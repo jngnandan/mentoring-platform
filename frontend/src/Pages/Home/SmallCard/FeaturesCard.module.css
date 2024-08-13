@@ -1,0 +1,40 @@
+.navbar {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow-y: auto; /* Enable scrolling for the navigation bar */
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
+  width: rem(200px);
+  padding: var(--mantine-spacing-md);
+  display: flex;
+  flex-direction: column;
+  border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.header {
+  /* padding: var(--mantine-spacing-md); */
+  padding-top: 0;
+  margin-left: calc(var(--mantine-spacing-md) * -1);
+  margin-right: calc(var(--mantine-spacing-md) * -1);
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+  border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.links {
+  flex: 1;
+  overflow-y: auto; /* Enable scrolling for the links area */
+  margin-left: calc(var(--mantine-spacing-md) * -1);
+  margin-right: calc(var(--mantine-spacing-md) * -1);
+}
+
+.linksInner {
+  /* padding: var(--mantine-spacing-xl) 0; */
+  /* Adjust vertical padding as needed */
+}
+
+.footer {
+  border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  padding: 0 var(--mantine-spacing-md);
+  /* Adjust padding as needed */
+}
