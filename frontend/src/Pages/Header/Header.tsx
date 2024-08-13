@@ -110,9 +110,9 @@ export default function Header() {
 
           <Group h="100%" gap={0} visibleFrom="sm">
           {/* <Link to='/'> */}
-            <a href="/" className={classes.link}>
+            {/* <a href="/" className={classes.link}>
               Home
-            </a>
+            </a> */}
             {/* </Link> */}
 
             <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
@@ -159,12 +159,16 @@ export default function Header() {
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
+            <a href="/mentors" className={classes.link}>
+              Mentors
+            </a>
             <a href="/about" className={classes.link}>
               About Us
             </a>
             <a href="/contact" className={classes.link}>
               Contact Us
             </a>
+       
 
           </Group>
 

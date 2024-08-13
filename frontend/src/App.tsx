@@ -22,6 +22,7 @@ import { ForgotPassword } from "./Pages/ForgotPassword/ForgotPassword.tsx";
 
 import SignupForm from "./Pages/Signup/SignupForm.tsx";
 // import SignupPage from "./Pages/SignupPage/index.tsx";
+import Mentors from "./Pages/Mentors/Mentors.tsx";
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
         <Route exact path="/signup" element={<SignupForm/>}/>
 
         {/* <Route exact path="/signup-page" element={<SignupPage/>}/> */}
+        <Route exact path='mentors' element={<Mentors/>}/>
 
       </Routes>
     </BrowserRouter>

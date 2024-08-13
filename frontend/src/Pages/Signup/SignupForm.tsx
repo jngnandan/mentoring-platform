@@ -47,11 +47,11 @@ export default function SignupForm() {
         <Group justify="space-between" mt="lg">
           <Checkbox label="Remember me" />
 
-          <Link to='/forgot-password'>
+          {/* <Link to='/forgot-password'>
           <Anchor component="button" size="sm">
             Forgot password?
           </Anchor>
-          </Link>
+          </Link> */}
         </Group>
         <Link to='/'>
         <Button fullWidth mt="xl">
