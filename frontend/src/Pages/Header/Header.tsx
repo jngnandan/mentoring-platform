@@ -115,7 +115,7 @@ export default function Header() {
             </a> */}
             {/* </Link> */}
 
-            <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
+            {/* <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
               <HoverCard.Target>
                 <a href="#" className={classes.link}>
                   <Center inline>
@@ -158,7 +158,7 @@ export default function Header() {
                   </Group>
                 </div>
               </HoverCard.Dropdown>
-            </HoverCard>
+            </HoverCard> */}
             <a href="/mentors" className={classes.link}>
               Mentors
             </a>
@@ -173,6 +173,9 @@ export default function Header() {
           </Group>
 
           <Group visibleFrom="sm">
+          <Link to='/mentor-register'>
+            <Button variant="default">Register as Mentor</Button>
+            </Link>
             <Link to='/login'>
             <Button variant="default">Log in</Button>
             </Link>

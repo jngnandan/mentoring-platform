@@ -27,6 +27,8 @@ import FooterLink from '../Footer/FooterLinks.tsx'
 import CompareCard from './CompareCard/CompareCard.tsx';
 import { HeroText } from './HeroText/HeroText.tsx';
 
+import { FaqSimple } from '../FAQ/FaqSimple.tsx';
+
   // Create an array of icon components
 const icons = [
   <SiAmazon key="amazon" size={44} />,
@@ -202,7 +204,7 @@ function HomePage() {
 
 
         {/* Realted Compare Product Cards */}
-        <Paper withBorder shadow="xs" px="xl" py='md' mx='md' my='xl'>
+        {/* <Paper withBorder shadow="xs" px="xl" py='md' mx='md' my='xl'>
        <div
         className='flex flex-row justify-between items-center my-3'
       >
@@ -213,7 +215,6 @@ function HomePage() {
         <Anchor href="/products" target="_blank" underline="hover" size='sm'>
           View More
         </Anchor>
-        {/* <IconArrowRight size={22} /> */}
       </div>
         </Link>
         </div>
@@ -230,11 +231,10 @@ function HomePage() {
                 )})}
         </div>
 
-       </Paper>
+       </Paper> */}
 
  
-
-
+      <FaqSimple/>
     
         {/* Footer */}
         <FooterLink/>
