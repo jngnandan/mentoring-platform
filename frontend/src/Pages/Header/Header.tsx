@@ -172,7 +172,7 @@ export default function Header() {
             <Link to='/login'>
             <Button variant="default">Log in</Button>
             </Link>
-            <Link to='/singup'>
+            <Link to='/signup'>
             <Button variant="fill">Sign up</Button>
             </Link>
           </Group>

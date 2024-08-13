@@ -15,10 +15,14 @@ import ComparisionPage from "./Pages/ComparisionPage/ComparisionPage.tsx";
 import About from "./Pages/About/index.tsx";
 import { ContactUs } from "./Pages/ContactPage/ContactUs.tsx";
 
-import Deals from "../src/Pages/Categories/Deals/index.tsx"
-import News from "../src/Pages/Categories/News/index.tsx"
+import Deals from "../src/Pages/Categories/Deals/index.tsx";
+import News from "../src/Pages/Categories/News/index.tsx";
 
 import { ForgotPassword } from "./Pages/ForgotPassword/ForgotPassword.tsx";
+
+import SignupForm from "./Pages/Signup/SignupForm.tsx";
+// import SignupPage from "./Pages/SignupPage/index.tsx";
+
 
 function App() {
   return (
@@ -38,6 +42,11 @@ function App() {
         <Route exact path="/about" element={<About/>}/>
         <Route exact path="/contact" element={<ContactUs/>}/>
         <Route exact path="/forgot-password" element={<ForgotPassword/>}/>
+
+        <Route exact path="/signup" element={<SignupForm/>}/>
+
+        {/* <Route exact path="/signup-page" element={<SignupPage/>}/> */}
+
       </Routes>
     </BrowserRouter>
 
