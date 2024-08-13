@@ -40,9 +40,12 @@ export default function AuthenticationForm() {
         <PasswordInput label="Password" placeholder="Your password" required mt="md" />
         <Group justify="space-between" mt="lg">
           <Checkbox label="Remember me" />
+
+          <Link to='/forgot-password'>
           <Anchor component="button" size="sm">
             Forgot password?
           </Anchor>
+          </Link>
         </Group>
         <Link to='/'>
         <Button fullWidth mt="xl">

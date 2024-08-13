@@ -165,13 +165,16 @@ export default function Header() {
             <a href="/contact" className={classes.link}>
               Contact Us
             </a>
+
           </Group>
 
           <Group visibleFrom="sm">
-            {/* <Link to='/login'>
+            <Link to='/login'>
             <Button variant="default">Log in</Button>
             </Link>
-            <Button>Sign up</Button> */}
+            <Link to='/singup'>
+            <Button variant="fill">Sign up</Button>
+            </Link>
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />

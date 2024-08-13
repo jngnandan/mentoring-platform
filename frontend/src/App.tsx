@@ -18,6 +18,7 @@ import { ContactUs } from "./Pages/ContactPage/ContactUs.tsx";
 import Deals from "../src/Pages/Categories/Deals/index.tsx"
 import News from "../src/Pages/Categories/News/index.tsx"
 
+import { ForgotPassword } from "./Pages/ForgotPassword/ForgotPassword.tsx";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route exact path="/compare" element={<ComparisionPage/>}/>
         <Route exact path="/about" element={<About/>}/>
         <Route exact path="/contact" element={<ContactUs/>}/>
+        <Route exact path="/forgot-password" element={<ForgotPassword/>}/>
       </Routes>
     </BrowserRouter>
 
