@@ -56,6 +56,9 @@ const categories = [
 function HomePage() {
 
   const {dataFromBackend, products} = useContext(ContentContext)
+  const { profilesData } = useContext(ContentContext);
+  // Assuming profilesData is an array of profile objects
+  const selectedProfiles = profilesData.slice(0, 8); // A
 
   // console.log(dataFromBackend)
 
@@ -101,6 +104,30 @@ function HomePage() {
     </div>
   </div>
 </div>
+
+{/* New Section: Featured Products */}
+<Paper withBorder shadow="xs" px="xl" py='md' mx='md' my='xl'>
+        <div className='flex flex-row justify-between items-center my-3'>
+          <Text my={8} fz={22} fw={500} size='xl'>Featured Products</Text>
+          <Link to='/products'>
+            <div className="flex flex-row items-center">
+              <Anchor href="/products" target="_blank" underline="hover" size='sm'>
+                View More
+              </Anchor>
+            </div>
+          </Link>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 mb-6'>
+          {selectedRange.map((product, index) => (
+            <div key={index}>
+              <Paper shadow="xs" style={{ height: '100%' }}>
+                <SmallCard data={product} />
+              </Paper>
+            </div>
+          ))}
+        </div>
+      </Paper>
 
       {/* The Grid with Unsplash images */}
       {/* <Container my="md" >
@@ -156,7 +183,6 @@ function HomePage() {
         <Anchor href="/products" target="_blank" underline="hover" size='sm'>
           View More
         </Anchor>
-        {/* <IconArrowRight size={22} /> */}
       </div>
         </Link>
           
@@ -174,33 +200,7 @@ function HomePage() {
        </Paper>
 
         {/* Popular Product Cards */}
-        <Paper withBorder shadow="xs" px="xl" py='md' mx='md' my='xl'>
-       <div
-        className='flex flex-row justify-between items-center my-3'
-      >
-
-        <Text my={8} fz={22} fw={500} size='xl'>Popular Products</Text>
-        <Link to='/products'>
-        <div className="flex flex-row items-center">
-        <Anchor href="/products" target="_blank" underline="hover" size='sm'>
-          View More
-        </Anchor>
-        {/* <IconArrowRight size={22} /> */}
-      </div>
-        </Link>
-        </div>
-        
-       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4  mb-6'>
-                {(newRange).map((product, index) => (
-                  <div
-                    key={index}>
-                    <Paper shadow="xs"  style={{ height: '100%' }}>
-                      <SmallCard data={product} />
-                    </Paper>
-                  </div>
-                ))}
-              </div>
-       </Paper>
+      
 
 
         {/* Realted Compare Product Cards */}

@@ -11,13 +11,19 @@ import {
   FileInput,
   Radio,
   Grid,
+  
 } from '@mantine/core';
+import { DateInput, DatePicker } from '@mantine/dates';
+// import DatePicker from 'react-datepicker';
+
 import { IconPhoto } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import classes from './MentorRegister.module.css';
 
 export default function MentorRegister() {
   const [selectedOption, setSelectedOption] = useState<string>('option1');
+
+  const [value, setValue] = useState<Date[]>([]);
 
   const handleNextClick = () => {
     const options = ['option1', 'option2', 'option3', 'option4'];
@@ -122,11 +128,13 @@ export default function MentorRegister() {
                   label="Upload Avatar"
                   withAsterisk
                   placeholder="Upload"
-                />
-              </Group>
+                />            
+            </Group>
             </Grid.Col>
             <Grid.Col span={8}>
-              <TextInput label="Name" placeholder="Your Name" required />
+              <TextInput label="Company Name" placeholder="Your Company" required />
+              <TextInput label="Email Address" placeholder="email@example.com" required mt="md" />
+              <DatePicker type="multiple" value={value} onChange={setValue} />
               <TextInput label="Email Address" placeholder="email@example.com" required mt="md" />
               <TextInput label="Job Title" placeholder="Your Job Title" required mt="md" />
               <Button fullWidth mt="xl" onClick={handleNextClick}>
@@ -162,6 +170,7 @@ export default function MentorRegister() {
             <Grid.Col span={8}>
               <TextInput label="First Name" placeholder="Your First Name" required />
               <TextInput label="Email ID" placeholder="you@example.com" required mt="md" />
+              {/* <DateInput clearable defaultValue={new Date()} label="Date input" placeholder="Date input" /> */}
               <TextInput label="Your Role" placeholder="Your Role" required mt="md" />
               <Button fullWidth mt="xl" onClick={handleNextClick}>
                 Next
