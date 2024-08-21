@@ -1,0 +1,17 @@
+/* CheckboxCard.module.css */
+
+.button {
+  display: flex;
+  width: 100%; /* Allow the button to take the full width of its parent */
+  max-width: 300px; /* Set a max width for the card */
+  margin: 0 auto; /* Center the card horizontally */
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-sm);
+  padding: var(--mantine-spacing-lg);
+  background-color: var(--mantine-color-white);
+  transition: background-color 0.3s; /* Add a transition effect for hover */
+}
+
+.button:hover {
+  background-color: var(--mantine-color-gray-0);
+}
