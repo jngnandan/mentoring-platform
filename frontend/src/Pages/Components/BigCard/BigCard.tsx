@@ -5,7 +5,7 @@ import classes from './CheckboxCard.module.css';
 export function BigCard({ icon: Icon, title, description }) {
   return (
     <UnstyledButton className={classes.button}>
-      <Icon size={24} mr={4} />
+      <Icon size={44} stroke={1.2} mr={4} />
 
       <div>
         <Text fw={500} ml={9} mb={7} lh={1.5}>

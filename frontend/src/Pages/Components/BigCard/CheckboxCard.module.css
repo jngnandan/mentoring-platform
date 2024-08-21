@@ -3,7 +3,7 @@
 .button {
   display: flex;
   width: 100%; /* Allow the button to take the full width of its parent */
-  max-width: 300px; /* Set a max width for the card */
+  /* max-width: 300px; */
   min-height: 200px;
   margin: 0 auto; /* Center the card horizontally */
   border: 1px solid var(--mantine-color-gray-3);
