@@ -228,11 +228,15 @@ function HomePage() {
         {/* Using IconTextCard for fields */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 lg:mx-12 mt-4">
         {fields.map((field, index) => (
+        <Link to='/mentors'>
+
           <IconTextCard
             key={index}
             icon={field.icon}
             title={field.title}
           />
+        </Link>
+
         ))}
       </div>
 
@@ -278,7 +282,7 @@ function HomePage() {
 
 {/* Discover Mentorship */}
 <div className='py-0 shadow-sm'>
-  <Container className={classes.wrapper} size={1400} my={80}>
+  <Container className={classes.wrapper} size={3000} my={80}>
     <div className={classes.inner}>
       <Title className={classes.title}>
         Meet our{' '}
