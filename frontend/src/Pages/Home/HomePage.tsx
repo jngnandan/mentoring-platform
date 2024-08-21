@@ -19,6 +19,7 @@ import FooterLink from '../Footer/FooterLinks.tsx';
 import { HeroText } from './HeroText/HeroText.tsx';
 import { FaqSimple } from '../FAQ/FaqSimple.tsx';
 import { IconTextCard } from '../Components/CardWithCheckbox/CheckboxCard.tsx';
+import { BigCard } from '../Components/BigCard/BigCard.tsx';
 
 const icons = [
   <SiAmazon key="amazon" size={44} />,
@@ -54,6 +55,14 @@ const fields = [
   { icon: IconHome2, title: 'Operations' },
   { icon: IconActivity, title: 'Content Creation' },
 ];
+
+// New list of fields with icons and titles
+const Categories = [
+  { icon: IconPalette, title: 'Group Mentoring' },
+  { icon: LiaToolsSolid, title: 'One-on-One Mentoring' },
+];
+
+
 
 function HomePage() {
   const { dataFromBackend, profilesData } = useContext(ContentContext);
@@ -117,6 +126,24 @@ function HomePage() {
           />
         ))}
       </div>
+
+        {/* Using IconTextCard for fields */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6 mx-12">
+        {Categories.map((field, index) => (
+          <BigCard
+            key={index}
+            icon={field.icon}
+            title={field.title}
+            description='lorem ipsum'
+          />
+        ))}
+      </div>
+
+
+
+
+
+
 
       {/* Product Cards */}
       <Paper withBorder shadow="xs" px="xl" py='md' m='md' mt='xl'>
