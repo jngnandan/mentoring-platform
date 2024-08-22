@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconBookmark, IconHeart, IconShare } from '@tabler/icons-react';
+import { IconBookmark, IconBriefcase } from '@tabler/icons-react';
 import {
   Card,
   Image,
@@ -7,10 +7,9 @@ import {
   ActionIcon,
   Badge,
   Group,
-  Center,
-  Avatar,
   useMantineTheme,
   rem,
+  Box,
 } from '@mantine/core';
 import classes from './ArticleCard.module.css';
 
@@ -23,9 +22,10 @@ interface ArticleCardProps {
   authorAvatar: string;
   badgeText?: string;
   badgeGradient?: { from: string; to: string };
+  job: string;
 }
 
-export function ArticleCard({
+export default function ArticleCard({
   imageUrl,
   linkUrl,
   title,
@@ -34,6 +34,7 @@ export function ArticleCard({
   authorAvatar,
   badgeText = 'Featured',
   badgeGradient = { from: 'blue', to: 'cyan' },
+  job,
 }: ArticleCardProps) {
   const linkProps = { href: linkUrl, target: '_blank', rel: 'noopener noreferrer' };
   const theme = useMantineTheme();
@@ -54,30 +55,28 @@ export function ArticleCard({
         {title}
       </Text>
 
-      <Text fz="sm" c="dimmed" lineClamp={4}>
-        {description}
-      </Text>
+      <div className='flex flex-row justify-start items-start mt-1'>
+        <IconBriefcase stroke={1} size={30}/>
+        <Text fz="sm" c="dimmed" lineClamp={4} ml={4}>
+          {description}
+        </Text>
+      </div>
 
       <Group justify="space-between" className={classes.footer}>
-        <Center>
-          <Avatar src={authorAvatar} size={24} radius="xl" mr="xs" />
-          <Text fz="sm" inline>
+        <Box pl={0}>
+          <Text fz="xs" c="dimmed">
+            Experience
+          </Text>
+          <Text fz="sm">
             {authorName}
           </Text>
-        </Center>
-
-        <Group gap={8} mr={0}>
-          <ActionIcon className={classes.action}>
-            <IconHeart style={{ width: rem(16), height: rem(16) }} color={theme.colors.red[6]} />
-          </ActionIcon>
+        </Box>
+        <Group mr={0}>
           <ActionIcon className={classes.action}>
             <IconBookmark
               style={{ width: rem(16), height: rem(16) }}
               color={theme.colors.yellow[7]}
             />
-          </ActionIcon>
-          <ActionIcon className={classes.action}>
-            <IconShare style={{ width: rem(16), height: rem(16) }} color={theme.colors.blue[6]} />
           </ActionIcon>
         </Group>
       </Group>
