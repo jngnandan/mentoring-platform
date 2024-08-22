@@ -68,7 +68,7 @@ export function HeroText() {
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
             <Button
               component={Link}
-              to="/become-mentor"
+              to="/mentor-register"
               size="md"
               // style={{
               //   background: 'linear-gradient(90deg, rgba(255,83,83,1) 0%, rgba(255,61,137,1) 100%)',
