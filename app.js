@@ -8,6 +8,9 @@ const gsmarena = require('gsmarena-api');
 const { Database } = require("sqlite3").verbose();
 const http = require('http');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+const faker = require('faker');
+const axios = require('axios');
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -20,37 +23,162 @@ const app = express();
 const dbPath = path.join(__dirname, "mydatabase2.db");
 let db = null;
 
+// Middleware
+app.use(cors());
+app.use(express.json()); // For parsing JSON bodies
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Add CSP middleware
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;"
+  );
+  next();
+});
+
+// Function to fetch random user data from randomuser.me
+const fetchRandomUserData = async () => {
+  try {
+    const response = await axios.get('https://randomuser.me/api/');
+    const user = response.data.results[0];
+    return {
+      id: uuidv4(),
+      username: user.login.username,
+      email: user.email,
+      first_name: user.name.first,
+      last_name: user.name.last,
+      job_title: "Software Developer",
+      bio: "Enthusiastic developer with a passion for technology.",
+      company: "Tech Solutions Inc.",
+      profile_picture: user.picture.large,
+      hobbies: "Reading, Coding, Traveling",
+      achievements: "Developed a full-stack application",
+      contributions: "Contributed to open-source projects",
+      last_updated: new Date().toISOString(),
+      social_media_links: JSON.stringify({
+        linkedin: "https://www.linkedin.com/in/example",
+        medium: "https://medium.com/@example",
+        twitter: "https://twitter.com/example",
+      }),
+      bookings: JSON.stringify({
+        recent_bookings: [
+          { date: new Date().toISOString(), location: "New York" },
+          { date: new Date().toISOString(), location: "San Francisco" },
+        ],
+      }),
+    };
+  } catch (error) {
+    console.error('Error fetching random user data:', error);
+    return null;
+  }
+};
+
+// Main function to insert profiles into the database
+const insertProfiles = async () => {
+  try {
+    const profiles = [];
+    for (let i = 0; i < 20; i++) {
+      const profile = await fetchRandomUserData();
+      if (profile) {
+        profiles.push(profile);
+      }
+    }
+    // Insert profiles into the database
+    for (const profile of profiles) {
+      await db.run(`
+        INSERT INTO profiles (id, username, email, first_name, last_name, job_title, bio, company, profile_picture, hobbies, achievements, contributions, last_updated, social_media_links, bookings)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        profile.id,
+        profile.username,
+        profile.email,
+        profile.first_name,
+        profile.last_name,
+        profile.job_title,
+        profile.bio,
+        profile.company,
+        profile.profile_picture,
+        profile.hobbies,
+        profile.achievements,
+        profile.contributions,
+        profile.last_updated,
+        profile.social_media_links,
+        profile.bookings,
+      ]);
+    }
+    console.log('20 profiles have been inserted into the database.');
+  } catch (error) {
+    console.error('Error inserting profiles:', error);
+  }
+};
+
+console.log("Setting up routes...");
+
+// Define your routes
+app.get('/test', (req, res) => {
+  res.send('Test route is working');
+});
+
+// 404 handler (this should come after all other route definitions)
+app.use((req, res) => {
+  res.status(404).send("Sorry, that route doesn't exist.");
+});
+
+app.post("/generate-profiles", async (req, res) => {
+  console.log("Reached /generate-profiles route");
+  try {
+    await insertProfiles();
+    res.status(201).json({ message: "20 profiles have been inserted into the database." });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/profiles", async (req, res) => {
+  try {
+    const data = await db.all(`SELECT * FROM profiles`);
+    res.json(data);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+console.log("All routes defined.");
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
+// 404 middleware
+app.use((req, res) => {
+  console.log(`Received request for ${req.method} ${req.url}`);
+  res.status(404).send("Sorry, that route doesn't exist.");
+});
+
 const initializeDBAndServer = async () => {
   try {
     db = await open({
       filename: dbPath,
       driver: sqlite3.Database,
     });
-
-    // Your other initialization code here...
-
-    const DOMAIN = 'localhost'; // Replace
-    const HOST = '0.0.0.0'; // Replace with your desired host
+    
     const PORT = process.env.PORT || 3002;
-
-    const httpsOptions = {
-      key: fs.readFileSync(path.join(__dirname, 'ssl/private.key')),
-      cert: fs.readFileSync(path.join(__dirname, 'ssl/certificate.crt')),
-    };
-
-    // const server = https.createServer(httpsOptions, app);
     const server = http.createServer(app);
-
     
-    // Serve static files from the 'public' directory
-    app.use(express.static(path.join(__dirname, 'public')));
-
     server.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server Running in Docker at http://localhost:${PORT}/`);
+      console.log(`Server Running at http://localhost:${PORT}/`);
+      console.log('Registered routes:');
+      app._router.stack.forEach(function(r){
+        if (r.route && r.route.path){
+          console.log(r.route.path)
+        }
+      });
     });
-    
-    
-
   } catch (error) {
     console.error("Error:", error);
     process.exit(1);
@@ -58,8 +186,6 @@ const initializeDBAndServer = async () => {
 };
 
 initializeDBAndServer();
-
-app.use(cors());
 
 // Define your routes and other middleware here...
 
@@ -69,6 +195,14 @@ app.use(cors());
 
 // ... Previous code ...
 
+// Global error handling middleware
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' http://localhost:3002/;"
+  );
+  next();
+});
 
 
 app.get("/mobiles", async (req, res) => {
@@ -577,4 +711,3 @@ app.get("/", async (req, res) => {
 //     res.status(500).json({ error: 'Internal Server Error' });
 //   }
 // });
-

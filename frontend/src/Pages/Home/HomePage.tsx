@@ -1,13 +1,5 @@
 import React, { useContext } from 'react';
-import { Text, Paper, Button, Anchor, Container, Title } from '@mantine/core';
-import { SiAmazon, SiFlipkart, SiSamsung, SiOneplus, SiApple } from 'react-icons/si';
-import { MdOutlineDesignServices, MdPeopleOutline } from "react-icons/md";
-import { LiaToolsSolid } from "react-icons/lia";
-import { FaRegHandshake } from "react-icons/fa6";
-import { AiOutlineBuild } from "react-icons/ai";
-import { BsLaptop } from "react-icons/bs";
-import { SlSpeech } from "react-icons/sl";
-import { LiaPhotoVideoSolid } from "react-icons/lia";
+import { Text, Container, Title } from '@mantine/core';
 import { IconPalette, IconHome2, IconActivity, IconUsersGroup } from '@tabler/icons-react';
 
 import { ContentContext } from '../../context/ContentContext.tsx';
@@ -26,116 +18,31 @@ import classes from '../Home/HomePage.module.css';
 
 const fields = [
   { icon: IconPalette, title: 'Design' },
-  { icon: LiaToolsSolid, title: 'Engineering' },
-  { icon: FaRegHandshake, title: 'Marketing' },
-  { icon: AiOutlineBuild, title: 'Product' },
-  { icon: MdOutlineDesignServices, title: 'UI/UX' },
-  { icon: MdPeopleOutline, title: 'HR' },
-  { icon: BsLaptop, title: 'Sales' },
-  { icon: SlSpeech, title: 'Communications' },
-  { icon: LiaPhotoVideoSolid, title: 'Video Editing' },
-  { icon: FaRegHandshake, title: 'Finance' },
+  { icon: IconHome2, title: 'Engineering' },
+  { icon: IconActivity, title: 'Marketing' },
+  { icon: IconUsersGroup, title: 'Product' },
+  { icon: IconHome2, title: 'UI/UX' },
+  { icon: IconActivity, title: 'HR' },
+  { icon: IconPalette, title: 'Sales' },
+  { icon: IconUsersGroup, title: 'Communications' },
+  { icon: IconActivity, title: 'Video Editing' },
+  { icon: IconPalette, title: 'Finance' },
   { icon: IconHome2, title: 'Operations' },
   { icon: IconActivity, title: 'Content Creation' },
 ];
 
 const Categories = [
   { icon: IconUsersGroup, title: 'Group Mentoring' },
-  { icon: LiaToolsSolid, title: 'One-on-One Mentoring' },
-];
-
-const members = [
-  {
-    title: "John Doe",
-    description: "Senior Software Engineer at TechCorp",
-    authorName: "10 years",
-    numberOfSessions: 35,
-    attendanceRate: "98%",
-    imageUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-    linkUrl: "https://mantine.dev",
-    authorAvatar: "https://randomuser.me/api/portraits/thumb/men/1.jpg",
-    badgeText: "Outstanding",
-    badgeGradient: { from: 'yellow', to: 'red' },
-  },
-  {
-    title: "Jane Smith",
-    description: "Lead Data Scientist at DataHub",
-    authorName: "8 years",
-    numberOfSessions: 50,
-    attendanceRate: "95%",
-    imageUrl: "https://randomuser.me/api/portraits/women/1.jpg",
-    linkUrl: "https://example.com",
-    authorAvatar: "https://randomuser.me/api/portraits/thumb/women/1.jpg",
-    badgeText: "Featured",
-    badgeGradient: { from: 'blue', to: 'cyan' },
-  },
-  {
-    title: "Michael Johnson",
-    description: "Product Manager at InnovateX",
-    authorName: "12 years",
-    numberOfSessions: 20,
-    attendanceRate: "92%",
-    imageUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-    linkUrl: "https://innovatex.com",
-    authorAvatar: "https://randomuser.me/api/portraits/thumb/men/2.jpg",
-    badgeText: "Expert",
-    badgeGradient: { from: 'green', to: 'blue' },
-  },
-  {
-    title: "Emily Davis",
-    description: "UX/UI Designer at CreativeStudio",
-    authorName: "7 years",
-    numberOfSessions: 28,
-    attendanceRate: "99%",
-    imageUrl: "https://randomuser.me/api/portraits/women/2.jpg",
-    linkUrl: "https://creativestudio.com",
-    authorAvatar: "https://randomuser.me/api/portraits/thumb/women/2.jpg",
-    badgeText: "Top Performer",
-    badgeGradient: { from: 'purple', to: 'pink' },
-  },
-  {
-    title: "Robert Brown",
-    description: "CTO at NextGenTech",
-    authorName: "15 years",
-    numberOfSessions: 60,
-    attendanceRate: "100%",
-    imageUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-    linkUrl: "https://nextgentech.com",
-    authorAvatar: "https://randomuser.me/api/portraits/thumb/men/3.jpg",
-    badgeText: "Innovator",
-    badgeGradient: { from: 'orange', to: 'red' },
-  },
-  {
-    title: "Sophia White",
-    description: "Digital Marketing Specialist at MarketPro",
-    authorName: "5 years",
-    numberOfSessions: 40,
-    attendanceRate: "97%",
-    imageUrl: "https://randomuser.me/api/portraits/women/3.jpg",
-    linkUrl: "https://marketpro.com",
-    authorAvatar: "https://randomuser.me/api/portraits/thumb/women/3.jpg",
-    badgeText: "Rising Star",
-    badgeGradient: { from: 'teal', to: 'lime' },
-  },
-  // {
-  //   title: "Liam Scott",
-  //   description: "Data Analyst at InsightLabs",
-  //   authorName: "4 years experience",
-  //   numberOfSessions: 25,
-  //   attendanceRate: "91%",
-  //   imageUrl: "https://randomuser.me/api/portraits/men/4.jpg",
-  //   linkUrl: "https://insightlabs.com",
-  //   authorAvatar: "https://randomuser.me/api/portraits/thumb/men/4.jpg",
-  //   badgeText: "New Talent",
-  //   badgeGradient: { from: 'lightblue', to: 'blue' },
-  // },
+  { icon: IconActivity, title: 'One-on-One Mentoring' },
 ];
 
 function HomePage() {
-  const { dataFromBackend, profilesData } = useContext(ContentContext);
-  const selectedProfiles = profilesData.slice(0, 8);
-  const selectedRange = dataFromBackend.slice(8, 15);
-  const newRange = dataFromBackend.slice(16, 23);
+  const { profilesData } = useContext(ContentContext);
+
+  // Handle case where profilesData might be empty or undefined
+  const selectedProfiles = profilesData ? profilesData.slice(0, 8) : [];
+  const selectedRange = profilesData ? profilesData.slice(8, 15) : [];
+  const newRange = profilesData ? profilesData.slice(16, 23) : [];
 
   return (
     <div>
@@ -203,19 +110,26 @@ function HomePage() {
             </Container>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 mx-12">
-              {members.map((member, index) => (
+              {selectedProfiles.map((profile, index) => (
                 <ArticleCard
-                  key={index}
-                  title={member.title}
-                  description={member.description}
-                  authorName={member.authorName}
-                  numberOfSessions={member.numberOfSessions}
-                  attendanceRate={member.attendanceRate}
-                  imageUrl={member.imageUrl}
-                  linkUrl={member.linkUrl}
-                  authorAvatar={member.authorAvatar}
-                  badgeText={member.badgeText}
-                  badgeGradient={member.badgeGradient}
+                  key={profile.id}
+                  profilepic={profile.profile_picture || 'https://via.placeholder.com/150'} // Default image if none
+                  linkUrl={profile.linkUrl || '#'}
+                  summary={profile.bio || profile.summary || 'No description available'}
+                  first_name={profile.first_name || 'Unknown'}
+                  last_name={profile.last_name || 'User'}
+                  job={profile.job_title || 'No job title'}
+                  bio={profile.bio || 'No bio available'}
+                  company={profile.company || 'No company available'}
+                  hobbies={profile.hobbies || 'No hobbies listed'}
+                  achievements={profile.achievements || 'No achievements listed'}
+                  contributions={profile.contributions || 'No contributions listed'}
+                  created_at={profile.last_updated || 'Date not available'}
+                  social_media_links={profile.social_media_links || 'No social media links available'}
+                  bookings={profile.bookings || 'No bookings available'}
+                  badgeText={profile.badgeText || 'Default Badge'}
+                  badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+                  experience={profile.experience || '5'}
                 />
               ))}
             </div>
