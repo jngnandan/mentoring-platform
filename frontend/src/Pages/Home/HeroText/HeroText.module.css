@@ -1,85 +1,80 @@
 .wrapper {
-    position: relative;
-    padding-top: rem(120px);
-    padding-bottom: rem(80px);
-  
-    @media (max-width: $mantine-breakpoint-sm) {
-      padding-top: rem(80px);
-      padding-bottom: rem(60px);
-    }
+  position: relative;
+  padding-top: 80px;
+  padding-bottom: 10px;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+}
+
+.dots {
+  position: absolute;
+  color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+}
+
+.title {
+  text-align: center;
+  font-weight: 800;
+  font-size: 44px;
+  letter-spacing: -1px;
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+  margin-bottom: var(--mantine-spacing-xs);
+  font-family: Greycliff CF, var(--mantine-font-family);
+}
+
+.description {
+  text-align: center;
+  max-width: 580px;
+  margin: 0 auto;
+  margin-top: var(--mantine-spacing-xl);
+  margin-bottom: var(--mantine-spacing-xl);
+  font-size: 18px;
+}
+
+.search {
+  max-width: 600px;
+  margin: var(--mantine-spacing-xl) auto 0;
+}
+
+.controls {
+  margin-top: var(--mantine-spacing-xl);
+}
+
+.control {
+  min-width: 150px;
+}
+
+.tabs {
+  max-width: 160px;
+  margin: 0 auto var(--mantine-spacing-xl);
+}
+
+.footer {
+  text-align: center;
+  margin-top: var(--mantine-spacing-xl);
+}
+
+@media (max-width: 755px) {
+  .wrapper {
+    padding-top: 80px;
+    padding-bottom: 60px;
   }
-  
-  .inner {
-    position: relative;
-    z-index: 1;
-  }
-  
+
+  /* Ensure dots are visible on mobile */
   .dots {
-    position: absolute;
-    color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
-  
-    @media (max-width: $mantine-breakpoint-sm) {
-      display: none;
-    }
+    display: block;
   }
-  
-  .dotsLeft {
-    left: 0;
-    top: 0;
-  }
-  
+
+  /* Center text for mobile */
   .title {
+    font-size: 28px;
     text-align: center;
-    font-weight: 800;
-    font-size: rem(40px);
-    letter-spacing: -1px;
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-    margin-bottom: var(--mantine-spacing-xs);
-    font-family:
-      Greycliff CF,
-      var(--mantine-font-family);
-  
-    @media (max-width: $mantine-breakpoint-xs) {
-      font-size: rem(28px);
-      text-align: left;
-    }
   }
-  
-  .highlight {
-    color: light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-4));
-  }
-  
+
   .description {
     text-align: center;
-  
-    @media (max-width: $mantine-breakpoint-xs) {
-      text-align: left;
-      font-size: var(--mantine-font-size-md);
-    }
+    font-size: 16px;
   }
-  
-  .controls {
-    margin-top: var(--mantine-spacing-lg);
-    display: flex;
-    justify-content: center;
-  
-    @media (max-width: $mantine-breakpoint-xs) {
-      flex-direction: column;
-    }
-  }
-  
-  .control {
-    &:not(:first-of-type) {
-      margin-left: var(--mantine-spacing-md);
-    }
-  
-    @media (max-width: $mantine-breakpoint-xs) {
-      height: rem(42px);
-      font-size: var(--mantine-font-size-md);
-  
-      &:not(:first-of-type) {
-        margin-top: var(--mantine-spacing-md);
-        margin-left: 0;
-      }
-    }
-  }
+}

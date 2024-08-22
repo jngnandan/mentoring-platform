@@ -173,9 +173,9 @@ export default function Header() {
           </Group>
 
           <Group visibleFrom="sm">
-          <Link to='/mentor-register'>
+          {/* <Link to='/mentor-register'>
             <Button variant="default">Register as Mentor</Button>
-            </Link>
+            </Link> */}
             <Link to='/login'>
             <Button variant="default">Log in</Button>
             </Link>
