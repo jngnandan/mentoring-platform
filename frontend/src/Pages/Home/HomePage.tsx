@@ -13,8 +13,10 @@ import { FaqSimple } from '../FAQ/FaqSimple.tsx';
 import { IconTextCard } from '../Components/CardWithCheckbox/CheckboxCard.tsx';
 import { BigCard } from '../Components/BigCard/BigCard.tsx';
 import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
+import NewsletterSignup from '../NewsLetter/NewsletterSignup.js';
 
 import classes from '../Home/HomePage.module.css';
+
 
 const fields = [
   { icon: IconPalette, title: 'Design' },
@@ -143,6 +145,10 @@ function HomePage() {
 
       <div className='bg-gray-100'>
         <FaqSimple />
+      </div>
+
+      <div>
+        <NewsletterSignup/>
       </div>
 
       <FooterLink />

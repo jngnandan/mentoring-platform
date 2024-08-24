@@ -8,6 +8,7 @@ const gsmarena = require('gsmarena-api');
 const { Database } = require("sqlite3").verbose();
 const http = require('http');
 const fs = require('fs');
+const newsletterRoutes = require('./newsletter'); // Import the newsletter routes
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -60,6 +61,11 @@ const initializeDBAndServer = async () => {
 initializeDBAndServer();
 
 app.use(cors());
+
+app.use(express.json()); // For parsing JSON bodies
+
+// Use newsletter routes
+app.use('/newsletter', newsletterRoutes);
 
 // Define your routes and other middleware here...
 

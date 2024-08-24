@@ -5,6 +5,7 @@ import App from './App.tsx';
 import reportWebVitals from './reportWebVitals.js';
 import { ContentProvider } from './context/ContentContext.tsx';
 import { MantineProvider, createTheme } from '@mantine/core';
+import '@mantine/core/styles.css'; // Import Mantine styles
 
 const theme = createTheme({
   /** Put your mantine theme override here */

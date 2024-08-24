@@ -4,7 +4,7 @@ import {
   Anchor, Grid, Avatar, Loader, ActionIcon, Box, Tabs, rem
 } from '@mantine/core';
 import { IconMapPin, IconStar, IconClock, IconBookmark, IconBrandLinkedin, IconBrandX, IconUserCheck, IconUserPlus } from '@tabler/icons-react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ContentContext } from '../../context/ContentContext.tsx';
 
 function ProfilePage() {
@@ -168,9 +168,11 @@ function ProfilePage() {
                 </Box>
               ))}
             </Stack>
+            <Link to={'/login'}>
             <Button fullWidth color="teal" mt="xl">
               Book now
             </Button>
+            </Link>
             <Anchor href="#" size="sm" color="teal" mt="xs" display="block" textAlign="center">
               View all sessions
             </Anchor>

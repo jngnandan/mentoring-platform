@@ -26,6 +26,8 @@ import Mentors from "./Pages/Mentors/Mentors.tsx";
 import MentorRegister from "./Pages/MentorRegister/MentorRegister.tsx";
 import MentorsPage from "./Pages/MentorsPage/index.tsx";
 
+import CookieConsentBanner from '../src/Pages/Components/CookieConsentBanner.js';
+import '@mantine/core/styles.css'; // Import Mantine styles
 // import SignIn from "./Pages/Components/GoogleButton.js";
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
 
     <BrowserRouter>
       <Header/>
+      <CookieConsentBanner />
       <Routes>
         <Route exact path="/" element={<HomePage/>}/>
         <Route exact path="/login" element={<AuthenticationForm/>}/>
