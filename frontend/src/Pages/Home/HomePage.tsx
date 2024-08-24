@@ -1,13 +1,9 @@
 import React, { useContext } from 'react';
 import { Text, Container, Title } from '@mantine/core';
-import {
-  IconPalette,
-  IconHome2,
-  IconActivity,
-  IconUsersGroup
-} from '@tabler/icons-react';
+import { IconPalette, IconHome2, IconActivity, IconUsersGroup } from '@tabler/icons-react';
 
 import { ContentContext } from '../../context/ContentContext.tsx';
+
 import ProductCard from './ProductCard/ProductCard.tsx';
 import SmallCard from './SmallCard/SmallCard.tsx';
 import { Link } from 'react-router-dom';
@@ -20,7 +16,6 @@ import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
 
 import classes from '../Home/HomePage.module.css';
 
-// Field data for icons and titles
 const fields = [
   { icon: IconPalette, title: 'Design' },
   { icon: IconHome2, title: 'Engineering' },
@@ -36,8 +31,7 @@ const fields = [
   { icon: IconActivity, title: 'Content Creation' },
 ];
 
-// Category data for cards
-const categories = [
+const Categories = [
   { icon: IconUsersGroup, title: 'Group Mentoring' },
   { icon: IconActivity, title: 'One-on-One Mentoring' },
 ];
@@ -45,52 +39,10 @@ const categories = [
 function HomePage() {
   const { profilesData } = useContext(ContentContext);
 
-  // Safely extract profiles data
+  // Handle case where profilesData might be empty or undefined
   const selectedProfiles = profilesData ? profilesData.slice(0, 8) : [];
-
-  // Helper function to render fields
-  const renderFields = () =>
-    fields.map((field, index) => (
-      <Link to='/mentors' key={index}>
-        <IconTextCard icon={field.icon} title={field.title} />
-      </Link>
-    ));
-
-  // Helper function to render categories
-  const renderCategories = () =>
-    categories.map((field, index) => (
-      <BigCard
-        key={index}
-        icon={field.icon}
-        title={field.title}
-        description='lorem ipsum'
-      />
-    ));
-
-  // Helper function to render mentors
-  const renderProfiles = () =>
-    selectedProfiles.map((profile) => (
-      <ArticleCard
-        key={profile.id}
-        profilepic={profile.profile_picture || 'https://via.placeholder.com/150'}
-        linkUrl={profile.linkUrl || '#'}
-        summary={profile.bio || 'No description available'}
-        first_name={profile.first_name || 'Unknown'}
-        last_name={profile.last_name || 'User'}
-        job={profile.job_title || 'No job title'}
-        bio={profile.bio || 'No bio available'}
-        company={profile.company || 'No company available'}
-        hobbies={profile.hobbies || 'No hobbies listed'}
-        achievements={profile.achievements || 'No achievements listed'}
-        contributions={profile.contributions || 'No contributions listed'}
-        created_at={profile.last_updated || 'Date not available'}
-        social_media_links={profile.social_media_links || 'No social media links available'}
-        bookings={profile.bookings || 'No bookings available'}
-        badgeText={profile.badgeText || 'Default Badge'}
-        badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
-        experience={profile.experience || '5'}
-      />
-    ));
+  const selectedRange = profilesData ? profilesData.slice(8, 15) : [];
+  const newRange = profilesData ? profilesData.slice(16, 23) : [];
 
   return (
     <div>
@@ -99,7 +51,14 @@ function HomePage() {
       <Container className={classes.wrapper} size={1400} my={80}>
         <div className={classes.inner}>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 lg:mx-12 mt-4">
-            {renderFields()}
+            {fields.map((field, index) => (
+              <Link to='/mentors' key={index}>
+                <IconTextCard
+                  icon={field.icon}
+                  title={field.title}
+                />
+              </Link>
+            ))}
           </div>
         </div>
       </Container>
@@ -121,7 +80,14 @@ function HomePage() {
             </Container>
 
             <div className="grid grid-cols-2 gap-6 mb-6 lg:mx-36 mt-8">
-              {renderCategories()}
+              {Categories.map((field, index) => (
+                <BigCard
+                  key={index}
+                  icon={field.icon}
+                  title={field.title}
+                  description='lorem ipsum'
+                />
+              ))}
             </div>
           </div>
         </Container>
@@ -143,8 +109,34 @@ function HomePage() {
               </Text>
             </Container>
 
+<<<<<<< HEAD
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 lg:mx-12">
               {renderProfiles()}
+=======
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 mx-12">
+              {selectedProfiles.map((profile, index) => (
+                <ArticleCard
+                  key={profile.id}
+                  profilepic={profile.profile_picture || 'https://via.placeholder.com/150'} // Default image if none
+                  linkUrl={profile.linkUrl || '#'}
+                  summary={profile.bio || profile.summary || 'No description available'}
+                  first_name={profile.first_name || 'Unknown'}
+                  last_name={profile.last_name || 'User'}
+                  job={profile.job_title || 'No job title'}
+                  bio={profile.bio || 'No bio available'}
+                  company={profile.company || 'No company available'}
+                  hobbies={profile.hobbies || 'No hobbies listed'}
+                  achievements={profile.achievements || 'No achievements listed'}
+                  contributions={profile.contributions || 'No contributions listed'}
+                  created_at={profile.last_updated || 'Date not available'}
+                  social_media_links={profile.social_media_links || 'No social media links available'}
+                  bookings={profile.bookings || 'No bookings available'}
+                  badgeText={profile.badgeText || 'Default Badge'}
+                  badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+                  experience={profile.experience || '5'}
+                />
+              ))}
+>>>>>>> parent of 346ad03 (apis updated for mobile)
             </div>
           </div>
         </Container>

@@ -193,17 +193,17 @@ export default function Header() {
         onClose={closeDrawer}
         size="100%"
         padding="md"
-        title="Mentree"
+        title="Navigation"
         hiddenFrom="sm"
         zIndex={1000000}
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
 
-          <a href="/mentors" className={classes.link}>
-            Mentors
+          <a href="#" className={classes.link}>
+            Home
           </a>
-          {/* <UnstyledButton className={classes.link} onClick={toggleLinks}>
+          <UnstyledButton className={classes.link} onClick={toggleLinks}>
             <Center inline>
               <Box component="span" mr={5}>
                 Features
@@ -213,25 +213,20 @@ export default function Header() {
                 color={theme.colors.blue[6]}
               />
             </Center>
-          </UnstyledButton> */}
+          </UnstyledButton>
           <Collapse in={linksOpened}>{links}</Collapse>
-          <a href="/contact" className={classes.link}>
-            About Us
+          <a href="#" className={classes.link}>
+            Learn
           </a>
-          <a href="/contact" className={classes.link}>
-            Contact us
+          <a href="#" className={classes.link}>
+            Academy
           </a>
 
           <Divider my="sm" />
 
           <Group justify="center" grow pb="xl" px="md">
-            <Link to={'/login'}>
             <Button variant="default">Log in</Button>
-            </Link>
-
-            <Link to={'/signup'}>
             <Button>Sign up</Button>
-            </Link>
           </Group>
         </ScrollArea>
       </Drawer>
