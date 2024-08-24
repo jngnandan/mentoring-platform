@@ -1,4 +1,9 @@
+// src/components/GoogleButton.tsx
+
+import React from 'react';
 import { Button, ButtonProps } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { signInWithGoogle } from '../../firebase.js'; // Ensure this is correctly pointing to your firebase utility functions
 
 function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -30,5 +35,17 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 }
 
 export default function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
-  return <Button leftSection={<GoogleIcon />} variant="default" {...props} />;
+  const navigate = useNavigate(); // Hook to programmatically navigate
+
+  const handleClick = async () => {
+    try {
+      await signInWithGoogle();
+      navigate('/mentors'); // Redirect to the "mentors" page after successful sign-in
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      // Handle errors, show notifications, etc.
+    }
+  };
+
+  return <Button leftSection={<GoogleIcon />} variant="default" onClick={handleClick} {...props} />;
 }
