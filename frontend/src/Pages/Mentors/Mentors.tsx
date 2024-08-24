@@ -24,6 +24,7 @@ import { FaMoneyBill, FaNewspaper, FaMobile, FaTablet, FaLaptop, FaTv, FaCamera,
 // import { IconHome2, IconGauge, IconChevronRight, IconActivity, IconCircleOff, IconPhoto, IconArrowRight } from '@tabler/icons-react';
 import { SiAmazon, SiFlipkart, SiSamsung, SiOneplus, SiApple, SiGoogle, SiHuawei, SiXiaomi, SiSony, SiMotorola, SiAsus, SiBlackberry } from 'react-icons/si';
 import FooterLinks from '../Footer/FooterLinks.tsx';
+import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
 
 
   // Create an array of icon components
@@ -57,7 +58,7 @@ import FooterLinks from '../Footer/FooterLinks.tsx';
 
 
 function Mentors() {
-  const { dataFromBackend, loading, setLoading, compareProducts, setCompareProducts, appleData, fetchAppleData, samsungData, fetchSamsungData, xiaomiData, fetchXiaomiData, oneplusData, fetchOneplusData,  fetchGoogleData, googleData, fetchMotorolaData, motorolaData, checkboxData, mobilesData, fetchMobilesData} = useContext(ContentContext);
+  const { dataFromBackend, loading, setLoading, compareProducts, setCompareProducts, appleData, fetchAppleData, samsungData, fetchSamsungData, xiaomiData, fetchXiaomiData, oneplusData, fetchOneplusData,  fetchGoogleData, googleData, fetchMotorolaData, motorolaData, checkboxData, mobilesData, fetchMobilesData, profilesData, fetchProfilesData} = useContext(ContentContext);
   // const [loading, setLoading] = useState(true);
   const isXS = useMediaQuery('(max-width: 575px)');
   const isSM = useMediaQuery('(max-width: 48em)')
@@ -87,6 +88,34 @@ function Mentors() {
 
   const bottomRef = useRef(null);
   const [shouldLoadMore, setShouldLoadMore] = useState(true);
+
+  const selectedProfiles = profilesData ? profilesData.slice(0, 20) : [];
+
+    // Helper function to render mentors
+    const renderProfiles = () =>
+      selectedProfiles.map((profile) => (
+        <ArticleCard
+          key={profile.id}
+          profilepic={profile.profile_picture || 'https://via.placeholder.com/150'}
+          linkUrl={profile.linkUrl || '#'}
+          summary={profile.bio || 'No description available'}
+          first_name={profile.first_name || 'Unknown'}
+          last_name={profile.last_name || 'User'}
+          job={profile.job_title || 'No job title'}
+          bio={profile.bio || 'No bio available'}
+          company={profile.company || 'No company available'}
+          hobbies={profile.hobbies || 'No hobbies listed'}
+          achievements={profile.achievements || 'No achievements listed'}
+          contributions={profile.contributions || 'No contributions listed'}
+          created_at={profile.last_updated || 'Date not available'}
+          social_media_links={profile.social_media_links || 'No social media links available'}
+          bookings={profile.bookings || 'No bookings available'}
+          badgeText={profile.badgeText || 'Default Badge'}
+          badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+          experience={profile.experience || '5'}
+        />
+      ));
+
 
   
   useEffect(() => {
@@ -159,6 +188,17 @@ useEffect(() => {
       
     // }
   }, [appleData]);
+
+  useEffect(() => {
+    // Fetch data only if dataFromBackend is empty
+    if (profilesData.length === 0) {
+      fetchProfilesData();
+    }
+    // if (appleData.length === 0) {
+    //   fetchSamsungeData();
+      
+    // }
+  }, [profilesData]);
 
   const handleIconClick = (name) => {
     setSelectedBrand(name);
@@ -439,26 +479,38 @@ useEffect(() => {
                 </div>
               </div>
               {/* <ScrollArea style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}> */}
-              <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6'>
-                {filteredData.slice(0, displayedItems).map((product, index) => (
+              {/* <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 mx-4'>
+                {selectedProfiles.slice(0, displayedItems).map((product, index) => (
                   <div
                     key={index}
                     style={{
-                      flex: '0 0 calc(25% - 16px)',
-                      margin: '8px',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
                       height: '100%',
                     }}
-                  >
-                    <Paper padding="xl" shadow="xs" radius="xs" style={{ height: '100%' }}>
-                      <NewCard data={product} />
+                  > */}
+                    {/* <Paper padding="xl" shadow="xs" radius="xs" style={{ height: '100%' }}> */}
+                      {/* <NewCard data={product} /> */}
+                      {/* {renderProfiles()} */}
                       {/* <ProdctCard data={product}/> */}
-                    </Paper>
-                  </div>
+                    {/* </Paper> */}
+                  {/* </div>
                 ))}
-              </div>
+              </div> */}
+
+              <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 mx-4 my-4'>
+  {selectedProfiles.slice(0, displayedItems).map((product, index) => (
+    <div
+      key={index}
+      className="flex flex-col justify-between h-full"
+    >
+      {renderProfiles()}
+    </div>
+  ))}
+</div>
+
+
               {/* </ScrollArea> */}
           </div>
         </Flex>

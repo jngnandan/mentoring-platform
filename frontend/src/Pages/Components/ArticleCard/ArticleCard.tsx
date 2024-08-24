@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconBookmark, IconBriefcase } from '@tabler/icons-react';
+import { IconBookmark, IconBriefcase, IconBuilding } from '@tabler/icons-react';
 import {
   Card,
   Image,
@@ -56,7 +56,7 @@ export default function ArticleCard({
   const theme = useMantineTheme();
 
   return (
-    <Card withBorder radius="md" className={classes.card}>
+    <Card withBorder radius="md" className={classes.card} shadow='sm' my={7}>
       <Card.Section>
         <a {...linkProps}>
           <Image src={profilepic} height={180} fit="cover" />
@@ -72,10 +72,31 @@ export default function ArticleCard({
         {`${first_name} ${last_name}`}
       </Text>
 
-      <Text className={classes.description} fz="sm" c="dimmed" lineClamp={4} mt={4}>
-  {`${job} at `}
-  <span style={{ color: '' }}>{company}</span>
-</Text>
+      <div  className='text-gray-400 flex justify-start items-center gap-2 mt-2'>
+  <IconBriefcase stroke={1.5} style={{ paddingRight: '2px' }} />
+  <Text  fz="sm" c="dimmed" lineClamp={4}>
+    {`${job} at `}
+    {/* <span style={{ color: '' }}>{company}</span> */}
+  </Text>
+</div>
+
+
+<div  className='text-gray-400 flex justify-start items-center gap-2 mt-2'>
+  <IconBuilding stroke={1.5} style={{ paddingRight: '2px' }} />
+  <Text  fz="sm" c="dimmed" lineClamp={4}>
+    {`${company} `}
+    {/* <span style={{ color: '' }}>{company}</span> */}
+  </Text>
+</div>
+  {/* <Text className={classes.description} fz="sm" c="dimmed" lineClamp={4}>
+        <span style={{ color: '' }}>{company}</span>
+    <br/>
+  </Text> */}
+
+
+
+
+      
 
 
       <Group position="apart"  className='space-between' mt="md">
@@ -99,6 +120,8 @@ export default function ArticleCard({
           />
         </ActionIcon>
       </Group>
+
+      
     </Card>
   );
 }
