@@ -1,127 +1,88 @@
 import React from 'react';
 import { IconBookmark, IconBriefcase, IconBuilding } from '@tabler/icons-react';
-import {
-  Card,
-  Image,
-  Text,
-  ActionIcon,
-  Badge,
-  Group,
-  useMantineTheme,
-  rem,
-  Box,
-} from '@mantine/core';
+import { Card, Image, Text, ActionIcon, Badge, Group, useMantineTheme, rem, Box } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import classes from './ArticleCard.module.css';
 
 interface ArticleCardProps {
-  profilepic: string; // Maps to the profilepic column
-  linkUrl: string;    // URL for the article link
-  summary: string;    // Maps to the summary column (used for both title and description)
-  first_name: string; // Maps to the first_name column
-  last_name: string;  // Maps to the last_name column
-  job: string;        // Maps to the job column
-  bio?: string;       // Maps to the bio column
-  company?: string;   // Maps to the company column
-  hobbies?: string;   // Maps to the hobbies column
-  achievements?: string; // Maps to the achievements column
-  contributions?: string; // Maps to the contributions column
-  created_at?: string;    // Maps to the created_at column
-  social_media_links?: string; // Maps to the social_media_links column
-  bookings?: string;  // Maps to the bookings column
-  badgeText?: string;
+  profilepic: string;
+  id: string; // Add an id field to create dynamic links
+  summary: string;
+  first_name: string;
+  last_name: string;
+  job: string;
+  bio?: string;
+  company?: string;
+  companyLogo?: string;  // Add a companyLogo field to display the company logo
   experience: string;
+  badgeText?: string;
   badgeGradient?: { from: string; to: string };
 }
 
 export default function ArticleCard({
   profilepic,
-  linkUrl,
+  id,
   summary,
   first_name,
   last_name,
   job,
-  bio = 'No bio available', // Default values if not provided
+  bio = 'No bio available',
   company = 'No company available',
-  hobbies = 'No hobbies listed',
-  achievements = 'No achievements listed',
-  contributions = 'No contributions listed',
-  created_at = 'Date not available',
-  social_media_links = 'No social media links available',
-  bookings = 'No bookings available',
+  companyLogo,  // Destructure the companyLogo prop
+  experience,
   badgeText = 'Featured',
   badgeGradient = { from: 'blue', to: 'cyan' },
-  experience
 }: ArticleCardProps) {
-  const linkProps = { href: linkUrl, target: '_blank', rel: 'noopener noreferrer' };
   const theme = useMantineTheme();
 
   return (
     <Card withBorder radius="md" className={classes.card} shadow='sm' my={7}>
       <Card.Section>
-        <a {...linkProps}>
+        <Link to={`/mentors/${id}`}>
           <Image src={profilepic} height={180} fit="cover" />
-        </a>
+        </Link>
       </Card.Section>
 
       <Badge className={classes.rating} variant="gradient" gradient={badgeGradient}>
         {badgeText}
       </Badge>
 
-      <Text className={classes.title} fw={500} component="a" {...linkProps}>
-        {/* {summary} */}
+      <Text className={classes.title} fw={500} component={Link} to={`/article/${id}`}>
         {`${first_name} ${last_name}`}
       </Text>
 
-      <div  className='text-gray-400 flex justify-start items-center gap-2 mt-2'>
-  <IconBriefcase stroke={1.5} style={{ paddingRight: '2px' }} />
-  <Text  fz="sm" c="dimmed" lineClamp={4}>
-    {`${job} at `}
-    {/* <span style={{ color: '' }}>{company}</span> */}
-  </Text>
-</div>
+      <div className='text-gray-400 flex justify-start items-center gap-2 mt-2'>
+        <IconBriefcase stroke={1.5} style={{ paddingRight: '2px' }} />
+        <Text fz="sm" c="dimmed" lineClamp={4}>
+          {`${job} at `}
+          {/* <span style={{ color: '' }}>{company}</span> */}
+        </Text>
+      </div>
 
+      <div className='text-gray-400 flex justify-start items-center gap-2 mt-2'>
+        <IconBuilding stroke={1.5} style={{ paddingRight: '2px' }} />
+        <Text fz="sm" c="dimmed" lineClamp={4}>
+          {company}
+        </Text>
+      </div>
 
-<div  className='text-gray-400 flex justify-start items-center gap-2 mt-2'>
-  <IconBuilding stroke={1.5} style={{ paddingRight: '2px' }} />
-  <Text  fz="sm" c="dimmed" lineClamp={4}>
-    {`${company} `}
-    {/* <span style={{ color: '' }}>{company}</span> */}
-  </Text>
-</div>
-  {/* <Text className={classes.description} fz="sm" c="dimmed" lineClamp={4}>
-        <span style={{ color: '' }}>{company}</span>
-    <br/>
-  </Text> */}
+      {companyLogo && (
+        <div className='flex justify-start items-center gap-2 mt-2'>
+          <Image src={companyLogo} alt={`${company} logo`} width={50} height={50} fit="contain" />
+        </div>
+      )}
 
-
-
-
-      
-
-
-      <Group position="apart"  className='space-between' mt="md">
+      <Group position="apart" className='space-between' mt="md">
         <Group spacing="xs">
-          {/* <img src={profilepic} alt={`${first_name} ${last_name}`} style={{ width: rem(32), height: rem(32), borderRadius: '50%' }} /> */}
           <Box>
-            <Text fz="xs" c="dimmed">
-              Experience
-            </Text>
-            <Text fz="sm" fw={500}>
-              {/* {`${first_name} ${last_name}`} */}
-              {`${experience} years`}
-
-            </Text>
+            <Text fz="xs" c="dimmed">Experience</Text>
+            <Text fz="sm" fw={500}>{`${experience} years`}</Text>
           </Box>
         </Group>
         <ActionIcon className={classes.action}>
-          <IconBookmark
-            style={{ width: rem(20), height: rem(20) }}
-            color={theme.colors.yellow[7]}
-          />
+          <IconBookmark style={{ width: rem(20), height: rem(20) }} color={theme.colors.yellow[7]} />
         </ActionIcon>
       </Group>
-
-      
     </Card>
   );
 }

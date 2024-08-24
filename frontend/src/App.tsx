@@ -24,6 +24,7 @@ import SignupForm from "./Pages/Signup/SignupForm.tsx";
 // import SignupPage from "./Pages/SignupPage/index.tsx";
 import Mentors from "./Pages/Mentors/Mentors.tsx";
 import MentorRegister from "./Pages/MentorRegister/MentorRegister.tsx";
+import MentorsPage from "./Pages/MentorsPage/index.tsx";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
 
         <Route exact path='/mentor-register' element={<MentorRegister/>}/>
 
+        <Route exact path="mentors/:id" element={<MentorsPage />} />
       </Routes>
     </BrowserRouter>
 

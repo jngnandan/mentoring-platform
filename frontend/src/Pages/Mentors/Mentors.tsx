@@ -92,32 +92,35 @@ function Mentors() {
   const bottomRef = useRef(null);
   const [shouldLoadMore, setShouldLoadMore] = useState(true);
 
-  const selectedProfiles = profilesData ? profilesData.slice(0, 20) : [];
+  const selectedProfiles = profilesData ? profilesData.slice(0, 10) : [];
 
+  // console.log(profilesData)
     // Helper function to render mentors
     const renderProfiles = () =>
-      selectedProfiles.map((profile) => (
-        <ArticleCard
-          key={profile.id}
-          profilepic={profile.profile_picture || 'https://via.placeholder.com/150'}
-          linkUrl={profile.linkUrl || '#'}
-          summary={profile.bio || 'No description available'}
-          first_name={profile.first_name || 'Unknown'}
-          last_name={profile.last_name || 'User'}
-          job={profile.job_title || 'No job title'}
-          bio={profile.bio || 'No bio available'}
-          company={profile.company || 'No company available'}
-          hobbies={profile.hobbies || 'No hobbies listed'}
-          achievements={profile.achievements || 'No achievements listed'}
-          contributions={profile.contributions || 'No contributions listed'}
-          created_at={profile.last_updated || 'Date not available'}
-          social_media_links={profile.social_media_links || 'No social media links available'}
-          bookings={profile.bookings || 'No bookings available'}
-          badgeText={profile.badgeText || 'Default Badge'}
-          badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
-          experience={profile.experience || '5'}
-        />
-      ));
+  selectedProfiles.map((profile) => (
+    <ArticleCard
+      key={profile.id}
+      id={profile.id}  // Pass the id here to the ArticleCard component
+      profilepic={profile.profile_picture || 'https://via.placeholder.com/150'}
+      linkUrl={profile.linkUrl || '#'}
+      summary={profile.bio || 'No description available'}
+      first_name={profile.first_name || 'Unknown'}
+      last_name={profile.last_name || 'User'}
+      job={profile.job_title || 'No job title'}
+      bio={profile.bio || 'No bio available'}
+      company={profile.company || 'No company available'}
+      hobbies={profile.hobbies || 'No hobbies listed'}
+      achievements={profile.achievements || 'No achievements listed'}
+      contributions={profile.contributions || 'No contributions listed'}
+      created_at={profile.last_updated || 'Date not available'}
+      social_media_links={profile.social_media_links || 'No social media links available'}
+      bookings={profile.bookings || 'No bookings available'}
+      badgeText={profile.badgeText || 'Default Badge'}
+      badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+      experience={profile.experience || '5'}
+    />
+  ));
+
 
 
     // Handle scroll for infinite scrolling
