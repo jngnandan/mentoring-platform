@@ -109,32 +109,8 @@ function HomePage() {
               </Text>
             </Container>
 
-            {/* <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 lg:mx-12"> */}
-              {/* {renderProfiles()} */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 mx-12">
-              {selectedProfiles.map((profile, index) => (
-                <ArticleCard
-                  key={profile.id}
-                  profilepic={profile.profile_picture || 'https://via.placeholder.com/150'} // Default image if none
-                  linkUrl={profile.linkUrl || '#'}
-                  summary={profile.bio || profile.summary || 'No description available'}
-                  first_name={profile.first_name || 'Unknown'}
-                  last_name={profile.last_name || 'User'}
-                  job={profile.job_title || 'No job title'}
-                  bio={profile.bio || 'No bio available'}
-                  company={profile.company || 'No company available'}
-                  hobbies={profile.hobbies || 'No hobbies listed'}
-                  achievements={profile.achievements || 'No achievements listed'}
-                  contributions={profile.contributions || 'No contributions listed'}
-                  created_at={profile.last_updated || 'Date not available'}
-                  social_media_links={profile.social_media_links || 'No social media links available'}
-                  bookings={profile.bookings || 'No bookings available'}
-                  badgeText={profile.badgeText || 'Default Badge'}
-                  badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
-                  experience={profile.experience || '5'}
-                />
-              ))}
-{/* >>>>>>> parent of 346ad03 (apis updated for mobile) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 mx-12">
+              {renderProfiles()}
             </div>
           </div>
         </Container>
