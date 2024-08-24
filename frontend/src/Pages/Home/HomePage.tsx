@@ -109,11 +109,9 @@ function HomePage() {
               </Text>
             </Container>
 
-<<<<<<< HEAD
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 lg:mx-12">
-              {renderProfiles()}
-=======
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 mx-12">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 lg:mx-12"> */}
+              {/* {renderProfiles()} */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 mx-12">
               {selectedProfiles.map((profile, index) => (
                 <ArticleCard
                   key={profile.id}
@@ -136,7 +134,7 @@ function HomePage() {
                   experience={profile.experience || '5'}
                 />
               ))}
->>>>>>> parent of 346ad03 (apis updated for mobile)
+{/* >>>>>>> parent of 346ad03 (apis updated for mobile) */}
             </div>
           </div>
         </Container>

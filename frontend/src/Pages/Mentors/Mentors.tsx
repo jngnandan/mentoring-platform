@@ -28,6 +28,7 @@ import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
 
 
   // Create an array of icon components
+  // Icons
   const icons = [
     // <SiAmazon key="amazon" size={30} />,
     // <SiFlipkart key="flipkart" size={30} />,
@@ -43,6 +44,7 @@ import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
     // { icon: <SiBlackberry size={32} />, name: 'Blackberry' },
   ];
   
+  //categories
   const categories = [
     { label: 'Deals', icon: <FaMoneyBill size={28} /> },
     { label: 'News', icon: <FaNewspaper size={28} /> },
@@ -58,6 +60,7 @@ import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
 
 
 function Mentors() {
+    // Context and state
   const { dataFromBackend, loading, setLoading, compareProducts, setCompareProducts, appleData, fetchAppleData, samsungData, fetchSamsungData, xiaomiData, fetchXiaomiData, oneplusData, fetchOneplusData,  fetchGoogleData, googleData, fetchMotorolaData, motorolaData, checkboxData, mobilesData, fetchMobilesData, profilesData, fetchProfilesData} = useContext(ContentContext);
   // const [loading, setLoading] = useState(true);
   const isXS = useMediaQuery('(max-width: 575px)');
@@ -117,7 +120,7 @@ function Mentors() {
       ));
 
 
-  
+    // Handle scroll for infinite scrolling
   useEffect(() => {
     const handleScroll = () => {
       const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
@@ -135,7 +138,7 @@ function Mentors() {
   }, []);
   
 
-  // Track scrolling using IntersectionObserver
+    // Handle intersection for infinite scrolling
 useEffect(() => {
   const handleIntersection = (entries) => {
     const [entry] = entries;
@@ -189,6 +192,8 @@ useEffect(() => {
     // }
   }, [appleData]);
 
+
+    // Fetch profiles on mount
   useEffect(() => {
     // Fetch data only if dataFromBackend is empty
     if (profilesData.length === 0) {
@@ -200,6 +205,8 @@ useEffect(() => {
     // }
   }, [profilesData]);
 
+
+    // Handle brand icon click
   const handleIconClick = (name) => {
     setSelectedBrand(name);
     setSearchQuery('');
@@ -231,7 +238,7 @@ useEffect(() => {
       setSelectedIcons(updatedSelectedIcons);
     }, [checkboxData]);
   
-  
+    // Update filtered data based on selected brand
   useEffect(() => {
     let updatedFilteredData = dataFromBackend;
     
@@ -309,8 +316,9 @@ useEffect(() => {
     setLoading(false);
   }, [selectedBrand, appleData, xiaomiData, samsungData, oneplusData, googleData, motorolaData]);
   
-  // console.log(filteredData);
 
+
+    // Update filtered data based on checkbox selection
   useEffect(() => {
     let updatedFilteredData = [...dataFromBackend]; // Create a copy of the original data
   
@@ -360,8 +368,6 @@ useEffect(() => {
   
   
 
-    // console.log(selectedIcons)
-
 
   const { ref, width, height } = useElementSize();
   const navigate = useNavigate();
@@ -374,6 +380,7 @@ useEffect(() => {
     }
   }, [dataFromBackend]);
 
+    // Select a product for comparison
   const selectProduct = (id) => {
     const foundItem = dataFromBackend.find((item) => item.id === id);
     setClickProduct((prevClickProduct) => [foundItem, ...prevClickProduct]);
@@ -397,6 +404,7 @@ useEffect(() => {
     }
   }, [clickProduct]);
 
+    // Open the second modal
   const openSecondModal = () => {
     setSecondModalOpened(true);
   };
@@ -405,6 +413,7 @@ useEffect(() => {
     setSecondModalOpened(false);
   };
 
+    // Handle search input change
   const handleSearchInputChange = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
@@ -415,6 +424,7 @@ useEffect(() => {
     setFilteredData(filtered);
   };
 
+    // Handle comparison
   const handleComparision = () => {
     setCompareProducts(clickProduct);
     navigate('/compare');
@@ -441,11 +451,16 @@ useEffect(() => {
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-3 mx-4">
               {icons.map((icon, index) => (
                 
-                <Button borderWidth onClick={() => handleIconClick(icon.name)} justify="center"   
+                <Button
+                onClick={() => handleIconClick(icon.name)}
+                justify="center"
                 variant={selectedIcons.includes(icon.name) ? 'outline' : 'default'} // Conditionally apply variant
-                key={icon.key} size="xl">
-                  {icon.icon}
-                </Button>
+                key={icon.name} // Use icon.name as a key
+                size="xl"
+              >
+                {icon.icon}
+              </Button>
+
 
               ))}
             </div>
