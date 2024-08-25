@@ -5,11 +5,7 @@ const sqlite3 = require("sqlite3");
 const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
 const gsmarena = require('gsmarena-api');
-const { Database } = require("sqlite3").verbose();
-const http = require('http');
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const faker = require('faker');
 const axios = require('axios');
 
 // Configure Cloudinary with your credentials
@@ -32,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;"
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self' https://www.googletagmanager.com;"
   );
   next();
 });
@@ -113,16 +109,9 @@ const insertProfiles = async () => {
   }
 };
 
-console.log("Setting up routes...");
-
 // Define your routes
 app.get('/test', (req, res) => {
   res.send('Test route is working');
-});
-
-// 404 handler (this should come after all other route definitions)
-app.use((req, res) => {
-  res.status(404).send("Sorry, that route doesn't exist.");
 });
 
 app.post("/generate-profiles", async (req, res) => {
@@ -146,7 +135,53 @@ app.get("/profiles", async (req, res) => {
   }
 });
 
-console.log("All routes defined.");
+// Route to fetch mobiles from different brands
+const createMobileRoute = (brand) => {
+  app.get(`/${brand}`, async (req, res) => {
+    try {
+      const getDataQuery = `
+        SELECT
+          name,
+          image_public_id,
+          description,
+          new_id,
+          price
+        FROM
+          ${brand};
+      `;
+
+      const data = await db.all(getDataQuery);
+
+      const transformedData = data.map((item) => ({
+        name: item.name,
+        img: cloudinary.url(item.image_public_id),
+        description: item.description,
+        new_id: item.new_id,
+        price: item.price,
+      }));
+
+      res.json(transformedData);
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+};
+
+// Create routes for different brands
+const brands = ['apple', 'samsung', 'xiaomi', 'oneplus', 'google', 'motorola'];
+brands.forEach(createMobileRoute);
+
+// Route to fetch deals from GSM Arena
+app.get("/", async (req, res) => {
+  try {
+    const deals = await gsmarena.deals.getDeals();
+    res.json(deals);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -160,6 +195,7 @@ app.use((req, res) => {
   res.status(404).send("Sorry, that route doesn't exist.");
 });
 
+// Initialize DB and server
 const initializeDBAndServer = async () => {
   try {
     db = await open({
@@ -173,9 +209,9 @@ const initializeDBAndServer = async () => {
     server.listen(PORT, '0.0.0.0', () => {
       console.log(`Server Running at http://localhost:${PORT}/`);
       console.log('Registered routes:');
-      app._router.stack.forEach(function(r){
-        if (r.route && r.route.path){
-          console.log(r.route.path)
+      app._router.stack.forEach((r) => {
+        if (r.route && r.route.path) {
+          console.log(r.route.path);
         }
       });
     });
@@ -186,6 +222,7 @@ const initializeDBAndServer = async () => {
 };
 
 initializeDBAndServer();
+
 
 // Define your routes and other middleware here...
 
@@ -481,6 +518,17 @@ app.get("/motorola", async (req, res) => {
   }
 });
 
+app.get("/", async (req, res) => {
+  try {
+    // Fetch deals from GSM Arena
+    const deals = await gsmarena.deals.getDeals();
+    res.json(deals);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // app.get("/mobiles", async (req, res) => {
 //   try {
 //     const tableName = "motorola";
@@ -648,16 +696,7 @@ app.get("/motorola", async (req, res) => {
 
 
 
-app.get("/", async (req, res) => {
-  try {
-    // Fetch deals from GSM Arena
-    const deals = await gsmarena.deals.getDeals();
-    res.json(deals);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+
 
 
 // const fetchDeviceDetails = async (id) => {
