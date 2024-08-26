@@ -33,6 +33,8 @@ import { ColorSchemeScript } from '@mantine/core';
 
 import { Link } from 'react-router-dom';
 
+import protocon from '../../Images/protocon.png'
+
 const mockdata = [
   {
     icon: IconCode,
@@ -85,6 +87,7 @@ export default function Header() {
 
         <ThemeIcon size={34} variant="default" radius="md">
           <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
+          
         </ThemeIcon>
         <div>
           <Text size="sm" fw={500}>
@@ -105,7 +108,8 @@ export default function Header() {
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
           <Link to='/'>
-          <MantineLogo size={30} />
+          {/* <MantineLogo size={30} /> */}
+          <img src={protocon} alt="protocon" className='w-36' />
           </Link>
 
           <Group h="100%" gap={0} visibleFrom="sm">

@@ -8,6 +8,8 @@ import cheerio from 'cheerio';
 import gsmarena from 'gsmarena-api';
 import { IconSmartHome } from '@tabler/icons-react';
 
+import { Helmet } from 'react-helmet';
+
 // import oneplus from '../../../../server/localData/oneplus.json'
 import ProdctCard from './ProductCard.tsx';
 
@@ -437,7 +439,20 @@ useEffect(() => {
 
   return (
     <div className="flex flex-col min-h-screen">     
-
+ <Helmet>
+        <title>Find Mentors | Your Website Name</title>
+        <meta name="description" content="Explore our curated list of mentors with diverse expertise. Find the perfect mentor to guide you on your journey." />
+        <meta name="keywords" content="mentors, career guidance, professional development, expert advice" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Find Mentors | Your Website Name" />
+        <meta property="og:description" content="Explore our curated list of mentors with diverse expertise. Find the perfect mentor to guide you on your journey." />
+        {/* <meta property="og:image" content="https://protocon.co.uk/path-to-image.jpg" /> */}
+        <meta property="og:url" content="https://protocon.co.uk/mentors" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Find Mentors | Protocon" />
+        <meta name="twitter:description" content="Explore our curated list of mentors with diverse expertise. Find the perfect mentor to guide you on your journey." />
+        <meta name="twitter:image" content="https://protocon.co.uk/" />
+      </Helmet>
       {loading ? (
         <div className='flex flex-col justify-center items-center h-screen'>
           <Loader size={48} color="blue" size={30} />
