@@ -27,6 +27,7 @@ import CookieConsentBanner from './Pages/Components/CookieConsentBanner.js';
 function App() {
   return (
     <BrowserRouter>
+    
       <Analytics />
       <Header />
       <CookieConsentBanner />
@@ -51,6 +52,7 @@ function App() {
       </Routes>
       {/* <FooterLinks /> */} {/* Uncomment if needed */}
     </BrowserRouter>
+
   );
 }
 
