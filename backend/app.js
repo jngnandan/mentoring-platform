@@ -9,6 +9,7 @@ const { Database } = require("sqlite3").verbose();
 const http = require('http');
 const fs = require('fs');
 const newsletterRoutes = require('./newsletter'); // Import the newsletter routes
+const mysql = require("mysql");
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
