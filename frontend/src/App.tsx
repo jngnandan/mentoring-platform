@@ -1,5 +1,9 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from '@vercel/analytics/react';
+import { MedusaProvider } from 'medusa-react'; // Import MedusaProvider
+import { Client } from '@medusajs/medusa-js'; // Import Medusa client
+import { QueryClient } from "@tanstack/react-query";
 import '@mantine/core/styles.css'; // Import Mantine styles
 
 // Pages
@@ -24,36 +28,45 @@ import Header from "./Pages/Header/Header.tsx";
 import FooterLinks from "./Pages/Footer/FooterLinks.tsx";
 import CookieConsentBanner from './Pages/Components/CookieConsentBanner.js';
 
+// Create the Medusa client
+const medusaClient = new Client({
+  baseUrl: 'http://localhost:9000', // Use the backend URL directly
+  maxRetries: 3,
+});
+
+// Create a QueryClient instance
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <BrowserRouter>
-    
-      <Analytics />
-      <Header />
-      <CookieConsentBanner />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<AuthenticationForm />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/products/:productId" element={<ProductPage />} />
-        {/* <Route path="/catelog" element={<CatelogPage />} /> */}
-        {/* <Route path="/filter" element={<FilterSearch />} /> */}
-        <Route path="/deals" element={<Deals />} />
-        <Route path="/news" element={<News />} />
-        <Route path="/compare" element={<ComparisionPage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/signup" element={<SignupForm />} />
-        {/* <Route path="/signup-page" element={<SignupPage />} /> */}
-        <Route path="/mentors" element={<Mentors />} />
-        <Route path="/mentor-register" element={<MentorRegister />} />
-        <Route path="/mentors/:id" element={<MentorsPage />} />
-      </Routes>
-      {/* <FooterLinks /> */} {/* Uncomment if needed */}
-    </BrowserRouter>
-
-  );
+    // <MedusaProvider client={medusaClient} queryClientProviderProps={{ client: queryClient }}>
+      <BrowserRouter>
+        <Analytics />
+        <Header />
+        <CookieConsentBanner />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<AuthenticationForm />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:productId" element={<ProductPage />} />
+          {/* <Route path="/catelog" element={<CatelogPage />} /> */}
+          {/* <Route path="/filter" element={<FilterSearch />} /> */}
+          <Route path="/deals" element={<Deals />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/compare" element={<ComparisionPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/signup" element={<SignupForm />} />
+          {/* <Route path="/signup-page" element={<SignupPage />} /> */}
+          <Route path="/mentors" element={<Mentors />} />
+          <Route path="/mentor-register" element={<MentorRegister />} />
+          <Route path="/mentors/:id" element={<MentorsPage />} />
+        </Routes>
+        {/* <FooterLinks /> */} {/* Uncomment if needed */}
+      </BrowserRouter>
+    // </MedusaProvider>
+  )
 }
 
 export default App;

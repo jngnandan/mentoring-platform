@@ -1,55 +1,115 @@
-import React, { useEffect, useState } from 'react';
-
-import { useContext } from 'react';
-
+import React, { useEffect, useState, useContext } from 'react';
+import { Card, Image, Text, Badge, Button, Loader } from '@mantine/core';
 import { ContentContext } from '../../context/ContentContext.tsx';
-import { Card, Text } from '@mantine/core';
 
 function About() {
-  const { loading, setLoading, compareProducts, setCompareProducts, appleData} = useContext(ContentContext);
+  const { compareProducts, setCompareProducts } = useContext(ContentContext);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
 
+      try {
+        const response = await fetch('http://localhost:9000/store/products', {
+          credentials: 'include',
+        });
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch(`http://localhost:${backendPort}/About`);
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch data');
-  //     }
-  //     const data = await response.json();
-  //     setDataFromBackend(data);
-  //     setLoading(false);
-  //     // setFilteredData(data)
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //   }
-  // };
+        if (!response.ok) {
+          throw new Error(`Failed to fetch products, status: ${response.status}`);
+        }
 
+        const data = await response.json();
+        console.log('Fetched products:', data);
 
+        if (Array.isArray(data.products)) {
+          setProducts(data.products);
+        } else {
+          throw new Error('Unexpected response format');
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // useEffect(() => {
-  //   // Fetch data only if dataFromBackend is empty
-  //   if (dataFromBackend.length === 0) {
-  //     fetchData();
-  //   }
-  // }, [dataFromBackend]);
-
-  // console.log(appleData)
+    fetchProducts();
+  }, []);
 
   return (
-    <div>
-            <Card withBorder radius="md" mx={40} py={30} px={30} mt={10}>
-              <Text size="xl"fw={600} className='text-center pb-10'>About</Text>
+    <div className="mx-4 mt-10">
+      <Card withBorder radius="md" className="py-8 px-6">
+        <Text size="xl" fw={600} className="text-center pb-10">
+          About
+        </Text>
+        <Text>
+          Welcome to [Your Company Name], where innovation meets excellence. Since our inception in [year], we've been on a
+          mission to [briefly describe your company's mission]. Our commitment to quality and customer satisfaction drives
+          everything we do.
+        </Text>
+      </Card>
 
-              <Text>
-              Welcome to [Your Company Name], where innovation meets excellence. Since our inception in [year], we've been on a mission to [briefly describe your company's mission, e.g., revolutionize the [industry] industry, provide cutting-edge solutions, deliver unmatched services]. Our commitment to quality and customer satisfaction drives everything we do.
-              </Text>
+      <Card withBorder radius="md" className="py-8 px-6 mt-10">
+        <Text size="xl" fw={600} className="text-center pb-10">
+          Products
+        </Text>
+        {isLoading ? (
+          <div className="flex justify-center items-center">
+            <Loader color="gray" />
+          </div>
+        ) : isError ? (
+          <div className="text-center">
+            <Text color="red">Error loading products!</Text>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center">
+            <Text>No products available.</Text>
+          </div>
+        ) : (
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {products.map((product) => (
+              <Card key={product.id} shadow="sm" padding="lg" radius="md" withBorder className="flex flex-col">
+                <Card.Section>
+                  <Image
+                    src={product.thumbnail}
+                    height={160}
+                    alt={product.title}
+                  />
+                </Card.Section>
 
-              <Text mt={8}>
-              At [Your Company Name], it's not just business; it's a passion. Our team of dedicated professionals works relentlessly to [briefly mention what your team does, e.g., push the boundaries of innovation, meet your unique needs, ensure your success]. We take pride in [mention something unique or an accomplishment of your company, e.g., our track record of success, industry leadership, commitment to sustainability].
-              </Text>
+                <div className="flex justify-between mt-2 mb-2">
+                  <Text fw={500} className="truncate">{product.title}</Text>
+                  <Badge color="pink">On Sale</Badge>
+                </div>
 
-            </Card>
+                <Text size="sm" className="text-gray-500 line-clamp-2">
+                  {product.description}
+                </Text>
+
+                <Text className="mt-2">
+                  Price: {product.variants[0].prices[0].amount / 100} {product.variants[0].prices[0].currency_code.toUpperCase()}
+                </Text>
+
+                <Button
+                  color="blue"
+                  fullWidth
+                  mt="md"
+                  radius="md"
+                  onClick={() => {
+                    setCompareProducts([...compareProducts, product]);
+                  }}
+                >
+                  Add to Compare
+                </Button>
+              </Card>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
