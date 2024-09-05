@@ -8,6 +8,9 @@ import cheerio from 'cheerio';
 import gsmarena from 'gsmarena-api';
 import { IconSmartHome } from '@tabler/icons-react';
 
+import { createClient } from '@supabase/supabase-js'; // Import Supabase client
+
+
 import { Helmet } from 'react-helmet';
 
 // import oneplus from '../../../../server/localData/oneplus.json'
@@ -28,6 +31,11 @@ import { SiAmazon, SiFlipkart, SiSamsung, SiOneplus, SiApple, SiGoogle, SiHuawei
 import FooterLinks from '../Footer/FooterLinks.tsx';
 import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
 
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL; // Your Supabase URL
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY; // Your Supabase Anon Key
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey); // Initialize Supabase client
 
   // Create an array of icon components
   // Icons
@@ -63,7 +71,7 @@ import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
 
 function Mentors() {
     // Context and state
-  const { dataFromBackend, loading, setLoading, compareProducts, setCompareProducts, appleData, fetchAppleData, samsungData, fetchSamsungData, xiaomiData, fetchXiaomiData, oneplusData, fetchOneplusData,  fetchGoogleData, googleData, fetchMotorolaData, motorolaData, checkboxData, mobilesData, fetchMobilesData, profilesData, fetchProfilesData} = useContext(ContentContext);
+  const { dataFromBackend, loading, setLoading, compareProducts, setCompareProducts, appleData, fetchAppleData, samsungData, fetchSamsungData, xiaomiData, fetchXiaomiData, oneplusData, fetchOneplusData,  fetchGoogleData, googleData, fetchMotorolaData, motorolaData, checkboxData, mobilesData, fetchMobilesData, profilesData, fetchProfilesData, superProfiles,setSuperProfiles, fetchSuperbaseProfiles} = useContext(ContentContext);
   // const [loading, setLoading] = useState(true);
   const isXS = useMediaQuery('(max-width: 575px)');
   const isSM = useMediaQuery('(max-width: 48em)')
@@ -94,8 +102,31 @@ function Mentors() {
   const bottomRef = useRef(null);
   const [shouldLoadMore, setShouldLoadMore] = useState(true);
 
-  const selectedProfiles = profilesData ? profilesData.slice(0, 10) : [];
+  const selectedProfiles = superProfiles ? superProfiles.slice(0, 10) : [];
 
+
+  const fetchSuperProfiles = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('profiles') // Replace with your Supabase table name
+        .select('*');
+      if (error) {
+        throw error;
+      }
+      setSuperProfiles(data);
+      console.log(data);
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // fetchData();
+    fetchSuperProfiles();
+  }, []);
   // console.log(profilesData)
     // Helper function to render mentors
     const renderProfiles = () =>
@@ -103,7 +134,7 @@ function Mentors() {
     <ArticleCard
       key={profile.id}
       id={profile.id}  // Pass the id here to the ArticleCard component
-      profilepic={profile.profile_picture || 'https://via.placeholder.com/150'}
+      profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
       linkUrl={profile.linkUrl || '#'}
       summary={profile.bio || 'No description available'}
       first_name={profile.first_name || 'Unknown'}
@@ -125,49 +156,49 @@ function Mentors() {
 
 
 
-    // Handle scroll for infinite scrolling
   useEffect(() => {
     const handleScroll = () => {
       const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-  
-      if (scrollHeight - scrollTop === clientHeight) {
+
+      // Check if the user has scrolled to the bottom of the page
+      if (scrollHeight - scrollTop <= clientHeight + 50) { // Adding a threshold of 50px for a smoother experience
         loadMoreItems();
       }
     };
-  
+
     window.addEventListener('scroll', handleScroll);
-  
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-  
 
-    // Handle intersection for infinite scrolling
-useEffect(() => {
-  const handleIntersection = (entries) => {
-    const [entry] = entries;
-    if (entry.isIntersecting) {
-      loadMoreItems();
-    }
-  };
+  // Handle intersection for infinite scrolling
+  useEffect(() => {
+    const handleIntersection = (entries) => {
+      const [entry] = entries;
+      if (entry.isIntersecting) {
+        loadMoreItems();
+      }
+    };
 
-  const observer = new IntersectionObserver(handleIntersection, {
-    root: null,
-    rootMargin: '600px', // Adjust this margin to start loading more items earlier
-    threshold: 1, // Consider lowering this threshold for early triggering
-  });
+    const observer = new IntersectionObserver(handleIntersection, {
+      root: null,
+      rootMargin: '600px', // Adjust this margin to start loading more items earlier
+      threshold: 0.1, // Lowered threshold to trigger earlier (0.1 means 10% visible)
+    });
 
-  if (bottomRef.current) {
-    observer.observe(bottomRef.current);
-  }
-
-  return () => {
     if (bottomRef.current) {
-      observer.unobserve(bottomRef.current);
+      observer.observe(bottomRef.current);
     }
-  };
-}, []);
+
+    return () => {
+      if (bottomRef.current) {
+        observer.unobserve(bottomRef.current);
+      }
+      observer.disconnect(); // Disconnect the observer on cleanup
+    };
+  }, []);
   // ...
 
   // const loadMoreItems = () => {

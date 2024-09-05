@@ -1,6 +1,12 @@
 import React, { createContext, useState, useEffect } from "react";
+import { createClient } from '@supabase/supabase-js'; // Import Supabase client
 
 const ContentContext = createContext();
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 
 const ContentProvider = ({ children }) => {
   const [products, setProducts] = useState('super');
@@ -16,9 +22,33 @@ const ContentProvider = ({ children }) => {
   const [checkboxData, setCheckboxData] = useState(['cool']);
   const [profilesData, setProfilesData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [superProfiles, setSuperProfiles] = useState([])
   
   const backendPort = 3002;
   const domainName = "localhost";
+
+  const fetchSuperbaseProfiles = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('profiles') // Replace with your Supabase table name
+        .select('*');
+      if (error) {
+        throw error;
+      }
+      setSuperProfiles(data);
+      console.log(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    fetchSuperbaseProfiles();
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -214,7 +244,10 @@ const ContentProvider = ({ children }) => {
       fetchMobilesData, 
       profilesData, 
       fetchProfilesData,
-      fetchProfileById
+      fetchProfileById,
+      superProfiles,
+      setSuperProfiles,
+      fetchSuperbaseProfiles
     }}>
       {children}
     </ContentContext.Provider>

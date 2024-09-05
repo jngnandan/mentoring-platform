@@ -1,17 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Container, Card, Text, Badge, Button, Group, Title, Divider, Stack,
-  Avatar, Box, Grid, Tabs, rem, Loader
+  Container, Card, Text, Badge, Button, Group, Divider, Stack,
+  Avatar, Box, Loader, rem, List, Anchor, Breadcrumbs
 } from '@mantine/core';
-import {
-  IconMapPin, IconClock,
-} from '@tabler/icons-react';
 import { useParams } from 'react-router-dom';
 import { ContentContext } from '../../context/ContentContext.tsx';
 
 const iconStyle = { width: rem(16), height: rem(16) };
 
-const sampleExpertise = ['Career Advice', 'Tech Industry', 'Product Management', 'Marketing'];
 const sampleMentorshipPlans = [
   { name: 'Basic', price: 100, sessions: 2, support: 'Email Support' },
   { name: 'Pro', price: 200, sessions: 4, support: 'Email and Chat Support' },
@@ -21,12 +17,17 @@ const sampleMentorshipPlans = [
 function UserInfo({ profile }) {
   return (
     <Box align="center" my="md">
-      <Avatar src={profile.profile_picture} size={150} radius="50%" />
+      <Avatar
+        src={profile.profilepic || 'path/to/fallback/image.jpg'}
+        size={150}
+        radius="50%"
+        onError={(e) => { e.target.src = 'path/to/fallback/image.jpg'; }}
+      />
       <Text align="center" size="lg" weight={500} mt="md">
         {profile.first_name} {profile.last_name}
       </Text>
       <Text align="center" color="dimmed">
-        {profile.job_title} at {profile.company}
+        {profile.job} at {profile.company}
       </Text>
       <Text align="center" color="dimmed" mt="xs">
         {profile.location}
@@ -36,6 +37,63 @@ function UserInfo({ profile }) {
         <Button color="blue">Subscribe</Button>
       </Group>
     </Box>
+  );
+}
+
+function AdditionalDetails({ profile }) {
+  return (
+    <Stack spacing="md">
+      <Divider my="lg" />
+      <Text weight={500} size="lg" mb="xs">Summary</Text>
+      <Text color="dimmed">{profile.summary || 'No summary available.'}</Text>
+
+      <Divider my="lg" />
+      <Text weight={500} size="lg" mb="xs">Achievements</Text>
+      <List spacing="sm" size="sm" color="dimmed">
+        {profile.achievements.length > 0 ? (
+          profile.achievements.map((achievement, index) => (
+            <List.Item key={index}>{achievement}</List.Item>
+          ))
+        ) : (
+          <Text color="dimmed">No achievements available.</Text>
+        )}
+      </List>
+
+      <Divider my="lg" />
+      <Text weight={500} size="lg" mb="xs">Contributions</Text>
+      <List spacing="sm" size="sm" color="dimmed">
+        {profile.contributions.length > 0 ? (
+          profile.contributions.map((contribution, index) => (
+            <List.Item key={index}>{contribution}</List.Item>
+          ))
+        ) : (
+          <Text color="dimmed">No contributions available.</Text>
+        )}
+      </List>
+
+      <Divider my="lg" />
+      <Text weight={500} size="lg" mb="xs">Hobbies</Text>
+      <Group spacing="xs">
+        {profile.hobbies.length > 0 ? (
+          profile.hobbies.map((hobby, index) => (
+            <Badge key={index} color="blue">{hobby}</Badge>
+          ))
+        ) : (
+          <Text color="dimmed">No hobbies available.</Text>
+        )}
+      </Group>
+
+      <Divider my="lg" />
+      <Text weight={500} size="lg" mb="xs">Social Links</Text>
+      <Group position="center" spacing="md">
+        {profile.linkedin_url && (
+          <Anchor href={profile.linkedin_url} target="_blank" color="blue">LinkedIn</Anchor>
+        )}
+        {profile.x_url && (
+          <Anchor href={profile.x_url} target="_blank" color="blue">External Profile</Anchor>
+        )}
+      </Group>
+    </Stack>
   );
 }
 
@@ -56,14 +114,14 @@ function MentorshipPlans() {
 }
 
 function ProfilePage() {
-  const { profilesData } = useContext(ContentContext);
+  const { superProfiles } = useContext(ContentContext);
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    const foundProfile = profilesData.find((profile) => profile.id === parseInt(id));
+    const foundProfile = superProfiles.find((profile) => profile.id === parseInt(id));
     setProfile(foundProfile);
-  }, [id, profilesData]);
+  }, [id, superProfiles]);
 
   if (!profile) {
     return (
@@ -75,31 +133,17 @@ function ProfilePage() {
 
   return (
     <Container size="sm" my="md">
-      <Card withBorder radius="md" shadow="sm" p="xl">
+      {/* Breadcrumbs Component */}
+      <Breadcrumbs>
+        <Anchor href="/">Home</Anchor>
+        <Anchor href="/mentors">Profiles</Anchor>
+        <Text>{profile.first_name} {profile.last_name}</Text>
+      </Breadcrumbs>
+
+      <Card withBorder radius="md" shadow="sm" p="xl" mt="md">
         <UserInfo profile={profile} />
 
-        <Divider my="lg" />
-
-        <Text weight={500} size="lg" mb="xs">Bio</Text>
-        <Text color="dimmed">{profile.bio}</Text>
-
-        <Divider my="lg" />
-
-        <Text weight={500} size="lg" mb="xs">Expertise</Text>
-        <Group spacing="xs">
-          {sampleExpertise.map((skill, index) => (
-            <Badge key={index} color="blue">{skill}</Badge>
-          ))}
-        </Group>
-
-        <Divider my="lg" />
-
-        <Text weight={500} size="lg" mb="xs">Mentorship Availability</Text>
-        <Stack spacing="sm">
-          <Group spacing="xs"><IconClock size={20} /><Text color="dimmed">Availability: 1-2 hours per week</Text></Group>
-          <Group spacing="xs"><IconClock size={20} /><Text color="dimmed">Response Time: 1-2 days</Text></Group>
-          <Group spacing="xs"><IconMapPin size={20} /><Text color="dimmed">Location: {profile.location}</Text></Group>
-        </Stack>
+        <AdditionalDetails profile={profile} />
 
         <Divider my="lg" />
 

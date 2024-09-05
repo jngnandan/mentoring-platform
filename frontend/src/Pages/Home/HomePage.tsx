@@ -20,8 +20,8 @@ import NewsletterSignup from '../NewsLetter/NewsletterSignup.js';
 import classes from '../Home/HomePage.module.css';
 import { Dots } from './HeroText/Dots.tsx';
 
-const supabaseUrl = 'https://lfibhgotnojhtgzuusgu.supabase.co'; // Your Supabase URL
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmaWJoZ290bm9qaHRnenV1c2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU1MzY1MTUsImV4cCI6MjA0MTExMjUxNX0.1LIoh-F9oQPbSHyX14A3eKx1a8sNoqyrRQDyn_X7u24';
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL// Your Supabase URL
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
