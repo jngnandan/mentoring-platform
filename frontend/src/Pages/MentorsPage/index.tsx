@@ -1,119 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Container, Card, Text, Badge, Button, Group, Divider, Stack,
-  Avatar, Box, Loader, rem, List, Anchor, Breadcrumbs
+  Container, Card, Text, Badge, Button, Group, Stack, Avatar, Box,
+  Anchor, Tabs, List, Grid, Paper, ActionIcon, rem, Loader
 } from '@mantine/core';
+import { IconBrandLinkedin, IconBrandTwitter, IconChevronLeft, IconMapPin, IconCalendarStats, IconClock } from '@tabler/icons-react';
 import { useParams } from 'react-router-dom';
 import { ContentContext } from '../../context/ContentContext.tsx';
 
-const iconStyle = { width: rem(16), height: rem(16) };
-
-const sampleMentorshipPlans = [
-  { name: 'Basic', price: 100, sessions: 2, support: 'Email Support' },
-  { name: 'Pro', price: 200, sessions: 4, support: 'Email and Chat Support' },
-  { name: 'Premium', price: 300, sessions: 6, support: 'Email, Chat, and Phone Support' },
-];
-
-function UserInfo({ profile }) {
-  return (
-    <Box align="center" my="md">
-      <Avatar
-        src={profile.profilepic || 'path/to/fallback/image.jpg'}
-        size={150}
-        radius="50%"
-        onError={(e) => { e.target.src = 'path/to/fallback/image.jpg'; }}
-      />
-      <Text align="center" size="lg" weight={500} mt="md">
-        {profile.first_name} {profile.last_name}
-      </Text>
-      <Text align="center" color="dimmed">
-        {profile.job} at {profile.company}
-      </Text>
-      <Text align="center" color="dimmed" mt="xs">
-        {profile.location}
-      </Text>
-      <Group position="center" mt="md" spacing="xs">
-        <Button variant="outline" color="blue">Connect</Button>
-        <Button color="blue">Subscribe</Button>
-      </Group>
-    </Box>
-  );
-}
-
-function AdditionalDetails({ profile }) {
-  return (
-    <Stack spacing="md">
-      <Divider my="lg" />
-      <Text weight={500} size="lg" mb="xs">Summary</Text>
-      <Text color="dimmed">{profile.summary || 'No summary available.'}</Text>
-
-      <Divider my="lg" />
-      <Text weight={500} size="lg" mb="xs">Achievements</Text>
-      <List spacing="sm" size="sm" color="dimmed">
-        {profile.achievements.length > 0 ? (
-          profile.achievements.map((achievement, index) => (
-            <List.Item key={index}>{achievement}</List.Item>
-          ))
-        ) : (
-          <Text color="dimmed">No achievements available.</Text>
-        )}
-      </List>
-
-      <Divider my="lg" />
-      <Text weight={500} size="lg" mb="xs">Contributions</Text>
-      <List spacing="sm" size="sm" color="dimmed">
-        {profile.contributions.length > 0 ? (
-          profile.contributions.map((contribution, index) => (
-            <List.Item key={index}>{contribution}</List.Item>
-          ))
-        ) : (
-          <Text color="dimmed">No contributions available.</Text>
-        )}
-      </List>
-
-      <Divider my="lg" />
-      <Text weight={500} size="lg" mb="xs">Hobbies</Text>
-      <Group spacing="xs">
-        {profile.hobbies.length > 0 ? (
-          profile.hobbies.map((hobby, index) => (
-            <Badge key={index} color="blue">{hobby}</Badge>
-          ))
-        ) : (
-          <Text color="dimmed">No hobbies available.</Text>
-        )}
-      </Group>
-
-      <Divider my="lg" />
-      <Text weight={500} size="lg" mb="xs">Social Links</Text>
-      <Group position="center" spacing="md">
-        {profile.linkedin_url && (
-          <Anchor href={profile.linkedin_url} target="_blank" color="blue">LinkedIn</Anchor>
-        )}
-        {profile.x_url && (
-          <Anchor href={profile.x_url} target="_blank" color="blue">External Profile</Anchor>
-        )}
-      </Group>
-    </Stack>
-  );
-}
-
-function MentorshipPlans() {
-  return (
-    <Stack spacing="md">
-      {sampleMentorshipPlans.map((plan, index) => (
-        <Card key={index} withBorder radius="md" shadow="sm" p="md">
-          <Text weight={500} size="lg">{plan.name}</Text>
-          <Text size="sm" color="dimmed">${plan.price} / month</Text>
-          <Text size="sm" color="dimmed">{plan.sessions} sessions</Text>
-          <Text size="sm" color="dimmed">{plan.support}</Text>
-        </Card>
-      ))}
-      <Button fullWidth color="blue" mt="xl">Choose Plan</Button>
-    </Stack>
-  );
-}
-
-function ProfilePage() {
+const ProfilePage = () => {
   const { superProfiles } = useContext(ContentContext);
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
@@ -131,27 +25,171 @@ function ProfilePage() {
     );
   }
 
+  const profileData = {
+    name: profile.first_name + ' ' + profile.last_name,
+    title: profile.title || 'Mentor',
+    location: profile.location || 'Location not specified',
+    activeLastWeek: 'Active last week', // You can update this if you have last activity data
+    skills: profile.skills || [],
+    advancedSkills: profile.advancedSkills || [],
+    about: profile.about || 'No description available.',
+    services: profile.services || {
+      price: 0,
+      period: 'month',
+      features: []
+    },
+    experience: profile.experience || []
+  };
+
+  const similarMentors = [
+    { name: 'Katie Kutters', title: 'Senior UX Designer @ The Home Depot', price: 150, reviews: 12 },
+    { name: 'Lyudmord Matveev', title: 'Principal UX Designer @ SAP', price: 220, reviews: 9 }
+  ];
+
   return (
-    <Container size="sm" my="md">
-      {/* Breadcrumbs Component */}
-      <Breadcrumbs>
-        <Anchor href="/">Home</Anchor>
-        <Anchor href="/mentors">Profiles</Anchor>
-        <Text>{profile.first_name} {profile.last_name}</Text>
-      </Breadcrumbs>
+    <Container size="lg">
+      <Group position="apart" mb="xl">
+        <Anchor href="/mentors" size="sm">
+          <Group spacing="xs">
+            <IconChevronLeft size={rem(12)} />
+            <Text>Find a Mentor</Text>
+          </Group>
+        </Anchor>
+        <Text size="sm" color="dimmed">
+          {profile.first_name} {profile.last_name}
+        </Text>
+      </Group>
 
-      <Card withBorder radius="md" shadow="sm" p="xl" mt="md">
-        <UserInfo profile={profile} />
+      <Grid>
+        <Grid.Col span={8}>
+          <Card withBorder p="lg">
+            <Group position="apart" align="flex-start">
+              <Box>
+                <Group>
+                <Avatar
+  src={profile.avatar || 'https://example.com/profileData-pic.jpg'}
+  size={100}
+  radius={100}
+  onError={(e) => {
+    e.target.src = 'https://example.com/profileData-pic.jpg'; // Fallback image
+  }}
+/>                  <Box>
+                    <Text size="xl" weight={700}>{profileData.name}</Text>
+                    <Text color="dimmed">{profileData.title}</Text>
+                    <Group spacing="xs" mt={4}>
+                      <IconMapPin size={rem(14)} />
+                      <Text size="sm" color="dimmed">{profileData.location}</Text>
+                    </Group>
+                    <Group spacing="xs" mt={4}>
+                      <IconCalendarStats size={rem(14)} />
+                      <Text size="sm" color="dimmed">{profileData.activeLastWeek}</Text>
+                    </Group>
+                  </Box>
+                </Group>
+              </Box>
+              <Button variant="outline">View Mentor</Button>
+            </Group>
 
-        <AdditionalDetails profile={profile} />
+            <Group mt="md" mb="xs">
+              {profileData.skills.map((skill) => (
+                <Badge key={skill} variant="outline">{skill}</Badge>
+              ))}
+            </Group>
 
-        <Divider my="lg" />
+            <Tabs defaultValue="services">
+              <Tabs.List>
+                <Tabs.Tab value="services">Services</Tabs.Tab>
+                <Tabs.Tab value="about">About</Tabs.Tab>
+              </Tabs.List>
 
-        <Text weight={500} size="lg" mb="xs">Mentorship Plans</Text>
-        <MentorshipPlans />
-      </Card>
+              <Tabs.Panel value="services" pt="xs">
+                <Card withBorder mt="md">
+                  <Text size="lg" weight={700}>${profileData.services.price} <Text span size="sm" color="dimmed">/ {profileData.services.period}</Text></Text>
+                  <Text size="sm" color="dimmed" mb="sm">The most popular way to get mentored, let's work towards your goals!</Text>
+                  <List
+                    spacing="xs"
+                    size="sm"
+                    center
+                    icon={
+                      <ActionIcon color="teal" size={20} radius="xl">
+                        <IconClock size="1rem" />
+                      </ActionIcon>
+                    }
+                  >
+                    {profileData.services.features.map((feature, index) => (
+                      <List.Item key={index}>{feature}</List.Item>
+                    ))}
+                  </List>
+                  <Button fullWidth color="teal" mt="md">Apply now</Button>
+                </Card>
+              </Tabs.Panel>
+
+              <Tabs.Panel value="about" pt="xs">
+                <Text>{profileData.about}</Text>
+              </Tabs.Panel>
+            </Tabs>
+          </Card>
+
+          <Card withBorder mt="xl">
+            <Text size="lg" weight={700} mb="md">Get to know {profileData.name.split(' ')[0]}</Text>
+            {profileData.experience.map((exp, index) => (
+              <Box key={index} mb="md">
+                <Text weight={500}>{exp.title}</Text>
+                <Text size="sm" color="dimmed">{exp.company}</Text>
+                <Text size="sm" mt={4}>{exp.description}</Text>
+              </Box>
+            ))}
+          </Card>
+
+          <Card withBorder mt="xl">
+            <Text size="lg" weight={700} mb="md">Skills</Text>
+            <Group spacing={8}>
+              {profileData.advancedSkills.map((skill) => (
+                <Badge key={skill} variant="outline">{skill}</Badge>
+              ))}
+            </Group>
+          </Card>
+        </Grid.Col>
+
+        <Grid.Col span={4}>
+          <Card withBorder p="lg">
+            <Text size="lg" weight={700} mb="md">Similar mentors</Text>
+            <Stack>
+              {similarMentors.map((mentor, index) => (
+                <Paper key={index} withBorder p="md">
+                  <Group>
+                    <Avatar size="md" />
+                    <Box>
+                      <Text weight={500}>{mentor.name}</Text>
+                      <Text size="xs" color="dimmed">{mentor.title}</Text>
+                    </Box>
+                  </Group>
+                  <Group position="apart" mt="xs">
+                    <Text size="sm" color="dimmed">from ${mentor.price} / hour</Text>
+                    <Badge size="sm" variant="outline">{mentor.reviews} reviews</Badge>
+                  </Group>
+                </Paper>
+              ))}
+            </Stack>
+          </Card>
+        </Grid.Col>
+      </Grid>
+
+      <Box component="footer" mt="xl" pb="xl">
+        <Text align="center" size="sm" color="dimmed">
+          Your trusted source to find highly-vetted mentors & industry professionals to move your career ahead.
+        </Text>
+        <Group position="center" spacing="xs" mt="md">
+          <ActionIcon size="lg" variant="default" radius="xl">
+            <IconBrandTwitter size="1.05rem" stroke={1.5} />
+          </ActionIcon>
+          <ActionIcon size="lg" variant="default" radius="xl">
+            <IconBrandLinkedin size="1.05rem" stroke={1.5} />
+          </ActionIcon>
+        </Group>
+      </Box>
     </Container>
   );
-}
+};
 
 export default ProfilePage;
