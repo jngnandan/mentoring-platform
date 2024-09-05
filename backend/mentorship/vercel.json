@@ -1,0 +1,26 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "src/index.ts",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "admin/**/*",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "admin/build"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/admin/(.*)",
+        "dest": "/admin/index.html"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "src/index.ts"
+      }
+    ]
+  }
