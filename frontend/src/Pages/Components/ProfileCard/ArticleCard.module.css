@@ -1,0 +1,93 @@
+import React from 'react';
+import { IconBookmark, IconBriefcase, IconBuilding } from '@tabler/icons-react';
+import { Image, Text, ActionIcon, Badge, Group, useMantineTheme, rem, Box } from '@mantine/core';
+import { Link } from 'react-router-dom';
+
+interface ArticleCardProps {
+  profilepic: string;
+  id: string;
+  summary: string;
+  first_name: string;
+  last_name: string;
+  job: string;
+  bio?: string;
+  company?: string;
+  companyLogo?: string;
+  experience: string;
+  badgeText?: string;
+  badgeGradient?: { from: string; to: string };
+}
+
+export default function ArticleCard({
+  profilepic,
+  id,
+  summary,
+  first_name,
+  last_name,
+  job,
+  bio = 'No bio available',
+  company = 'No company available',
+  companyLogo,
+  experience,
+  badgeText = 'Featured',
+  badgeGradient = { from: 'blue', to: 'cyan' },
+}: ArticleCardProps) {
+  const theme = useMantineTheme();
+
+  return (
+    <div className="relative bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg shadow-sm rounded-md my-7 p-4">
+      <div>
+        <Link to={`/mentors/${id}`}>
+          <img src={profilepic} alt={`${first_name} ${last_name}`} className="w-full h-48 object-cover rounded-t-md" />
+        </Link>
+      </div>
+
+      <Badge
+        variant="gradient"
+        gradient={badgeGradient}
+        className="absolute top-2 right-3 pointer-events-none bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm px-2 py-1 rounded-md"
+      >
+        {badgeText}
+      </Badge>
+
+      <Text className="text-lg font-medium mt-4 mb-2 text-black">
+        <Link to={`/article/${id}`} className="hover:underline">
+          {`${first_name} ${last_name}`}
+        </Link>
+      </Text>
+
+      <div className="text-gray-500 flex items-center gap-2 mt-2">
+        <IconBriefcase stroke={1.5} className="pr-1" />
+        <Text className="text-sm">
+          {`${job} at `}
+        </Text>
+      </div>
+
+      <div className="text-gray-500 flex items-center gap-2 mt-2">
+        <IconBuilding stroke={1.5} className="pr-1" />
+        <Text className="text-sm">
+          {company}
+        </Text>
+      </div>
+
+      {companyLogo && (
+        <div className="flex items-center gap-2 mt-2">
+          <img src={companyLogo} alt={`${company} logo`} className="w-12 h-12 object-contain" />
+        </div>
+      )}
+
+      <div className="flex justify-between mt-4">
+        <div>
+          <Text className="text-xs text-gray-500">Experience</Text>
+          <Text className="text-sm font-medium text-black">{`${experience} years`}</Text>
+        </div>
+        <ActionIcon>
+          <IconBookmark
+            className="w-5 h-5"
+            color={theme.colors.yellow[7]}
+          />
+        </ActionIcon>
+      </div>
+    </div>
+  );
+}
