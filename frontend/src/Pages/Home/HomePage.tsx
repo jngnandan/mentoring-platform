@@ -154,8 +154,8 @@ function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
-            {profiles.map((profile) => (
-              <ArticleCard
+          {profiles.slice(0, 4).map((profile) => (
+            <ArticleCard
               key={profile.id}
               id={profile.id}  // Pass the id here to the ArticleCard component
               profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
@@ -176,7 +176,8 @@ function HomePage() {
               badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
               experience={profile.experience || '5'}
             />
-            ))}
+          ))}
+
           </div>
           <Anchor href="/mentors" size="sm" mt={4}>
           <Group>
