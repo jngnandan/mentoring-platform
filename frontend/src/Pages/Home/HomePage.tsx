@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, Container, Title } from '@mantine/core';
-import { IconPalette, IconHome2, IconActivity, IconUsersGroup } from '@tabler/icons-react';
+import { Text, Container, Title, Anchor, Group, rem } from '@mantine/core';
+import { IconPalette, IconHome2, IconActivity, IconUsersGroup, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Helmet } from 'react-helmet';
 import { createClient } from '@supabase/supabase-js'; // Import Supabase client
 
@@ -154,29 +154,41 @@ function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
-            {selectedProfiles.map((profile) => (
+            {profiles.map((profile) => (
               <ArticleCard
-                key={profile.id}
-                id={profile.id}
-                profilepic={profile.profile_picture || 'https://via.placeholder.com/150'}
-                summary={profile.bio || profile.summary || 'No description available'}
-                first_name={profile.first_name || 'Unknown'}
-                last_name={profile.last_name || 'User'}
-                job={profile.job_title || 'No job title'}
-                bio={profile.bio || 'No bio available'}
-                company={profile.company || 'No company available'}
-                companyLogo={profile.company_logo || null}
-                experience={profile.experience || '5'}
-                badgeText={profile.badgeText || 'Default Badge'}
-                badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
-              />
+              key={profile.id}
+              id={profile.id}  // Pass the id here to the ArticleCard component
+              profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
+              linkUrl={profile.linkUrl || '#'}
+              summary={profile.bio || 'No description available'}
+              first_name={profile.first_name || 'Unknown'}
+              last_name={profile.last_name || 'User'}
+              job={profile.job_title || 'No job title'}
+              bio={profile.bio || 'No bio available'}
+              company={profile.company || 'No company available'}
+              hobbies={profile.hobbies || 'No hobbies listed'}
+              achievements={profile.achievements || 'No achievements listed'}
+              contributions={profile.contributions || 'No contributions listed'}
+              created_at={profile.last_updated || 'Date not available'}
+              social_media_links={profile.social_media_links || 'No social media links available'}
+              bookings={profile.bookings || 'No bookings available'}
+              badgeText={profile.badgeText || 'Default Badge'}
+              badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+              experience={profile.experience || '5'}
+            />
             ))}
           </div>
+          <Anchor href="/mentors" size="sm" mt={4}>
+          <Group>
+            <Text>Find a Mentor</Text>
+            <IconChevronRight size={rem(12)} />
+          </Group>
+        </Anchor>
         </Container>
       </section>
 
  {/* New Section for Profiles from Supabase */}
-<section className="relative py-20 bg-gradient-to-b from-white to-gray-100">
+{/* <section className="relative py-20 bg-gradient-to-b from-white to-gray-100">
   <Container className="relative z-10 max-w-7xl mx-auto px-4">
     <Title className="text-center text-3xl font-bold mb-4 ">
       Recent <Text component="span" className="text-blue-600" inherit>Profiles</Text>
@@ -185,7 +197,7 @@ function HomePage() {
     {loading ? (
       <Text className="text-center">Loading profiles...</Text>
     ) : (
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {profiles.length > 0 ? (
           profiles.map((profile) => (
             <ProfileCard
@@ -214,7 +226,7 @@ function HomePage() {
       </div>
     )}
   </Container>
-</section>
+</section> */}
 
       <section className="relative py-20 bg-gradient-to-b from-blue-100 to-white">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">
