@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Container, Card, Text, Badge, Button, Group, Stack, Avatar, Box,
-  Anchor, Tabs, List, Grid, Paper, ActionIcon, rem, Loader
+  Anchor, Tabs, List, Paper, ActionIcon, Loader, rem
 } from '@mantine/core';
 import { IconBrandLinkedin, IconBrandTwitter, IconChevronLeft, IconMapPin, IconCalendarStats, IconClock } from '@tabler/icons-react';
 import { useParams } from 'react-router-dom';
@@ -29,7 +29,7 @@ const ProfilePage = () => {
     name: profile.first_name + ' ' + profile.last_name,
     title: profile.title || 'Mentor',
     location: profile.location || 'Location not specified',
-    activeLastWeek: 'Active last week', // You can update this if you have last activity data
+    activeLastWeek: 'Active last week',
     skills: profile.skills || [],
     advancedSkills: profile.advancedSkills || [],
     about: profile.about || 'No description available.',
@@ -60,20 +60,22 @@ const ProfilePage = () => {
         </Text>
       </Group>
 
-      <Grid>
-        <Grid.Col span={8}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Profile Card */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-2">
           <Card withBorder p="lg">
             <Group position="apart" align="flex-start">
               <Box>
                 <Group>
-                <Avatar
-  src={profile.avatar || 'https://example.com/profileData-pic.jpg'}
-  size={100}
-  radius={100}
-  onError={(e) => {
-    e.target.src = 'https://example.com/profileData-pic.jpg'; // Fallback image
-  }}
-/>                  <Box>
+                  <Avatar
+                    src={profile.avatar || 'https://example.com/profileData-pic.jpg'}
+                    size={100}
+                    radius={100}
+                    onError={(e) => {
+                      e.target.src = 'https://example.com/profileData-pic.jpg'; // Fallback image
+                    }}
+                  />
+                  <Box>
                     <Text size="xl" weight={700}>{profileData.name}</Text>
                     <Text color="dimmed">{profileData.title}</Text>
                     <Group spacing="xs" mt={4}>
@@ -149,9 +151,10 @@ const ProfilePage = () => {
               ))}
             </Group>
           </Card>
-        </Grid.Col>
+        </div>
 
-        <Grid.Col span={4}>
+        {/* Similar Mentors Card */}
+        <div className="col-span-1 md:col-span-1 lg:col-span-1">
           <Card withBorder p="lg">
             <Text size="lg" weight={700} mb="md">Similar mentors</Text>
             <Stack>
@@ -172,8 +175,8 @@ const ProfilePage = () => {
               ))}
             </Stack>
           </Card>
-        </Grid.Col>
-      </Grid>
+        </div>
+      </div>
 
       <Box component="footer" mt="xl" pb="xl">
         <Text align="center" size="sm" color="dimmed">
