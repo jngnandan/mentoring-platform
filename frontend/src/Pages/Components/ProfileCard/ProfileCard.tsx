@@ -1,148 +1,133 @@
 import React from 'react';
-import { IconBookmark, IconBriefcase, IconBuilding } from '@tabler/icons-react';
-import { Card, Image, Text, ActionIcon, Badge, Group, useMantineTheme, rem, Box } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { Card, Image, Text, Badge, Group, Button, Stack, Flex } from '@mantine/core';
+import { IconStar, IconGift } from '@tabler/icons-react';
+import { Link } from 'react-router-dom'; // Make sure to import Link
 
 interface ProfileCardProps {
+  id: string;
   profilepic: string;
-  id: string; // Use this field to create dynamic links
+  linkUrl: string;
   summary: string;
   first_name: string;
   last_name: string;
   job: string;
-  bio?: string;
+  bio: string;
   company: string;
-  hobbies?: string[]; // Add hobbies as an array
-  achievements?: string[]; // Add achievements as an array
-  contributions?: string[]; // Add contributions as an array
-  companyLogo?: string;  // Add a companyLogo field to display the company logo
-  experience: string; // Add experience in years
-  badgeText?: string;
-  badgeGradient?: { from: string; to: string };
-  x_url?: string; // URL for external reference
-  linkedin_url?: string; // LinkedIn profile URL
+  hobbies: string;
+  achievements: string;
+  contributions: string;
+  created_at: string;
+  social_media_links: string;
+  bookings: string;
+  badgeText: string;
+  badgeGradient: { from: string; to: string };
+  experience: string;
 }
 
 export default function ProfileCard({
-  profilepic,
   id,
+  profilepic,
+  linkUrl,
   summary,
   first_name,
   last_name,
   job,
-  bio = 'No bio available',
+  bio,
   company,
-  hobbies = [],
-  achievements = [],
-  contributions = [],
-  companyLogo,  // Destructure the companyLogo prop
+  hobbies,
+  achievements,
+  contributions,
+  created_at,
+  social_media_links,
+  bookings,
+  badgeText,
+  badgeGradient,
   experience,
-  badgeText = 'Featured',
-  badgeGradient = { from: 'blue', to: 'cyan' },
-  x_url,
-  linkedin_url,
 }: ProfileCardProps) {
-  const theme = useMantineTheme();
+  const name = `${first_name} ${last_name}`;
 
   return (
-    <Card
-      withBorder
-      radius="md"
-      className="relative bg-white/30 backdrop-blur-lg shadow-lg my-2 p-4 border border-white/20"
-      shadow='sm'
-    >
-      <Card.Section>
+    <Link to={`/mentors/${id}`}>
+    <Card withBorder radius="md" p="md" className="relative m-3">
+      <Text className="absolute top-2 right-2 text-gray-500 text-sm">Only 3 Spots Left</Text>
+      <Flex gap="md">
+        {profilepic && (
         <Link to={`/mentors/${id}`}>
           <Image
-            src={profilepic || 'https://via.placeholder.com/150'} // Fallback image
+            src={profilepic}
             height={180}
             fit="cover"
-            className="rounded-t-md"
-            alt={`${first_name} ${last_name}`} // Add alt text for accessibility
+            radius='md'
+            className="rounded-md"
+            alt={`${name}'s profile picture`} // Add alt attribute for better accessibility
           />
-        </Link>
-      </Card.Section>
-
-      <Badge className="absolute top-2 right-3 pointer-events-none" variant="gradient" gradient={badgeGradient}>
-        {badgeText}
-      </Badge>
-
-      <Text className="block mt-4 mb-1 font-medium text-lg" fw={500} component={Link} to={`/article/${id}`}>
-        {`${first_name} ${last_name}`}
+          </Link>
+        )}
+        <Stack spacing="xs">
+          <Group position="apart" align="flex-start">
+            <div>
+              <Text size="xl" weight={700}>
+                {name}
+              </Text>
+              {/* Uncomment if you want to use the badge
+              <Badge color="blue" variant="light" gradient={badgeGradient}>
+                {badgeText}
+              </Badge>
+              */}
+            </div>
+          </Group>
+          <Text size="sm" color="dimmed">
+            {job} at {company}
+          </Text>
+          <Text size="sm" color="teal">
+            {bio}
+          </Text>
+          <Group spacing="xs">
+            <IconStar size={16} color="gold" fill="gold" />
+            <Text size="xs" color="dimmed">
+              {bookings}
+            </Text>
+          </Group>
+        </Stack>
+      </Flex>
+      <Text size="sm" mt="md">
+        <IconGift size={16} style={{ verticalAlign: 'middle', marginRight: '5px' }} />
+        FREE INTRO CALL: Set up a free 20 minute introductory call here:{' '}
+        <a href={linkUrl} target="_blank" rel="noopener noreferrer">
+          {linkUrl}
+        </a>
       </Text>
-
-      <div className="text-gray-400 flex justify-start items-center gap-2 mt-2">
-        <IconBriefcase stroke={1.5} style={{ paddingRight: '2px' }} />
-        <Text fz="sm" c="dimmed" lineClamp={4}>
-          {`${job} at `}
-        </Text>
-      </div>
-
-      <div className="text-gray-400 flex justify-start items-center gap-2 mt-2">
-        <IconBuilding stroke={1.5} style={{ paddingRight: '2px' }} />
-        <Text fz="sm" c="dimmed" lineClamp={4}>
-          {company}
-        </Text>
-      </div>
-
-      {companyLogo && (
-        <div className="flex justify-start items-center gap-2 mt-2">
-          <Image
-            src={companyLogo}
-            alt={`${company} logo`} // Use alt text for accessibility
-            width={50}
-            height={50}
-            fit="contain"
-          />
-        </div>
-      )}
-
-      <Group position="apart" className="flex justify-between mt-4">
-        <Group spacing="xs">
-          <Box>
-            <Text fz="xs" c="dimmed">Experience</Text>
-            <Text fz="sm" fw={500}>{`${experience} years`}</Text>
-          </Box>
-        </Group>
-        <ActionIcon className="bg-gray-100 hover:bg-gray-200">
-          <IconBookmark color='white' style={{ width: rem(20), height: rem(20) }} />
-        </ActionIcon>
+      <Group mt="md" spacing="xs">
+        {[hobbies, achievements, contributions].filter(Boolean).map((item, index) => (
+          <Badge key={index} variant="light">
+            {item}
+          </Badge>
+        ))}
       </Group>
-
-      <Text fz="sm" c="dimmed" mt={10}>{summary}</Text>
-
-      {hobbies.length > 0 && (
-        <div className="mt-2">
-          <Text fz="xs" c="dimmed">Hobbies</Text>
-          <Text fz="sm">{hobbies.join(', ')}</Text>
+      <Flex justify="space-between" align="center" mt="xl">
+        <div>
+          <Text size="xs" color="dimmed">
+            Experience
+          </Text>
+          <Text size="xl" weight={700}>
+            {experience}
+            <Text span size="sm" weight={400}>
+              {' '}
+              years
+            </Text>
+          </Text>
         </div>
-      )}
-
-      {achievements.length > 0 && (
-        <div className="mt-2">
-          <Text fz="xs" c="dimmed">Achievements</Text>
-          <Text fz="sm">{achievements.join(', ')}</Text>
-        </div>
-      )}
-
-      {contributions.length > 0 && (
-        <div className="mt-2">
-          <Text fz="xs" c="dimmed">Contributions</Text>
-          <Text fz="sm">{contributions.join(', ')}</Text>
-        </div>
-      )}
-
-      {x_url && (
-        <Text fz="sm" c="blue" mt={10}>
-          <Link to={x_url}>Personal Website</Link>
-        </Text>
-      )}
-
-      {linkedin_url && (
-        <Text fz="sm" c="blue" mt={10}>
-          <Link to={linkedin_url}>LinkedIn Profile</Link>
-        </Text>
-      )}
+        <Button
+          component={Link}
+          to={`/mentors/${id}`}
+          variant="light"
+          color="blue"
+          size="md"
+        >
+          View Profile
+        </Button>
+      </Flex>
     </Card>
+    </Link>
   );
 }

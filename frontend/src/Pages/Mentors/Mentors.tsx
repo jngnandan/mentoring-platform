@@ -30,7 +30,7 @@ import { FaMoneyBill, FaNewspaper, FaMobile, FaTablet, FaLaptop, FaTv, FaCamera,
 import { SiAmazon, SiFlipkart, SiSamsung, SiOneplus, SiApple, SiGoogle, SiHuawei, SiXiaomi, SiSony, SiMotorola, SiAsus, SiBlackberry } from 'react-icons/si';
 import FooterLinks from '../Footer/FooterLinks.tsx';
 import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
-
+import ProfileCard from '../Components/ProfileCard/ProfileCard.tsx';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL; // Your Supabase URL
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY; // Your Supabase Anon Key
@@ -131,27 +131,27 @@ function Mentors() {
     // Helper function to render mentors
     const renderProfiles = () =>
   selectedProfiles.map((profile) => (
-    <ArticleCard
-      key={profile.id}
-      id={profile.id}  // Pass the id here to the ArticleCard component
-      profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
-      linkUrl={profile.linkUrl || '#'}
-      summary={profile.bio || 'No description available'}
-      first_name={profile.first_name || 'Unknown'}
-      last_name={profile.last_name || 'User'}
-      job={profile.job_title || 'No job title'}
-      bio={profile.bio || 'No bio available'}
-      company={profile.company || 'No company available'}
-      hobbies={profile.hobbies || 'No hobbies listed'}
-      achievements={profile.achievements || 'No achievements listed'}
-      contributions={profile.contributions || 'No contributions listed'}
-      created_at={profile.last_updated || 'Date not available'}
-      social_media_links={profile.social_media_links || 'No social media links available'}
-      bookings={profile.bookings || 'No bookings available'}
-      badgeText={profile.badgeText || 'Default Badge'}
-      badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
-      experience={profile.experience || '5'}
-    />
+    <ProfileCard
+    key={profile.id}
+    id={profile.id}
+    profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
+    linkUrl={profile.linkUrl || '#'}
+    summary={profile.bio || 'No description available'}
+    first_name={profile.first_name || 'Unknown'}
+    last_name={profile.last_name || 'User'}
+    job={profile.job_title || 'No job title'}
+    bio={profile.bio || 'No bio available'}
+    company={profile.company || 'No company available'}
+    hobbies={profile.hobbies || 'No hobbies listed'}
+    achievements={profile.achievements || 'No achievements listed'}
+    contributions={profile.contributions || 'No contributions listed'}
+    created_at={profile.last_updated || 'Date not available'}
+    social_media_links={profile.social_media_links || 'No social media links available'}
+    bookings={profile.bookings || 'No bookings available'}
+    badgeText={profile.badgeText || 'Default Badge'}
+    badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+    experience={profile.experience || '5'}
+  />
   ));
 
 
@@ -563,7 +563,7 @@ function Mentors() {
                 ))}
               </div> */}
 
-              <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 mx-4 my-4'>
+              <div className='grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-2 gap-4 mx-4 my-4'>
   {selectedProfiles.slice(0, displayedItems).map((product, index) => (
     <div
       key={index}

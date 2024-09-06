@@ -41,10 +41,10 @@ export function HeroText() {
             </div>
 
             <Group justify="center" className="mt-8">
-              <Button component={Link} to="/mentors" size="lg" variant="outline" color="gray">
+              <Button component={Link} to="/mentors" size="mg" variant="outline" color="gray">
                 View Mentors
               </Button>
-              <Button component={Link} to="/about" size="lg">
+              <Button component={Link} to="/about" size="mg">
                 Know More
               </Button>
             </Group>
@@ -63,7 +63,7 @@ export function HeroText() {
               <Button
                 component={Link}
                 to="/mentor-register"
-                size="lg"
+                size="mg"
                 className="bg-gradient-to-r from-red-500 to-pink-500 text-white"
               >
                 Become a Mentor
@@ -72,7 +72,7 @@ export function HeroText() {
           </div>
         )}
         
-        <Text size="sm" className="text-center mt-12 text-gray-500 mt-4">
+        <Text size="sm" mt={8} className="text-center text-gray-500 mt-4">
           Proven success with our top mentors
         </Text>
       </Container>
