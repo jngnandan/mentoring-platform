@@ -4,7 +4,7 @@ import {
   Anchor, Tabs, List, Paper, ActionIcon, Loader, rem
 } from '@mantine/core';
 import { IconBrandLinkedin, IconBrandTwitter, IconChevronLeft, IconMapPin, IconCalendarStats, IconClock } from '@tabler/icons-react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ContentContext } from '../../context/ContentContext.tsx';
 
 const ProfilePage = () => {
@@ -26,8 +26,22 @@ const ProfilePage = () => {
   }
 
   const profileData = {
+    key: profile.id,
     name: profile.first_name + ' ' + profile.last_name,
-    title: profile.title || 'Mentor',
+    profilePic: profile.profilepic || 'https://via.placeholder.com/150',
+    linkUrl: profile.linkUrl || '#',
+    summary: profile.bio || 'No description available',
+    title: profile.job_title || 'No job title',
+    company: profile.company || 'No company available',
+    hobbies: profile.hobbies || 'No hobbies listed',
+    achievements: profile.achievements || 'No achievements listed',
+    contributions: profile.contributions || 'No contributions listed',
+    createdAt: profile.last_updated || 'Date not available',
+    socialMediaLinks: profile.social_media_links || 'No social media links available',
+    bookings: profile.bookings || 'No bookings available',
+    badgeText: profile.badgeText || 'Default Badge',
+    badgeGradient: profile.badgeGradient || { from: 'gray', to: 'white' },
+    experience: Array.isArray(profile.experience) ? profile.experience : [], // Ensure it's an array
     location: profile.location || 'Location not specified',
     activeLastWeek: 'Active last week',
     skills: profile.skills || [],
@@ -38,8 +52,9 @@ const ProfilePage = () => {
       period: 'month',
       features: []
     },
-    experience: profile.experience || []
   };
+  
+
 
   const similarMentors = [
     { name: 'Katie Kutters', title: 'Senior UX Designer @ The Home Depot', price: 150, reviews: 12 },
@@ -67,14 +82,16 @@ const ProfilePage = () => {
             <Group position="apart" align="flex-start">
               <Box>
                 <Group>
+                  {/* <Link to='/'> */}
                   <Avatar
-                    src={profile.avatar || 'https://example.com/profileData-pic.jpg'}
+                    src={profile.profilepic || 'https://example.com/profileData-pic.jpg'}
                     size={100}
                     radius={100}
                     onError={(e) => {
                       e.target.src = 'https://example.com/profileData-pic.jpg'; // Fallback image
                     }}
                   />
+                  {/* </Link> */}
                   <Box>
                     <Text size="xl" weight={700}>{profileData.name}</Text>
                     <Text color="dimmed">{profileData.title}</Text>
@@ -93,16 +110,25 @@ const ProfilePage = () => {
             </Group>
 
             <Group mt="md" mb="xs">
-              {profileData.skills.map((skill) => (
-                <Badge key={skill} variant="outline">{skill}</Badge>
-              ))}
+            <Group mt="md" spacing="xs">
+        {/* {[hobbies, achievements, contributions].filter(Boolean).map((item, index) => (
+          <Badge key={index} variant="light">
+            {item}
+          </Badge>
+        ))} */}
+      </Group>
             </Group>
 
-            <Tabs defaultValue="services">
+            <Tabs defaultValue="overview">
               <Tabs.List>
+              <Tabs.Tab value="overview">Overview</Tabs.Tab>
                 <Tabs.Tab value="services">Services</Tabs.Tab>
-                <Tabs.Tab value="about">About</Tabs.Tab>
+                <Tabs.Tab value="group">Group Sessions</Tabs.Tab>
               </Tabs.List>
+              
+              <Tabs.Panel value="overview" pt="xs">
+                <Text>{profileData.summary}</Text>
+              </Tabs.Panel>
 
               <Tabs.Panel value="services" pt="xs">
                 <Card withBorder mt="md">
@@ -113,7 +139,7 @@ const ProfilePage = () => {
                     size="sm"
                     center
                     icon={
-                      <ActionIcon color="teal" size={20} radius="xl">
+                      <ActionIcon color="blue" size={20} radius="xl">
                         <IconClock size="1rem" />
                       </ActionIcon>
                     }
@@ -122,26 +148,30 @@ const ProfilePage = () => {
                       <List.Item key={index}>{feature}</List.Item>
                     ))}
                   </List>
-                  <Button fullWidth color="teal" mt="md">Apply now</Button>
+                  <Button fullWidth color="blue" mt="md">Apply now</Button>
                 </Card>
               </Tabs.Panel>
 
-              <Tabs.Panel value="about" pt="xs">
+              <Tabs.Panel value="group" pt="xs">
                 <Text>{profileData.about}</Text>
               </Tabs.Panel>
             </Tabs>
           </Card>
 
           <Card withBorder mt="xl">
-            <Text size="lg" weight={700} mb="md">Get to know {profileData.name.split(' ')[0]}</Text>
-            {profileData.experience.map((exp, index) => (
-              <Box key={index} mb="md">
-                <Text weight={500}>{exp.title}</Text>
-                <Text size="sm" color="dimmed">{exp.company}</Text>
-                <Text size="sm" mt={4}>{exp.description}</Text>
-              </Box>
-            ))}
-          </Card>
+  <Text size="lg" weight={700} mb="md">Get to know {profileData.name.split(' ')[0]}</Text>
+  {profileData.advancedSkills && profileData.advancedSkills.length > 0 && (
+            <Card withBorder mt="xl">
+              <Text size="lg" weight={700} mb="md">Advanced Skills</Text>
+              <Group spacing={8}>
+                {profileData.advancedSkills.map((skill, index) => (
+                  <Badge key={index} variant="filled" color="blue">{skill}</Badge>
+                ))}
+              </Group>
+            </Card>
+          )}
+</Card>
+
 
           <Card withBorder mt="xl">
             <Text size="lg" weight={700} mb="md">Skills</Text>
