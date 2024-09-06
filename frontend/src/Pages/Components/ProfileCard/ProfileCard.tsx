@@ -46,6 +46,7 @@ export default function ProfileCard({
 }: ProfileCardProps) {
   const name = `${first_name} ${last_name}`;
 
+
   return (
     <Link to={`/mentors/${id}`}>
     <Card withBorder radius="md" p="md" className="relative m-3">
