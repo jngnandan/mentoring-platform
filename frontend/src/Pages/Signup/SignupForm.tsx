@@ -31,32 +31,38 @@ export default function SignupForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-  
-    try {
-      // Try to create user with email and password
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const firebaseUser = userCredential.user;
 
-      // Optionally, save additional user info to Firebase Firestore (if needed)
-      console.log('User signed up:', {
-        displayName: `${firstName} ${lastName}`,
-        email: firebaseUser.email,
-        firebase_uid: firebaseUser.uid,
-        created_at: new Date(),
-      });
+    // Delay the signup process for half a second
+    const timeout = setTimeout(async () => {
+      try {
+        // Try to create user with email and password
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const firebaseUser = userCredential.user;
 
-      navigate('/'); // Redirect to home page after successful signup
-    } catch (error) {
-      // If Firebase says the email is already in use
-      if (error.code === 'auth/email-already-in-use') {
-        setError('This email is already registered. Please try logging in.');
-      } else {
-        console.error('Error during signup:', error);
-        setError(error.message || 'An error occurred during signup. Please try again.');
+        // Optionally, save additional user info to Firebase Firestore (if needed)
+        console.log('User signed up:', {
+          displayName: `${firstName} ${lastName}`,
+          email: firebaseUser.email,
+          firebase_uid: firebaseUser.uid,
+          created_at: new Date(),
+        });
+
+        navigate('/mentors'); // Redirect to home page after successful signup
+      } catch (error) {
+        // If Firebase says the email is already in use
+        if (error.code === 'auth/email-already-in-use') {
+          setError('This email is already registered. Please try logging in.');
+        } else {
+          console.error('Error during signup:', error);
+          setError(error.message || 'An error occurred during signup. Please try again.');
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
+    }, 500); // Half a second delay
+
+    // Cleanup the timeout on unmount
+    return () => clearTimeout(timeout);
   };
 
   return (

@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   HoverCard,
   Group,
@@ -16,9 +18,10 @@ import {
   ScrollArea,
   rem,
   useMantineTheme,
+  Avatar,
+  Menu,
+  LoadingOverlay,
 } from '@mantine/core';
-import { MantineLogo } from '@mantine/ds';
-import { useDisclosure } from '@mantine/hooks';
 import {
   IconNotification,
   IconCode,
@@ -27,174 +30,156 @@ import {
   IconFingerprint,
   IconCoin,
   IconChevronDown,
+  IconUser,
+  IconLogout,
+  IconSettings,
 } from '@tabler/icons-react';
 import classes from './HeaderMegaMenu.module.css';
-import { ColorSchemeScript } from '@mantine/core';
-
-import { Link } from 'react-router-dom';
-
-import protocon from '../../Images/protocon.png'
+import protocon from '../../Images/protocon.png';
+import { useContent } from '../../context/ContentContext.tsx';
 
 const mockdata = [
   {
     icon: IconCode,
     title: 'Open source',
-    description: 'This Pokémon’s cry is very loud and distracting',
-    page: 'products'
+    description: 'This Pokémons cry is very loud and distracting',
+    page: 'products',
   },
   {
     icon: IconCoin,
     title: 'Mobile Offers',
-    description: 'The fluid of Smeargle’s tail secretions changes',
-    page: 'products'
+    description: 'The fluid of Smeargles tail secretions changes',
+    page: 'products',
   },
   {
     icon: IconBook,
-    title: 'Catelog',
+    title: 'Catalog',
     description: 'Yanma is capable of seeing 360 degrees without',
-    page: 'catelog'
+    page: 'catalog',
   },
   {
     icon: IconFingerprint,
     title: 'Security',
-    description: 'The shell’s rounded shape and the grooves on its.',
-    page: 'products'
+    description: 'The shells rounded shape and the grooves on its.',
+    page: 'products',
   },
   {
     icon: IconChartPie3,
     title: 'Analytics',
     description: 'This Pokémon uses its flying ability to quickly chase',
-    page: 'products'
+    page: 'products',
   },
   {
     icon: IconNotification,
     title: 'Notifications',
     description: 'Combusken battles with the intensely hot flames it spews',
-    page: 'products'
+    page: 'products',
   },
 ];
 
-export default function Header() {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-  const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
+const Header: React.FC = () => {
+  const [drawerOpened, setDrawerOpened] = useState(false);
+  const [linksOpened, setLinksOpened] = useState(false);
   const theme = useMantineTheme();
+  const navigate = useNavigate();
 
-  const links = mockdata.map((item) => (
-    <UnstyledButton className={classes.subLink} key={item.title}>
-      <Link to={`/${item.page}`}>
+  const { authState, signOut } = useContent();
+  const isLoggedIn = !!authState.user;
+  const user = authState.user;
 
-       <Group wrap="nowrap" align="flex-start">
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
-        <ThemeIcon size={34} variant="default" radius="md">
-          <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
-          
-        </ThemeIcon>
-        <div>
-          <Text size="sm" fw={500}>
-            {item.title}
-          </Text>
-          <Text size="xs" c="dimmed">
-            {item.description}
-          </Text>
-        </div>
-       </Group>
-      </Link>
+  const renderLinks = () =>
+    mockdata.map((item) => (
+      <UnstyledButton className={classes.subLink} key={item.title}>
+        <Link to={`/${item.page}`}>
+          <Group wrap="nowrap" align="flex-start">
+            <ThemeIcon size={34} variant="default" radius="md">
+              <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
+            </ThemeIcon>
+            <div>
+              <Text size="sm" fw={500}>
+                {item.title}
+              </Text>
+              <Text size="xs" c="dimmed">
+                {item.description}
+              </Text>
+            </div>
+          </Group>
+        </Link>
+      </UnstyledButton>
+    ));
 
-    </UnstyledButton>
-  ));
+  if (authState.loading) {
+    return <LoadingOverlay visible={true} />;
+  }
 
   return (
     <Box pb={16} pt={16}>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-          <Link to='/'>
-          {/* <MantineLogo size={30} /> */}
-          <img src={protocon} alt="protocon" className='w-36' />
+          <Link to="/">
+            <img src={protocon} alt="protocon" className="w-36" />
           </Link>
 
           <Group h="100%" gap={0} visibleFrom="sm">
-          {/* <Link to='/'> */}
-            {/* <a href="/" className={classes.link}>
-              Home
-            </a> */}
-            {/* </Link> */}
-
-            {/* <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
-              <HoverCard.Target>
-                <a href="#" className={classes.link}>
-                  <Center inline>
-                    <Box component="span" mr={5}>
-                      Features
-                    </Box>
-                    <IconChevronDown
-                      style={{ width: rem(16), height: rem(16) }}
-                      color={theme.colors.blue[6]}
-                    />
-                  </Center>
-                </a>
-              </HoverCard.Target>
-
-              <HoverCard.Dropdown style={{ overflow: 'hidden' }}>
-                <Group justify="space-between" px="md">
-                  <Text fw={500}>Features</Text>
-                  <Anchor href="#" fz="xs">
-                    View all
-                  </Anchor>
-                </Group>
-
-                <Divider my="sm" />
-
-                <SimpleGrid cols={2} spacing={0}>
-                  {links}
-                </SimpleGrid>
-
-                <div className={classes.dropdownFooter}>
-                  <Group justify="space-between">
-                    <div>
-                      <Text fw={500} fz="sm">
-                        Get started
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        Their food sources have decreased, and their numbers
-                      </Text>
-                    </div>
-                    <Button variant="default">Get started</Button>
-                  </Group>
-                </div>
-              </HoverCard.Dropdown>
-            </HoverCard> */}
-            <a href="/mentors" className={classes.link}>
-              Mentors
-            </a>
-            <a href="/about" className={classes.link}>
-              About Us
-            </a>
-            <a href="/contact" className={classes.link}>
-              Contact Us
-            </a>
-       
-
+            <Link to="/mentors" className={classes.link}>Mentors</Link>
+            <Link to="/about" className={classes.link}>About Us</Link>
+            <Link to="/contact" className={classes.link}>Contact Us</Link>
           </Group>
 
           <Group visibleFrom="sm">
-          {/* <Link to='/mentor-register'>
-            <Button variant="default">Register as Mentor</Button>
-            </Link> */}
-            <Link to='/login'>
-            <Button variant="default">Log in</Button>
-            </Link>
-            <Link to='/signup'>
-            <Button variant="fill">Sign up</Button>
-            </Link>
+            {isLoggedIn ? (
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <UnstyledButton>
+                    <Group>
+                      <Avatar color="blue" radius="xl">
+                        {user?.email?.[0].toUpperCase() || <IconUser size="1.5rem" />}
+                      </Avatar>
+                      <Text>{user?.email}</Text>
+                    </Group>
+                  </UnstyledButton>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item leftSection={<IconSettings size={14} />}>
+                    Settings
+                  </Menu.Item>
+                  <Menu.Item leftSection={<IconLogout size={14} />} onClick={handleLogout}>
+                    Logout
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="default">Log in</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button>Sign up</Button>
+                </Link>
+              </>
+            )}
           </Group>
 
-          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
+          <Burger 
+            opened={drawerOpened} 
+            onClick={() => setDrawerOpened((o) => !o)} 
+            hiddenFrom="sm" 
+          />
         </Group>
       </header>
 
       <Drawer
         opened={drawerOpened}
-        onClose={closeDrawer}
+        onClose={() => setDrawerOpened(false)}
         size="100%"
         padding="md"
         title="Navigation"
@@ -203,37 +188,47 @@ export default function Header() {
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-
-          <a href="#" className={classes.link}>
-            Home
-          </a>
-          <UnstyledButton className={classes.link} onClick={toggleLinks}>
+          
+          <Link to="/" className={classes.link}>Home</Link>
+          
+          <UnstyledButton className={classes.link} onClick={() => setLinksOpened((o) => !o)}>
             <Center inline>
-              <Box component="span" mr={5}>
-                Features
-              </Box>
-              <IconChevronDown
-                style={{ width: rem(16), height: rem(16) }}
-                color={theme.colors.blue[6]}
-              />
+              <Box component="span" mr={5}>Features</Box>
+              <IconChevronDown style={{ width: rem(16), height: rem(16) }} color={theme.colors.blue[6]} />
             </Center>
           </UnstyledButton>
-          <Collapse in={linksOpened}>{links}</Collapse>
-          <a href="#" className={classes.link}>
-            Learn
-          </a>
-          <a href="#" className={classes.link}>
-            Academy
-          </a>
-
+          <Collapse in={linksOpened}>{renderLinks()}</Collapse>
+          
+          <Link to="/learn" className={classes.link}>Learn</Link>
+          <Link to="/academy" className={classes.link}>Academy</Link>
+          
           <Divider my="sm" />
-
+          
           <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
+            {isLoggedIn ? (
+              <UnstyledButton onClick={handleLogout}>
+                <Group>
+                  <Avatar color="blue" radius="xl">
+                    {user?.email?.[0].toUpperCase() || <IconUser size="1.5rem" />}
+                  </Avatar>
+                  <Text>Logout</Text>
+                </Group>
+              </UnstyledButton>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="default">Log in</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button>Sign up</Button>
+                </Link>
+              </>
+            )}
           </Group>
         </ScrollArea>
       </Drawer>
     </Box>
   );
-}
+};
+
+export default Header;

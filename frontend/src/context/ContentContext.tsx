@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, useReducer } from "react";
 import { createClient, User, SupabaseClient } from '@supabase/supabase-js';
-import { signInWithGoogle } from '../firebase'; // Ensure this path is correct
+import { signInWithGoogle, auth } from '../firebase'; // Ensure this path is correct
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL!;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY!;
@@ -104,28 +104,52 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      authDispatch({ type: 'SET_USER', payload: user });
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+  // const signIn = async () => {
+  //   try {
+  //     authDispatch({ type: 'SET_LOADING', payload: true });
+  //     const user = await signInWithGoogle();
+  //     if (user && user.email) {
+  //       const { data, error } = await supabase
+  //         .from('users')
+  //         .select('id')
+  //         .eq('email', user.email)
+  //         .single();
+
+  //       if (error && error.code !== 'PGRST116') {
+  //         throw error;
+  //       }
+
+  //       if (data) {
+  //         authDispatch({ type: 'SET_USER', payload: user });
+  //       } else {
+  //         throw new Error("User not authorized");
+  //       }
+  //     } else {
+  //       throw new Error("Failed to get user email from Google sign-in");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error signing in:", error);
+  //     throw error;
+  //   } finally {
+  //     authDispatch({ type: 'SET_LOADING', payload: false });
+  //   }
+  // };
+
   const signIn = async () => {
     try {
       authDispatch({ type: 'SET_LOADING', payload: true });
       const user = await signInWithGoogle();
-      if (user && user.email) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', user.email)
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
-
-        if (data) {
-          authDispatch({ type: 'SET_USER', payload: user });
-        } else {
-          throw new Error("User not authorized");
-        }
-      } else {
-        throw new Error("Failed to get user email from Google sign-in");
+      if (user) {
+        authDispatch({ type: 'SET_USER', payload: user });
       }
     } catch (error) {
       console.error("Error signing in:", error);
@@ -137,7 +161,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      await auth.signOut();
       authDispatch({ type: 'SET_USER', payload: null });
     } catch (error) {
       console.error("Error signing out:", error);
@@ -296,7 +320,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setLoading(true);
       const response = await fetch(`http://${domainName}:${backendPort}/profiles`);
       if (!response.ok) {
-        throw new Error('Failed to fetch profiles data');
+        throw new Error('Failed to fetch data');
       }
       const data = await response.json();
       setProfilesData(data);
@@ -312,60 +336,69 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setLoading(true);
       const response = await fetch(`http://${domainName}:${backendPort}/profiles/${id}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch profile data');
+        throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      setProfilesData([data]); // Replace or update the existing profile
-      setLoading(false);
+      return data;
     } catch (error) {
       console.error(`Error fetching profile with ID ${id}:`, error);
+      return null;
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-    fetchSuperbaseProfiles();
+    fetchAppleData();
+    fetchSamsungData();
+    fetchXiaomiData();
+    fetchOneplusData();
+    fetchMotorolaData();
+    fetchGoogleData();
     fetchProfilesData();
+    fetchSuperbaseProfiles();
   }, []);
 
+  const value: ContentContextType = {
+    authState,
+    authDispatch,
+    signIn,
+    signOut,
+    products,
+    setProducts,
+    compareProducts,
+    setCompareProducts,
+    dataFromBackend,
+    setDataFromBackend,
+    appleData,
+    samsungData,
+    fetchSamsungData,
+    xiaomiData,
+    fetchXiaomiData,
+    oneplusData,
+    fetchOneplusData,
+    googleData,
+    fetchGoogleData,
+    motorolaData,
+    fetchMotorolaData,
+    loading,
+    setLoading,
+    fetchAppleData,
+    checkboxData,
+    setCheckboxData,
+    mobilesData,
+    fetchMobilesData,
+    profilesData,
+    fetchProfilesData,
+    fetchProfileById,
+    superProfiles,
+    setSuperProfiles,
+    fetchSuperbaseProfiles,
+  };
+
   return (
-    <ContentContext.Provider value={{ 
-      authState,
-      authDispatch,
-      signIn,
-      signOut,
-      products, 
-      setProducts, 
-      compareProducts, 
-      setCompareProducts, 
-      dataFromBackend, 
-      setDataFromBackend, 
-      appleData, 
-      samsungData, 
-      fetchSamsungData, 
-      xiaomiData, 
-      fetchXiaomiData, 
-      oneplusData, 
-      fetchOneplusData, 
-      fetchGoogleData, 
-      googleData, 
-      fetchMotorolaData, 
-      motorolaData, 
-      loading, 
-      setLoading, 
-      fetchAppleData, 
-      checkboxData, 
-      setCheckboxData, 
-      mobilesData, 
-      fetchMobilesData, 
-      profilesData, 
-      fetchProfilesData,
-      fetchProfileById,
-      superProfiles,
-      setSuperProfiles,
-      fetchSuperbaseProfiles
-    }}>
+    <ContentContext.Provider value={value}>
       {children}
     </ContentContext.Provider>
   );
@@ -373,7 +406,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
 export const useContent = () => {
   const context = useContext(ContentContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useContent must be used within a ContentProvider');
   }
   return context;

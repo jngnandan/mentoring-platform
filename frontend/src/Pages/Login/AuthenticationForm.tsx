@@ -56,7 +56,7 @@ export default function AuthenticationForm() {
       console.log('User signed in with Firebase:', user);
 
       // Redirect to home page if login is successful
-      navigate('/'); // Adjust the route to your home page
+      navigate('/mentors'); // Adjust the route to your home page
 
       // Clear form if everything is fine
       setEmail('');
