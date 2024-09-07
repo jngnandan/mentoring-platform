@@ -12,14 +12,11 @@ import {
   Anchor,
 } from '@mantine/core';
 import { Link, useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { auth, signInWithGoogle, signInWithTwitter } from '../../firebase'; // Import Firebase methods
+import { createUserWithEmailAndPassword } from 'firebase/auth'; // Firebase email/password signup
 import classes from './AuthenticationTitle.module.css';
 import GoogleButton from './GoogleButton.tsx';
 import TwitterButton from './TwitterButton.tsx';
-
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function SignupForm() {
   const [firstName, setFirstName] = useState('');
@@ -34,46 +31,29 @@ export default function SignupForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
+  
     try {
-      // Step 1: Check if the user already exists
-      const { data: existingUser, error: checkError } = await supabase
-        .from('users')
-        .select('email')
-        .eq('email', email)
-        .single();
+      // Try to create user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
 
-      if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError; // Handle unexpected errors
-      }
+      // Optionally, save additional user info to Firebase Firestore (if needed)
+      console.log('User signed up:', {
+        displayName: `${firstName} ${lastName}`,
+        email: firebaseUser.email,
+        firebase_uid: firebaseUser.uid,
+        created_at: new Date(),
+      });
 
-      if (existingUser) {
-        setError('This email is already registered. Please login instead.');
-        setLoading(false);
-        return;
-      }
-
-      // Step 2: If the user doesn't exist, insert new user data
-      const { data, error } = await supabase
-        .from('users')
-        .insert([
-          {
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            password_hash: password, // Make sure to hash passwords securely in a real application
-            created_at: new Date().toISOString(),
-          },
-        ]);
-
-      if (error) throw error;
-
-      console.log('User data inserted:', data);
       navigate('/'); // Redirect to home page after successful signup
-
     } catch (error) {
-      console.error('Error during signup:', error);
-      setError(error.message || 'An error occurred during signup. Please try again.');
+      // If Firebase says the email is already in use
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please try logging in.');
+      } else {
+        console.error('Error during signup:', error);
+        setError(error.message || 'An error occurred during signup. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -90,7 +70,7 @@ export default function SignupForm() {
           <Anchor size="sm" component="button">
             Login
           </Anchor>
-          </Link>
+        </Link>
       </Text>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
@@ -101,10 +81,10 @@ export default function SignupForm() {
         )}
 
         <form onSubmit={handleSignup}>
-        <Group grow mb="md" mt="md">
-          <GoogleButton radius="xl">Google</GoogleButton>
-          <TwitterButton radius="xl">Twitter</TwitterButton>
-        </Group>
+          <Group grow mb="md" mt="md">
+              <GoogleButton radius="xl" onClick={signInWithGoogle}>Google</GoogleButton>
+              <TwitterButton radius="xl" onClick={signInWithTwitter}>Twitter</TwitterButton>
+          </Group>
           <TextInput
             label="First Name"
             placeholder="Your First Name"
@@ -140,8 +120,6 @@ export default function SignupForm() {
             Sign up
           </Button>
         </form>
-
-
       </Paper>
     </Container>
   );

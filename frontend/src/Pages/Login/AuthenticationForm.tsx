@@ -13,10 +13,9 @@ import {
   Button,
   Loader,
 } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import GoogleButton from './GoogleButton.tsx';
 import TwitterButton from './TwitterButton.tsx';
-import { createClient } from '@supabase/supabase-js';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import classes from './AuthenticationTitle.module.css';
@@ -36,7 +35,6 @@ if (!getApps().length) {
   initializeApp(firebaseConfig);
 }
 
-const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
 const auth = getAuth();
 
 export default function AuthenticationForm() {
@@ -44,10 +42,12 @@ export default function AuthenticationForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Use useNavigate for redirection
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(''); // Reset error message on new submit
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -55,47 +55,17 @@ export default function AuthenticationForm() {
 
       console.log('User signed in with Firebase:', user);
 
-      const { data: existingUser, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', user.email)
-        .single();
+      // Redirect to home page if login is successful
+      navigate('/'); // Adjust the route to your home page
 
-      if (userError && userError.code !== 'PGRST116') {
-        console.error('Error checking user in Supabase:', userError);
-        throw userError;
-      }
-
-      if (!existingUser) {
-        const { data: newUser, error: insertError } = await supabase
-          .from('users')
-          .insert([
-            {
-              email: user.email,
-              name: user.displayName || '',
-              image: user.photoURL || '',
-              provider: 'firebase',
-            },
-          ]);
-
-        if (insertError) {
-          console.error('Error inserting new user into Supabase:', insertError);
-          throw insertError;
-        }
-
-        console.log('New user inserted into Supabase:', newUser);
-      } else {
-        console.log('User already exists in Supabase:', existingUser);
-      }
-
+      // Clear form if everything is fine
       setEmail('');
       setPassword('');
       setError('');
     } catch (err) {
       console.error('Error during login:', err);
-
-      if (err.code === 'auth/operation-not-allowed') {
-        setError('Email/password authentication is not enabled.');
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setError('Account does not exist. Please sign up.'); // Show error if user doesn't exist
       } else {
         setError(err.message || 'Failed to sign in. Please try again.');
       }
