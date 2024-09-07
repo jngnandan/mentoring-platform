@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider,
   TwitterAuthProvider,
   signInWithPopup,
+  createUserWithEmailAndPassword
 } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { createClient } from "@supabase/supabase-js";
@@ -30,7 +31,8 @@ const firestore = getFirestore(app);
 
 // Initialize Supabase client
 const SUPABASE_URL = "https://lfibhgotnojhtgzuusgu.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmaWJoZ290bm9qaHRnenV1c2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU1MzY1MTUsImV4cCI6MjA0MTExMjUxNX0.1LIoh-F9oQPbSHyX14A3eKx1a8sNoqyrRQDyn_X7u24"; // Replace with your Supabase anon key
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmaWJoZ290bm9qaHRnenV1c2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU1MzY1MTUsImV4cCI6MjA0MTExMjUxNX0.1LIoh-F9oQPbSHyX14A3eKx1a8sNoqyrRQDyn_X7u24";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Google Auth Provider
@@ -44,7 +46,7 @@ const saveUserToSupabase = async (user) => {
   const { email, displayName, uid } = user;
   const { error } = await supabase
     .from("users")
-    .insert([
+    .upsert([
       {
         email,
         display_name: displayName,
@@ -55,6 +57,8 @@ const saveUserToSupabase = async (user) => {
 
   if (error) {
     console.error("Error saving user to Supabase:", error);
+  } else {
+    console.log("User saved to Supabase:", user);
   }
 };
 
@@ -76,11 +80,10 @@ const signInWithGoogle = async () => {
     await saveUserToSupabase(user);
 
     console.log("User signed in with Google: ", user);
-    // Return user or any necessary data for further processing
-    return user; // Return user for further use (e.g., redirecting)
+    return user;
   } catch (error) {
     console.error("Error signing in with Google:", error);
-    throw new Error("Google sign-in failed. Please try again."); // Throw error to handle in the UI
+    throw error; // Throw the original error for more detailed debugging
   }
 };
 
@@ -102,13 +105,39 @@ const signInWithTwitter = async () => {
     await saveUserToSupabase(user);
 
     console.log("User signed in with Twitter: ", user);
-    // Return user or any necessary data for further processing
-    return user; // Return user for further use (e.g., redirecting)
+    return user;
   } catch (error) {
     console.error("Error signing in with Twitter:", error);
-    throw new Error("Twitter sign-in failed. Please try again."); // Throw error to handle in the UI
+    console.log("Error code:", error.code);
+    console.log("Error message:", error.message);
+    throw error; // Throw the original error for more detailed debugging
+  }
+};
+
+// Sign Up with Email and Password
+const signUpWithEmail = async (email, password) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Save user info to Firestore
+    await setDoc(doc(firestore, "users", user.uid), {
+      displayName: user.displayName || email,
+      email: user.email,
+      firebase_uid: user.uid,
+      created_at: new Date(),
+    });
+
+    // Save user info to Supabase
+    await saveUserToSupabase(user);
+
+    console.log("User signed up with email: ", user);
+    return user;
+  } catch (error) {
+    console.error("Error signing up with email:", error);
+    throw error; // Throw the original error for more detailed debugging
   }
 };
 
 // Export necessary modules
-export { auth, firestore, signInWithGoogle, signInWithTwitter };
+export { auth, firestore, signInWithGoogle, signInWithTwitter, signUpWithEmail };

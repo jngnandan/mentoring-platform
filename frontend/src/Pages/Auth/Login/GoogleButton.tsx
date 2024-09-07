@@ -1,4 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import { Button, ButtonProps } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { signInWithGoogle, auth } from '../../../firebase.js'; // Ensure this is correctly pointing to your firebase utility functions
 
 function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -30,5 +34,37 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 }
 
 export default function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
-  return <Button leftSection={<GoogleIcon />} variant="default" {...props} />;
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is already authenticated
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        // If the user is logged in, redirect them to the "mentors" page
+        navigate('/mentors');
+      }
+    });
+
+    // Cleanup the listener on component unmount
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const handleClick = async () => {
+    try {
+      await signInWithGoogle();
+      navigate('/mentors'); // Redirect to the "mentors" page after successful sign-in
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+      // Handle errors, show notifications, etc.
+    }
+  };
+
+  if (user) {
+    // If the user is already authenticated, you can hide the login button or show a loading state
+    return null;
+  }
+
+  return <Button leftSection={<GoogleIcon />} variant="default" onClick={handleClick} {...props} />;
 }

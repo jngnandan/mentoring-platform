@@ -4,7 +4,7 @@ import React from 'react';
 import { Button, ButtonProps } from '@mantine/core';
 import { TwitterIcon } from '@mantine/ds';
 import { useNavigate } from 'react-router-dom';
-import { signInWithTwitter } from '../../firebase.js'; // Ensure this is correctly pointing to your firebase utility functions
+import { signInWithTwitter } from '../../../firebase.js'; // Ensure this is correctly pointing to your firebase utility functions
 
 export default function TwitterButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
   const navigate = useNavigate(); // Hook to programmatically navigate

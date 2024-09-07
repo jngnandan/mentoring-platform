@@ -7,7 +7,7 @@ import '@mantine/core/styles.css';
 
 // Pages
 import HomePage from "./Pages/Home/HomePage.tsx";
-import AuthenticationForm from "./Pages/Login/AuthenticationForm.tsx";
+import AuthenticationForm from "./Pages/Auth/Login/AuthenticationForm.tsx";
 import Products from "./Pages/Products/Products.tsx";
 import ProductPage from "./Pages/ProductPage/ProductPage.tsx";
 import CatelogPage from "./Pages/CatelogPage/CatelogPage.tsx";
@@ -17,7 +17,7 @@ import { ContactUs } from "./Pages/ContactPage/ContactUs.tsx";
 import Deals from "./Pages/Categories/Deals/index.tsx";
 import News from "./Pages/Categories/News/index.tsx";
 import { ForgotPassword } from "./Pages/ForgotPassword/ForgotPassword.tsx";
-import SignupForm from "./Pages/Signup/SignupForm.tsx";
+import SignupForm from "./Pages/Auth/Signup/SignupForm.tsx";
 import Mentors from "./Pages/Mentors/Mentors.tsx";
 import MentorRegister from "./Pages/MentorRegister/MentorRegister.tsx";
 import MentorsPage from "./Pages/MentorsPage/index.tsx";
@@ -56,6 +56,8 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<SignupForm />} />
+        {/* <Route path="/mentors" element={<Mentors />} /> */}
+
         <Route 
           path="/mentors" 
           element={
