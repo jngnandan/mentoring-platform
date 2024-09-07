@@ -1,54 +1,166 @@
-import React, { createContext, useState, useEffect } from "react";
-import { createClient } from '@supabase/supabase-js'; // Import Supabase client
+import React, { createContext, useState, useEffect, useContext, useReducer } from "react";
+import { createClient, User, SupabaseClient } from '@supabase/supabase-js';
+import { signInWithGoogle } from '../firebase'; // Ensure this path is correct
 
-const ContentContext = createContext();
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL!;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY!;
+const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+type AuthState = {
+  user: User | null;
+  loading: boolean;
+};
 
+type AuthAction =
+  | { type: 'SET_USER'; payload: User | null }
+  | { type: 'SET_LOADING'; payload: boolean };
 
-const ContentProvider = ({ children }) => {
-  const [products, setProducts] = useState('super');
-  const [compareProducts, setCompareProducts] = useState('Wow');
-  const [dataFromBackend, setDataFromBackend] = useState([]);
-  const [appleData, setAppleData] = useState([]);
-  const [samsungData, setSamsungData] = useState([]);
-  const [xiaomiData, setXiaomiData] = useState([]);
-  const [oneplusData, setOneplusData] = useState([]);
-  const [motorolaData, setMotorolaData] = useState([]);
-  const [googleData, setGoogleData] = useState([]);
-  const [mobilesData, setMobilesData] = useState([]);
-  const [checkboxData, setCheckboxData] = useState(['cool']);
-  const [profilesData, setProfilesData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [superProfiles, setSuperProfiles] = useState([])
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  switch (action.type) {
+    case 'SET_USER':
+      return { ...state, user: action.payload, loading: false };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    default:
+      return state;
+  }
+};
+
+interface ContentContextType {
+  authState: AuthState;
+  authDispatch: React.Dispatch<AuthAction>;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+  products: string;
+  setProducts: React.Dispatch<React.SetStateAction<string>>;
+  compareProducts: string;
+  setCompareProducts: React.Dispatch<React.SetStateAction<string>>;
+  dataFromBackend: any[];
+  setDataFromBackend: React.Dispatch<React.SetStateAction<any[]>>;
+  appleData: any[];
+  samsungData: any[];
+  fetchSamsungData: () => Promise<void>;
+  xiaomiData: any[];
+  fetchXiaomiData: () => Promise<void>;
+  oneplusData: any[];
+  fetchOneplusData: () => Promise<void>;
+  fetchGoogleData: () => Promise<void>;
+  googleData: any[];
+  fetchMotorolaData: () => Promise<void>;
+  motorolaData: any[];
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchAppleData: () => Promise<void>;
+  checkboxData: string[];
+  setCheckboxData: React.Dispatch<React.SetStateAction<string[]>>;
+  mobilesData: any[];
+  fetchMobilesData: (brand: string) => Promise<any[]>;
+  profilesData: any[];
+  fetchProfilesData: () => Promise<void>;
+  fetchProfileById: (id: string) => Promise<void>;
+  superProfiles: any[];
+  setSuperProfiles: React.Dispatch<React.SetStateAction<any[]>>;
+  fetchSuperbaseProfiles: () => Promise<void>;
+}
+
+export const ContentContext = createContext<ContentContextType | undefined>(undefined);
+
+export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [authState, authDispatch] = useReducer(authReducer, { user: null, loading: true });
+  const [products, setProducts] = useState<string>('super');
+  const [compareProducts, setCompareProducts] = useState<string>('Wow');
+  const [dataFromBackend, setDataFromBackend] = useState<any[]>([]);
+  const [appleData, setAppleData] = useState<any[]>([]);
+  const [samsungData, setSamsungData] = useState<any[]>([]);
+  const [xiaomiData, setXiaomiData] = useState<any[]>([]);
+  const [oneplusData, setOneplusData] = useState<any[]>([]);
+  const [motorolaData, setMotorolaData] = useState<any[]>([]);
+  const [googleData, setGoogleData] = useState<any[]>([]);
+  const [mobilesData, setMobilesData] = useState<any[]>([]);
+  const [checkboxData, setCheckboxData] = useState<string[]>(['cool']);
+  const [profilesData, setProfilesData] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [superProfiles, setSuperProfiles] = useState<any[]>([]);
   
   const backendPort = 3002;
   const domainName = "localhost";
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      authDispatch({ type: 'SET_USER', payload: session?.user || null });
+    };
+    
+    checkSession();
+    
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      authDispatch({ type: 'SET_USER', payload: session?.user || null });
+    });
+
+    return () => {
+      if (authListener && authListener.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+    };
+  }, []);
+
+  const signIn = async () => {
+    try {
+      authDispatch({ type: 'SET_LOADING', payload: true });
+      const user = await signInWithGoogle();
+      if (user && user.email) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+
+        if (data) {
+          authDispatch({ type: 'SET_USER', payload: user });
+        } else {
+          throw new Error("User not authorized");
+        }
+      } else {
+        throw new Error("Failed to get user email from Google sign-in");
+      }
+    } catch (error) {
+      console.error("Error signing in:", error);
+      throw error;
+    } finally {
+      authDispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      authDispatch({ type: 'SET_USER', payload: null });
+    } catch (error) {
+      console.error("Error signing out:", error);
+      throw error;
+    }
+  };
 
   const fetchSuperbaseProfiles = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('profiles') // Replace with your Supabase table name
+        .from('profiles')
         .select('*');
       if (error) {
         throw error;
       }
-      setSuperProfiles(data);
-      console.log(data);
+      setSuperProfiles(data || []);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching profiles:', error);
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchData();
-    fetchSuperbaseProfiles();
-  }, []);
 
   const fetchData = async () => {
     try {
@@ -65,7 +177,7 @@ const ContentProvider = ({ children }) => {
     }
   };
 
-  const fetchMobilesData = async (brand) => {
+  const fetchMobilesData = async (brand: string) => {
     try {
       setLoading(true);
       const response = await fetch(`http://${domainName}:${backendPort}/mobiles/${brand}`);
@@ -195,7 +307,7 @@ const ContentProvider = ({ children }) => {
     }
   };
 
-  const fetchProfileById = async (id) => {
+  const fetchProfileById = async (id: string) => {
     try {
       setLoading(true);
       const response = await fetch(`http://${domainName}:${backendPort}/profiles/${id}`);
@@ -213,11 +325,16 @@ const ContentProvider = ({ children }) => {
 
   useEffect(() => {
     fetchData();
+    fetchSuperbaseProfiles();
     fetchProfilesData();
   }, []);
 
   return (
     <ContentContext.Provider value={{ 
+      authState,
+      authDispatch,
+      signIn,
+      signOut,
       products, 
       setProducts, 
       compareProducts, 
@@ -254,4 +371,10 @@ const ContentProvider = ({ children }) => {
   );
 };
 
-export { ContentContext, ContentProvider };
+export const useContent = () => {
+  const context = useContext(ContentContext);
+  if (context === undefined) {
+    throw new Error('useContent must be used within a ContentProvider');
+  }
+  return context;
+};

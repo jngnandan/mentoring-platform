@@ -2165,7 +2165,7 @@
     clsx "2.0.0"
     highlight.js "^11.7.0"
 
-"@mantine/core@^7.12.1", "@mantine/core@7.1.3", "@mantine/core@7.12.1":
+"@mantine/core@^7.12.1", "@mantine/core@>=7.0.0", "@mantine/core@7.1.3", "@mantine/core@7.12.1":
   version "7.12.1"
   resolved "https://registry.npmjs.org/@mantine/core/-/core-7.12.1.tgz"
   integrity sha512-PXKIDaT1fpNB77dPQIcdFGM2NRnfmsJSVx3uuBccngBQWMIWI0wPyiO1Y26DK4LQrbrypeb+TS+Zxpgx6RoiCA==
@@ -2199,10 +2199,15 @@
     fast-deep-equal "^3.1.3"
     klona "^2.0.5"
 
-"@mantine/hooks@^7.12.1", "@mantine/hooks@7.1.3", "@mantine/hooks@7.12.1":
+"@mantine/hooks@^7.12.1", "@mantine/hooks@>=7.0.0", "@mantine/hooks@7.1.3", "@mantine/hooks@7.12.1":
   version "7.12.1"
   resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-7.12.1.tgz"
   integrity sha512-YPA3qiMHJkWID5+YzakBaLvjHtX3Fg3PdPY49iIb/CaWM9+lrJ+77TOVS7bsY7ZTBHXUfzft1/6Woqt3xSuweA==
+
+"@mantinex/mantine-logo@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@mantinex/mantine-logo/-/mantine-logo-1.0.1.tgz"
+  integrity sha512-t5Lp4Bpae+EVydBr5n0bDG6EXhQ3QY/fw29PCvnwn9LwWReIaYUKhQ4mRINyb7ted2R3MuG7VS1MZQcJ1Qh6Cg==
 
 "@medusajs/core-flows@^0.0.10":
   version "0.0.10"

@@ -28,6 +28,8 @@ import Header from "./Pages/Header/Header.tsx";
 import FooterLinks from "./Pages/Footer/FooterLinks.tsx";
 import CookieConsentBanner from './Pages/Components/CookieConsentBanner.js';
 
+import NavBar from './Pages/NavBar/NavbarSimple.tsx'
+
 // Create the Medusa client
 const medusaClient = new Client({
   baseUrl: 'http://localhost:9000', // Use the backend URL directly
@@ -62,6 +64,7 @@ function App() {
           <Route path="/mentors" element={<Mentors />} />
           <Route path="/mentor-register" element={<MentorRegister />} />
           <Route path="/mentors/:id" element={<MentorsPage />} />
+          <Route path="/profile" element={<NavBar/>} />
         </Routes>
         {/* <FooterLinks /> */} {/* Uncomment if needed */}
       </BrowserRouter>
