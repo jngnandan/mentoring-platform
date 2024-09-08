@@ -7,7 +7,7 @@ import { IconSmartHome, IconWorld, IconSearch, IconAdjustments, IconClock, IconS
 import { createClient } from '@supabase/supabase-js';
 import { Helmet } from 'react-helmet';
 import FilterSearch from './FilterSearch/FilterSearch.tsx';
-import FooterLinks from '../Footer/FooterLinks.tsx';
+import FooterLinks from '../Components/Footer/FooterLinks.tsx';
 import ProfileCard from '../Components/ProfileCard/ProfileCard.tsx';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;

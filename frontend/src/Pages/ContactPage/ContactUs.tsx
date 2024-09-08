@@ -13,7 +13,7 @@ import {
 import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons-react';
 import { ContactIconsList } from './ContactIcons.tsx';
 import classes from './ContactUs.module.css';
-import FooterLinks from '../Footer/FooterLinks.tsx';
+import FooterLinks from '../Components/Footer/FooterLinks.tsx';
 
 const social = [IconBrandTwitter, IconBrandYoutube, IconBrandInstagram];
 

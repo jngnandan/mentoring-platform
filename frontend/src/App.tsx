@@ -9,24 +9,19 @@ import { IconArrowUp } from '@tabler/icons-react';
 
 // Pages
 import HomePage from "./Pages/Home/HomePage.tsx";
-import AuthenticationForm from "./Pages/Auth/Login/AuthenticationForm.tsx";
-import Products from "./Pages/Products/Products.tsx";
-import ProductPage from "./Pages/ProductPage/ProductPage.tsx";
-import CatelogPage from "./Pages/CatelogPage/CatelogPage.tsx";
-import ComparisionPage from "./Pages/ComparisionPage/ComparisionPage.tsx";
+import AuthenticationForm from "./Pages/Authentication/Login/AuthenticationForm.tsx";
+import SignupForm from "./Pages/Authentication/Signup/SignupForm.tsx";
+// import ComparisionPage from "./Pages/ComparisionPage/ComparisionPage.tsx";
 import About from "./Pages/About/index.tsx";
 import { ContactUs } from "./Pages/ContactPage/ContactUs.tsx";
-import Deals from "./Pages/Categories/Deals/index.tsx";
-import News from "./Pages/Categories/News/index.tsx";
 import { ForgotPassword } from "./Pages/ForgotPassword/ForgotPassword.tsx";
-import SignupForm from "./Pages/Auth/Signup/SignupForm.tsx";
 import Mentors from "./Pages/Mentors/Mentors.tsx";
 import MentorRegister from "./Pages/MentorRegister/MentorRegister.tsx";
 import MentorsPage from "./Pages/MentorsPage/index.tsx";
 
 // Components
-import Header from "./Pages/Header/Header.tsx";
-import FooterLinks from "./Pages/Footer/FooterLinks.tsx";
+import Header from "./Pages/Components/Header/Header.tsx";
+import FooterLinks from "./Pages/Components/Footer/FooterLinks.tsx";
 import CookieConsentBanner from './Pages/Cookies/index.js';
 import NavBar from './Pages/NavBar/NavbarSimple.tsx';
 import ProtectedRoute from './ProtectedRoute.js';
@@ -68,11 +63,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<AuthenticationForm />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/products/:productId" element={<ProductPage />} />
-        <Route path="/deals" element={<Deals />} />
-        <Route path="/news" element={<News />} />
-        <Route path="/compare" element={<ComparisionPage />} />
+        {/* <Route path="/compare" element={<ComparisionPage />} /> */}
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -85,9 +76,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <NavBar />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentors/:id" element={<MentorsPage />} />
-        <Route path="/profile" element={<NavBar />} />
+        {/* <Route path="/profile" element={<NavBar />} /> */}
       </Routes>
       {showScrollTop && (
         <Button

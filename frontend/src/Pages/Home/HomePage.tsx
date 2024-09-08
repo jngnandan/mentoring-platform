@@ -6,9 +6,9 @@ import { createClient } from '@supabase/supabase-js';
 
 import { ContentContext } from '../../context/ContentContext.tsx';
 import { Link } from 'react-router-dom';
-import FooterLink from '../Footer/FooterLinks.tsx';
+import FooterLink from '../Components/Footer/FooterLinks.tsx';
 import { HeroText } from './HeroText/HeroText.tsx';
-import { FaqSimple } from '../FAQ/FaqSimple.tsx';
+import { FaqSimple } from '../Components/FAQ/FaqSimple.tsx';
 import { IconTextCard } from '../Components/CardWithCheckbox/CheckboxCard.tsx';
 import { BigCard } from '../Components/BigCard/BigCard.tsx';
 import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';

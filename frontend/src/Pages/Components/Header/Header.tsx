@@ -38,8 +38,8 @@ import {
   IconBoxMultiple
 } from '@tabler/icons-react';
 import classes from './HeaderMegaMenu.module.css';
-import protocon from '../../Images/protocon.png';
-import { useContent } from '../../context/ContentContext.tsx';
+import protocon from '../../../Images/protocon.png';
+import { useContent } from '../../../context/ContentContext.tsx';
 
 const mockdata = [
   {
@@ -166,7 +166,7 @@ const Header: React.FC = () => {
                   </UnstyledButton>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Link to='/account'>
+                  <Link to='/profile'>
                     <Menu.Item leftSection={<IconUserCircle size={14} />}>
                       Account
                     </Menu.Item>
