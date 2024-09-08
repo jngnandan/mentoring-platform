@@ -13,10 +13,8 @@ interface LinksGroupProps {
 
 export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksGroupProps) {
   const { checkboxData, setCheckboxData } = useContext(ContentContext);
-
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
-
   const [selectedLinks, setSelectedLinks] = useState(
     (hasLinks ? links : []).reduce((acc, link) => {
       acc[link.label] = false;
@@ -29,26 +27,31 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
       ...prevState,
       [label]: !prevState[label],
     }));
-
-    // Create a new object with the updated checkbox data
     const updatedCheckboxData = {
       ...checkboxData,
-      [label]: !selectedLinks[label], // Update the checkbox state
+      [label]: !selectedLinks[label],
     };
-
-    // Update the checkboxData state in the context
     setCheckboxData(updatedCheckboxData);
-
-    // Log the status of the clicked checkbox
     console.log(`Checkbox "${label}" is now ${!selectedLinks[label] ? true : false}`);
   };
 
   const items = (hasLinks ? links : []).map((link) => (
-    <div key={link.label} className={classes.linkItem} className='flex flex-row justify-start items-center pl-6'>
+    <div
+      key={link.label}
+      className={`flex flex-row justify-start items-center ${classes.linkItem}`}
+      style={{
+        borderLeft: 'none',
+        boxShadow: 'none',
+        position: 'relative',
+        paddingLeft: '1.5rem',
+      }}
+    >
       <Checkbox
         checked={selectedLinks[link.label]}
         onChange={() => toggleLink(link.label)}
-        style={{ marginRight: '0px' }} // Adjust this margin as needed
+        style={{
+          marginRight: '0px', // Reduced margin
+        }}
       />
       <Text
         component="a"
@@ -58,19 +61,19 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
           event.preventDefault();
           toggleLink(link.label);
         }}
-        style={{ marginLeft: '0px' }} // Adjust this margin as needed
+        style={{ borderLeft: 'none', boxShadow: 'none', marginLeft: '0px' }} // Added marginLeft: '0px'
       >
         {link.label}
       </Text>
     </div>
-  ));  
+  ));
 
   return (
     <>
       <UnstyledButton onClick={() => setOpened((o) => !o)} className={classes.control}>
         <Group justify="space-between" gap={0}>
           <Box style={{ display: 'flex', alignItems: 'center' }}>
-            <ThemeIcon variant="light" size={30}>
+            <ThemeIcon variant="light" color='gray' size={30}>
               <Icon style={{ width: rem(18), height: rem(18) }} />
             </ThemeIcon>
             <Box ml="md">{label}</Box>
@@ -88,7 +91,13 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
           )}
         </Group>
       </UnstyledButton>
-      {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
+      {hasLinks ? (
+        <Collapse in={opened}>
+          <div style={{ borderLeft: 'none', boxShadow: 'none' }}>
+            {items}
+          </div>
+        </Collapse>
+      ) : null}
     </>
   );
 }
