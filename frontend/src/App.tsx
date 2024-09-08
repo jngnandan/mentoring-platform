@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from '@vercel/analytics/react';
 import { Client } from '@medusajs/medusa-js';
 import { QueryClient } from "@tanstack/react-query";
 import '@mantine/core/styles.css';
+import { Button } from '@mantine/core';
+import { IconArrowUp } from '@tabler/icons-react';
 
 // Pages
 import HomePage from "./Pages/Home/HomePage.tsx";
@@ -25,7 +27,7 @@ import MentorsPage from "./Pages/MentorsPage/index.tsx";
 // Components
 import Header from "./Pages/Header/Header.tsx";
 import FooterLinks from "./Pages/Footer/FooterLinks.tsx";
-import CookieConsentBanner from './Pages/Components/CookieConsentBanner.js';
+import CookieConsentBanner from './Pages/Cookies/index.js';
 import NavBar from './Pages/NavBar/NavbarSimple.tsx';
 import ProtectedRoute from './ProtectedRoute.js';
 
@@ -39,11 +41,30 @@ const medusaClient = new Client({
 const queryClient = new QueryClient();
 
 function App() {
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const checkScrollTop = () => {
+      if (!showScrollTop && window.pageYOffset > 400) {
+        setShowScrollTop(true);
+      } else if (showScrollTop && window.pageYOffset <= 400) {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', checkScrollTop);
+    return () => window.removeEventListener('scroll', checkScrollTop);
+  }, [showScrollTop]);
+
+  const scrollTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <BrowserRouter>
+      <CookieConsentBanner/>
       <Analytics />
       <Header />
-      <CookieConsentBanner />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<AuthenticationForm />} />
@@ -56,20 +77,32 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<SignupForm />} />
-        {/* <Route path="/mentors" element={<Mentors />} /> */}
-
-        <Route 
-          path="/mentors" 
+        <Route
+          path="/mentors"
           element={
             <ProtectedRoute>
               <Mentors />
             </ProtectedRoute>
-          } 
+          }
         />
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentors/:id" element={<MentorsPage />} />
         <Route path="/profile" element={<NavBar />} />
       </Routes>
+      {showScrollTop && (
+        <Button
+          onClick={scrollTop}
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 1000
+          }}
+        >
+          <IconArrowUp size="1rem" />
+          Scroll top
+        </Button>
+      )}
       {/* <FooterLinks /> */}
     </BrowserRouter>
   )

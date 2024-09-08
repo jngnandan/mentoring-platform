@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Text, Container, Title, Anchor, Group, rem } from '@mantine/core';
-import { IconPalette, IconHome2, IconActivity, IconUsersGroup, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { IconPalette, IconHome2, IconActivity, IconUsersGroup, IconChevronRight } from '@tabler/icons-react';
 import { Helmet } from 'react-helmet';
-import { createClient } from '@supabase/supabase-js'; // Import Supabase client
+import { createClient } from '@supabase/supabase-js';
 
 import { ContentContext } from '../../context/ContentContext.tsx';
-import ProductCard from './ProductCard/ProductCard.tsx';
-import SmallCard from './SmallCard/SmallCard.tsx';
 import { Link } from 'react-router-dom';
 import FooterLink from '../Footer/FooterLinks.tsx';
 import { HeroText } from './HeroText/HeroText.tsx';
@@ -14,14 +12,13 @@ import { FaqSimple } from '../FAQ/FaqSimple.tsx';
 import { IconTextCard } from '../Components/CardWithCheckbox/CheckboxCard.tsx';
 import { BigCard } from '../Components/BigCard/BigCard.tsx';
 import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
-import ProfileCard from '../Components/ProfileCard/ProfileCard.tsx';
 import NewsletterSignup from '../NewsLetter/NewsletterSignup.js';
 
 import classes from '../Home/HomePage.module.css';
 import { Dots } from './HeroText/Dots.tsx';
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL// Your Supabase URL
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -47,30 +44,25 @@ const Categories = [
 
 function HomePage() {
   const { profilesData } = useContext(ContentContext);
-  const [profiles, setProfiles] = useState([]); // State for articles
-  const [loading, setLoading] = useState(true); // Loading state
+  const [profiles, setProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch articles from Supabase
   useEffect(() => {
     const fetchProfiles = async () => {
       const { data, error } = await supabase
-        .from('profiles') // Replace with your Supabase table name
+        .from('profiles')
         .select('*');
       if (error) {
         console.error('Error fetching articles:', error);
       } else {
         setProfiles(data);
-        console.log(data)
+        console.log(data);
       }
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false);
     };
 
     fetchProfiles();
   }, []);
-
-  const selectedProfiles = profilesData ? profilesData.slice(0, 8) : [];
-  const selectedRange = profilesData ? profilesData.slice(8, 15) : [];
-  const newRange = profilesData ? profilesData.slice(16, 23) : [];
 
   return (
     <div className="relative">
@@ -157,7 +149,7 @@ function HomePage() {
           {profiles.slice(0, 4).map((profile) => (
             <ArticleCard
               key={profile.id}
-              id={profile.id}  // Pass the id here to the ArticleCard component
+              id={profile.id}
               profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
               linkUrl={profile.linkUrl || '#'}
               summary={profile.bio || 'No description available'}
@@ -177,57 +169,15 @@ function HomePage() {
               experience={profile.experience || '5'}
             />
           ))}
-
           </div>
           <Anchor href="/mentors" size="sm" mt={4}>
-          <Group>
-            <Text>Find a Mentor</Text>
-            <IconChevronRight size={rem(12)} />
-          </Group>
-        </Anchor>
+            <Group>
+              <Text>Find a Mentor</Text>
+              <IconChevronRight size={rem(12)} />
+            </Group>
+          </Anchor>
         </Container>
       </section>
-
- {/* New Section for Profiles from Supabase */}
-{/* <section className="relative py-20 bg-gradient-to-b from-white to-gray-100">
-  <Container className="relative z-10 max-w-7xl mx-auto px-4">
-    <Title className="text-center text-3xl font-bold mb-4 ">
-      Recent <Text component="span" className="text-blue-600" inherit>Profiles</Text>
-    </Title>
-
-    {loading ? (
-      <Text className="text-center">Loading profiles...</Text>
-    ) : (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {profiles.length > 0 ? (
-          profiles.map((profile) => (
-            <ProfileCard
-              key={profile.id}
-              id={profile.id} // Dynamic link identifier
-              profilepic={profile.profile_picture || 'https://via.placeholder.com/150'} // Fallback image
-              summary={profile.bio || 'No summary available'} // Use bio or a fallback message
-              first_name={profile.first_name}
-              last_name={profile.last_name}
-              job={profile.job} // Add job title
-              company={profile.company} // Company name
-              hobbies={profile.hobbies || []} // Array of hobbies
-              achievements={profile.achievements || []} // Array of achievements
-              contributions={profile.contributions || []} // Array of contributions
-              companyLogo={profile.companyLogo} // Company logo
-              experience={profile.experience} // Experience in years
-              badgeText={profile.badgeText} // Badge text
-              badgeGradient={profile.badgeGradient} // Badge gradient
-              x_url={profile.x_url} // URL for external reference
-              linkedin_url={profile.linkedin_url} // LinkedIn profile URL
-            />
-          ))
-        ) : (
-          <Text className="text-center">No profiles found.</Text>
-        )}
-      </div>
-    )}
-  </Container>
-</section> */}
 
       <section className="relative py-20 bg-gradient-to-b from-blue-100 to-white">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">

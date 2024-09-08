@@ -21,6 +21,7 @@ import {
   Avatar,
   Menu,
   LoadingOverlay,
+  Modal,
 } from '@mantine/core';
 import {
   IconNotification,
@@ -33,6 +34,8 @@ import {
   IconUser,
   IconLogout,
   IconSettings,
+  IconUserCircle,
+  IconBoxMultiple
 } from '@tabler/icons-react';
 import classes from './HeaderMegaMenu.module.css';
 import protocon from '../../Images/protocon.png';
@@ -80,6 +83,8 @@ const mockdata = [
 const Header: React.FC = () => {
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [linksOpened, setLinksOpened] = useState(false);
+  const [logoutModalOpened, setLogoutModalOpened] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const theme = useMantineTheme();
   const navigate = useNavigate();
 
@@ -87,12 +92,24 @@ const Header: React.FC = () => {
   const isLoggedIn = !!authState.user;
   const user = authState.user;
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => {
+    setLogoutModalOpened(true);
+  };
+
+  const handleLogoutConfirm = async () => {
     try {
+      setIsLoggingOut(true);
+      setLogoutModalOpened(false);
+      
+      // Simulate a delay of 500ms (half a second)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       await signOut();
       navigate('/');
     } catch (error) {
       console.error('Error signing out:', error);
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -117,7 +134,7 @@ const Header: React.FC = () => {
       </UnstyledButton>
     ));
 
-  if (authState.loading) {
+  if (authState.loading || isLoggingOut) {
     return <LoadingOverlay visible={true} />;
   }
 
@@ -149,10 +166,24 @@ const Header: React.FC = () => {
                   </UnstyledButton>
                 </Menu.Target>
                 <Menu.Dropdown>
+                  <Link to='/account'>
+                    <Menu.Item leftSection={<IconUserCircle size={14} />}>
+                      Account
+                    </Menu.Item>
+                  </Link>
+                  
                   <Menu.Item leftSection={<IconSettings size={14} />}>
                     Settings
                   </Menu.Item>
-                  <Menu.Item leftSection={<IconLogout size={14} />} onClick={handleLogout}>
+
+                  <Link to='/bookings'>
+                    <Menu.Item leftSection={<IconBoxMultiple size={14} />}>
+                      Bookings
+                    </Menu.Item>
+                  </Link>
+                  
+                  
+                  <Menu.Item leftSection={<IconLogout size={14} />} onClick={handleLogoutClick}>
                     Logout
                   </Menu.Item>
                 </Menu.Dropdown>
@@ -176,6 +207,19 @@ const Header: React.FC = () => {
           />
         </Group>
       </header>
+
+      <Modal
+        opened={logoutModalOpened}
+        onClose={() => setLogoutModalOpened(false)}
+        title="Confirm Logout"
+        centered
+      >
+        <Text>Are you sure you want to log out?</Text>
+        <Group mt="md" justify="flex-end">
+          <Button variant="outline" onClick={() => setLogoutModalOpened(false)}>Cancel</Button>
+          <Button color="red" onClick={handleLogoutConfirm}>Logout</Button>
+        </Group>
+      </Modal>
 
       <Drawer
         opened={drawerOpened}
@@ -206,7 +250,7 @@ const Header: React.FC = () => {
           
           <Group justify="center" grow pb="xl" px="md">
             {isLoggedIn ? (
-              <UnstyledButton onClick={handleLogout}>
+              <UnstyledButton onClick={handleLogoutClick}>
                 <Group>
                   <Avatar color="blue" radius="xl">
                     {user?.email?.[0].toUpperCase() || <IconUser size="1.5rem" />}
@@ -227,6 +271,8 @@ const Header: React.FC = () => {
           </Group>
         </ScrollArea>
       </Drawer>
+
+      <LoadingOverlay visible={isLoggingOut} overlayBlur={2} />
     </Box>
   );
 };

@@ -10,13 +10,14 @@ import {
   IconReceipt2,
   IconSwitchHorizontal,
   IconLogout,
-  IconBrandDribbble
+  IconBrandDribbble,
+  IconUserCircle
 } from '@tabler/icons-react';
 import classes from './NavbarSimple.module.css';
 import mantineLogo from './mantine-logo.png'
 
 const data = [
-  { link: '', label: 'Notifications', icon: IconBellRinging },
+  { link: '', label: 'Account', icon: IconUserCircle },
   { link: '', label: 'Billing', icon: IconReceipt2 },
   { link: '', label: 'Security', icon: IconFingerprint },
   { link: '', label: 'SSH Keys', icon: IconKey },
