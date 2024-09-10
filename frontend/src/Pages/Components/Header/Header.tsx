@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  HoverCard,
   Group,
   Button,
   UnstyledButton,
   Text,
-  SimpleGrid,
-  ThemeIcon,
-  Anchor,
   Divider,
+  ThemeIcon,
   Center,
   Box,
   Burger,
@@ -35,23 +32,24 @@ import {
   IconLogout,
   IconSettings,
   IconUserCircle,
-  IconBoxMultiple
+  IconBoxMultiple,
 } from '@tabler/icons-react';
 import classes from './HeaderMegaMenu.module.css';
 import protocon from '../../../Images/protocon.png';
 import { useContent } from '../../../context/ContentContext.tsx';
+import Demo from './Demo.tsx';
 
 const mockdata = [
   {
     icon: IconCode,
     title: 'Open source',
-    description: 'This Pokémons cry is very loud and distracting',
+    description: 'This Pokémon\'s cry is very loud and distracting',
     page: 'products',
   },
   {
     icon: IconCoin,
     title: 'Mobile Offers',
-    description: 'The fluid of Smeargles tail secretions changes',
+    description: 'The fluid of Smeargle\'s tail secretions changes',
     page: 'products',
   },
   {
@@ -63,7 +61,7 @@ const mockdata = [
   {
     icon: IconFingerprint,
     title: 'Security',
-    description: 'The shells rounded shape and the grooves on its.',
+    description: 'The shell\'s rounded shape and the grooves on it.',
     page: 'products',
   },
   {
@@ -100,10 +98,10 @@ const Header: React.FC = () => {
     try {
       setIsLoggingOut(true);
       setLogoutModalOpened(false);
-      
+
       // Simulate a delay of 500ms (half a second)
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       await signOut();
       navigate('/');
     } catch (error) {
@@ -152,7 +150,7 @@ const Header: React.FC = () => {
             <Link to="/contact" className={classes.link}>Contact Us</Link>
           </Group>
 
-          <Group visibleFrom="sm">
+          <Group visibleFrom="sm" spacing="xs"> {/* Adjust spacing as needed */}
             {isLoggedIn ? (
               <Menu shadow="md" width={200}>
                 <Menu.Target>
@@ -166,26 +164,24 @@ const Header: React.FC = () => {
                   </UnstyledButton>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Link to='/profile'>
+                  <Link to="/profile">
                     <Menu.Item leftSection={<IconUserCircle size={14} />}>
                       Account
                     </Menu.Item>
                   </Link>
-                  
-                  <Link to='/mentor-dashboard'>
-                  <Menu.Item leftSection={<IconSettings size={14} />}>
-                    Mentor Dashboard
-                  </Menu.Item>
+
+                  <Link to="/mentor-dashboard">
+                    <Menu.Item leftSection={<IconSettings size={14} />}>
+                      Mentor Dashboard
+                    </Menu.Item>
                   </Link>
 
-
-                  <Link to='/profile'>
+                  <Link to="/profile">
                     <Menu.Item leftSection={<IconBoxMultiple size={14} />}>
                       Bookings
                     </Menu.Item>
                   </Link>
-                  
-                  
+
                   <Menu.Item leftSection={<IconLogout size={14} />} onClick={handleLogoutClick}>
                     Logout
                   </Menu.Item>
@@ -201,12 +197,14 @@ const Header: React.FC = () => {
                 </Link>
               </>
             )}
+
+            <Demo /> {/* Keep the Demo component here to align it in the same row */}
           </Group>
 
-          <Burger 
-            opened={drawerOpened} 
-            onClick={() => setDrawerOpened((o) => !o)} 
-            hiddenFrom="sm" 
+          <Burger
+            opened={drawerOpened}
+            onClick={() => setDrawerOpened((o) => !o)}
+            hiddenFrom="sm"
           />
         </Group>
       </header>
@@ -235,22 +233,14 @@ const Header: React.FC = () => {
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-          
-          <Link to="/" className={classes.link}>Home</Link>
-          
-          <UnstyledButton className={classes.link} onClick={() => setLinksOpened((o) => !o)}>
-            <Center inline>
-              <Box component="span" mr={5}>Features</Box>
-              <IconChevronDown style={{ width: rem(16), height: rem(16) }} color={theme.colors.blue[6]} />
-            </Center>
-          </UnstyledButton>
-          <Collapse in={linksOpened}>{renderLinks()}</Collapse>
-          
-          <Link to="/learn" className={classes.link}>Learn</Link>
-          <Link to="/academy" className={classes.link}>Academy</Link>
-          
+
+          <Link to="/" className={classes.link} onClick={() => setDrawerOpened(false)}>Home</Link>
+          <Link to="/mentors" className={classes.link} onClick={() => setDrawerOpened(false)}>Mentors</Link>
+          <Link to="/about" className={classes.link} onClick={() => setDrawerOpened(false)}>About Us</Link>
+          <Link to="/contact" className={classes.link} onClick={() => setDrawerOpened(false)}>Contact Us</Link>
+
           <Divider my="sm" />
-          
+
           <Group justify="center" grow pb="xl" px="md">
             {isLoggedIn ? (
               <UnstyledButton onClick={handleLogoutClick}>
@@ -264,13 +254,14 @@ const Header: React.FC = () => {
             ) : (
               <>
                 <Link to="/login">
-                  <Button variant="default">Log in</Button>
+                  <Button onClick={() => setDrawerOpened(false)} variant="default">Log in</Button>
                 </Link>
                 <Link to="/signup">
-                  <Button>Sign up</Button>
+                  <Button onClick={() => setDrawerOpened(false)}>Sign up</Button>
                 </Link>
               </>
             )}
+            <Demo /> {/* Keep the Demo component here to align it in the same row on mobile */}
           </Group>
         </ScrollArea>
       </Drawer>

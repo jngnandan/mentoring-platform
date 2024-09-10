@@ -57,10 +57,12 @@ interface ContentContextType {
   fetchMobilesData: (brand: string) => Promise<any[]>;
   profilesData: any[];
   fetchProfilesData: () => Promise<void>;
-  fetchProfileById: (id: string) => Promise<void>;
+  fetchProfileById: (id: string) => Promise<any>;
   superProfiles: any[];
   setSuperProfiles: React.Dispatch<React.SetStateAction<any[]>>;
   fetchSuperbaseProfiles: () => Promise<void>;
+  colorScheme: string; // Added for dark mode
+  toggleColorScheme: () => void; // Function to toggle color scheme
 }
 
 export const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -82,6 +84,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState<boolean>(true);
   const [superProfiles, setSuperProfiles] = useState<any[]>([]);
   
+  const [colorScheme, setColorScheme] = useState<string>('light'); // Default to light
+
   const backendPort = 3002;
   const domainName = "localhost";
 
@@ -98,9 +102,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
 
     return () => {
-      if (authListener && authListener.subscription) {
-        authListener.subscription.unsubscribe();
-      }
+      authListener?.subscription.unsubscribe();
     };
   }, []);
 
@@ -111,38 +113,6 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     return () => unsubscribe();
   }, []);
-
-
-  // const signIn = async () => {
-  //   try {
-  //     authDispatch({ type: 'SET_LOADING', payload: true });
-  //     const user = await signInWithGoogle();
-  //     if (user && user.email) {
-  //       const { data, error } = await supabase
-  //         .from('users')
-  //         .select('id')
-  //         .eq('email', user.email)
-  //         .single();
-
-  //       if (error && error.code !== 'PGRST116') {
-  //         throw error;
-  //       }
-
-  //       if (data) {
-  //         authDispatch({ type: 'SET_USER', payload: user });
-  //       } else {
-  //         throw new Error("User not authorized");
-  //       }
-  //     } else {
-  //       throw new Error("Failed to get user email from Google sign-in");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error signing in:", error);
-  //     throw error;
-  //   } finally {
-  //     authDispatch({ type: 'SET_LOADING', payload: false });
-  //   }
-  // };
 
   const signIn = async () => {
     try {
@@ -172,16 +142,12 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchSuperbaseProfiles = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*');
-      if (error) {
-        throw error;
-      }
+      const { data, error } = await supabase.from('profiles').select('*');
+      if (error) throw error;
       setSuperProfiles(data || []);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching profiles:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -189,14 +155,12 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchData = async () => {
     try {
       const response = await fetch(`http://${domainName}:${backendPort}/`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
+      if (!response.ok) throw new Error('Failed to fetch data');
       const data = await response.json();
       setDataFromBackend(data);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -205,128 +169,35 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       setLoading(true);
       const response = await fetch(`http://${domainName}:${backendPort}/mobiles/${brand}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
+      if (!response.ok) throw new Error('Failed to fetch data');
       const data = await response.json();
       setMobilesData(data);
-      setLoading(false);
       return data;
     } catch (error) {
       console.error(`Error fetching ${brand} data:`, error);
-      setLoading(false);
       return [];
-    }
-  };
-
-  const fetchAppleData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://${domainName}:${backendPort}/mobiles/apple`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      setAppleData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching Apple data:', error);
+    } finally {
       setLoading(false);
     }
   };
 
-  const fetchSamsungData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://${domainName}:${backendPort}/mobiles/samsung`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      setSamsungData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching Samsung data:', error);
-      setLoading(false);
-    }
-  };
-
-  const fetchXiaomiData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://${domainName}:${backendPort}/mobiles/xiaomi`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      setXiaomiData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching Xiaomi data:', error);
-      setLoading(false);
-    }
-  };
-
-  const fetchOneplusData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://${domainName}:${backendPort}/mobiles/oneplus`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      setOneplusData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching Oneplus data:', error);
-      setLoading(false);
-    }
-  };
-
-  const fetchMotorolaData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://${domainName}:${backendPort}/mobiles/motorola`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      setMotorolaData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching Motorola data:', error);
-      setLoading(false);
-    }
-  };
-
-  const fetchGoogleData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://${domainName}:${backendPort}/mobiles/google`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      setGoogleData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching Google data:', error);
-      setLoading(false);
-    }
-  };
+  const fetchAppleData = async () => fetchMobilesData('apple');
+  const fetchSamsungData = async () => fetchMobilesData('samsung');
+  const fetchXiaomiData = async () => fetchMobilesData('xiaomi');
+  const fetchOneplusData = async () => fetchMobilesData('oneplus');
+  const fetchMotorolaData = async () => fetchMobilesData('motorola');
+  const fetchGoogleData = async () => fetchMobilesData('google');
 
   const fetchProfilesData = async () => {
     try {
       setLoading(true);
       const response = await fetch(`http://${domainName}:${backendPort}/profiles`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
+      if (!response.ok) throw new Error('Failed to fetch data');
       const data = await response.json();
       setProfilesData(data);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching profiles data:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -335,17 +206,18 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       setLoading(true);
       const response = await fetch(`http://${domainName}:${backendPort}/profiles/${id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      return data;
+      if (!response.ok) throw new Error('Failed to fetch data');
+      return await response.json();
     } catch (error) {
       console.error(`Error fetching profile with ID ${id}:`, error);
       return null;
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleColorScheme = () => {
+    setColorScheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
   useEffect(() => {
@@ -395,16 +267,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     superProfiles,
     setSuperProfiles,
     fetchSuperbaseProfiles,
+    colorScheme, 
+    toggleColorScheme // Added to toggle color scheme
   };
 
-  return (
-    <ContentContext.Provider value={value}>
-      {children}
-    </ContentContext.Provider>
-  );
+  return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
 };
 
-export const useContent = () => {
+export const useContent = (): ContentContextType => {
   const context = useContext(ContentContext);
   if (!context) {
     throw new Error('useContent must be used within a ContentProvider');
