@@ -7,11 +7,9 @@ import {
   Text,
   Divider,
   ThemeIcon,
-  Center,
   Box,
   Burger,
   Drawer,
-  Collapse,
   ScrollArea,
   rem,
   useMantineTheme,
@@ -19,6 +17,7 @@ import {
   Menu,
   LoadingOverlay,
   Modal,
+  Stack, // Import Stack from Mantine
 } from '@mantine/core';
 import {
   IconNotification,
@@ -27,7 +26,6 @@ import {
   IconChartPie3,
   IconFingerprint,
   IconCoin,
-  IconChevronDown,
   IconUser,
   IconLogout,
   IconSettings,
@@ -80,7 +78,6 @@ const mockdata = [
 
 const Header: React.FC = () => {
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const [linksOpened, setLinksOpened] = useState(false);
   const [logoutModalOpened, setLogoutModalOpened] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const theme = useMantineTheme();
@@ -99,7 +96,6 @@ const Header: React.FC = () => {
       setIsLoggingOut(true);
       setLogoutModalOpened(false);
 
-      // Simulate a delay of 500ms (half a second)
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       await signOut();
@@ -110,27 +106,6 @@ const Header: React.FC = () => {
       setIsLoggingOut(false);
     }
   };
-
-  const renderLinks = () =>
-    mockdata.map((item) => (
-      <UnstyledButton className={classes.subLink} key={item.title}>
-        <Link to={`/${item.page}`}>
-          <Group wrap="nowrap" align="flex-start">
-            <ThemeIcon size={34} variant="default" radius="md">
-              <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
-            </ThemeIcon>
-            <div>
-              <Text size="sm" fw={500}>
-                {item.title}
-              </Text>
-              <Text size="xs" c="dimmed">
-                {item.description}
-              </Text>
-            </div>
-          </Group>
-        </Link>
-      </UnstyledButton>
-    ));
 
   if (authState.loading || isLoggingOut) {
     return <LoadingOverlay visible={true} />;
@@ -144,13 +119,7 @@ const Header: React.FC = () => {
             <img src={protocon} alt="protocon" className="w-36" />
           </Link>
 
-          <Group h="100%" gap={0} visibleFrom="sm">
-            <Link to="/mentors" className={classes.link}>Mentors</Link>
-            <Link to="/about" className={classes.link}>About Us</Link>
-            <Link to="/contact" className={classes.link}>Contact Us</Link>
-          </Group>
-
-          <Group visibleFrom="sm" spacing="xs"> {/* Adjust spacing as needed */}
+          <Group visibleFrom="sm" spacing="xs">
             {isLoggedIn ? (
               <Menu shadow="md" width={200}>
                 <Menu.Target>
@@ -197,8 +166,7 @@ const Header: React.FC = () => {
                 </Link>
               </>
             )}
-
-            <Demo /> {/* Keep the Demo component here to align it in the same row */}
+            <Demo />
           </Group>
 
           <Burger
@@ -228,40 +196,72 @@ const Header: React.FC = () => {
         size="100%"
         padding="md"
         title="Navigation"
-        hiddenFrom="sm"
         zIndex={1000000}
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
 
-          <Link to="/" className={classes.link} onClick={() => setDrawerOpened(false)}>Home</Link>
-          <Link to="/mentors" className={classes.link} onClick={() => setDrawerOpened(false)}>Mentors</Link>
-          <Link to="/about" className={classes.link} onClick={() => setDrawerOpened(false)}>About Us</Link>
-          <Link to="/contact" className={classes.link} onClick={() => setDrawerOpened(false)}>Contact Us</Link>
+          {/* Using Stack for mobile navigation with individual stacks for each item */}
+          <Stack spacing="md" align="stretch">
+            <Stack spacing="xs" align="stretch">
+              <Link to="/" className={classes.link} onClick={() => setDrawerOpened(false)}>Home</Link>
+            </Stack>
+            <Stack spacing="xs" align="stretch">
+              <Link to="/mentors" className={classes.link} onClick={() => setDrawerOpened(false)}>Mentors</Link>
+            </Stack>
+            <Stack spacing="xs" align="stretch">
+              <Link to="/about" className={classes.link} onClick={() => setDrawerOpened(false)}>About Us</Link>
+            </Stack>
+            <Stack spacing="xs" align="stretch">
+              <Link to="/contact" className={classes.link} onClick={() => setDrawerOpened(false)}>Contact Us</Link>
+            </Stack>
 
-          <Divider my="sm" />
+            <Divider my="sm" />
 
-          <Group justify="center" grow pb="xl" px="md">
+            {/* Display account-related links for logged-in users */}
             {isLoggedIn ? (
-              <UnstyledButton onClick={handleLogoutClick}>
-                <Group>
-                  <Avatar color="blue" radius="xl">
-                    {user?.email?.[0].toUpperCase() || <IconUser size="1.5rem" />}
-                  </Avatar>
-                  <Text>Logout</Text>
-                </Group>
-              </UnstyledButton>
-            ) : (
               <>
-                <Link to="/login">
-                  <Button onClick={() => setDrawerOpened(false)} variant="default">Log in</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button onClick={() => setDrawerOpened(false)}>Sign up</Button>
-                </Link>
+                <Stack spacing="xs" align="stretch">
+                  <Link to="/profile" className={classes.link} onClick={() => setDrawerOpened(false)}>
+                    Account
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <Link to="/mentor-dashboard" className={classes.link} onClick={() => setDrawerOpened(false)}>
+                    Mentor Dashboard
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <Link to="/profile" className={classes.link} onClick={() => setDrawerOpened(false)}>
+                    Bookings
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <UnstyledButton onClick={handleLogoutClick} className={classes.link}>
+                    <Button className='mt-4' onClick={() => setDrawerOpened(false)} leftSection={<IconLogout size={16} />}>
+                      Logout
+                    </Button>
+                  </UnstyledButton>
+                </Stack>
               </>
+            ) : (
+              <Stack spacing="md" ml={14}>
+                <Stack spacing="xs" align="stretch">
+                  <Link to="/login">
+                    <Button onClick={() => setDrawerOpened(false)} variant="default">Log in</Button>
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <Link to="/signup">
+                    <Button onClick={() => setDrawerOpened(false)}>Sign up</Button>
+                  </Link>
+                </Stack>
+              </Stack>
             )}
-            <Demo /> {/* Keep the Demo component here to align it in the same row on mobile */}
+          </Stack>
+
+          <Group justify="right" pb="xl" px="md">
+            <Demo />
           </Group>
         </ScrollArea>
       </Drawer>
