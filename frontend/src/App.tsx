@@ -25,6 +25,7 @@ import FooterLinks from "./Pages/Components/Footer/FooterLinks.tsx";
 import CookieConsentBanner from './Pages/Cookies/index.js';
 import NavBar from './Pages/NavBar/NavbarSimple.tsx';
 import ProtectedRoute from './ProtectedRoute.js';
+import MentorDashboard from './Pages/MentorDashboard/MentorDashboard.tsx';
 
 // Create the Medusa client
 const medusaClient = new Client({
@@ -86,6 +87,8 @@ function App() {
         />
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentors/:id" element={<MentorsPage />} />
+        <Route path="/mentor-dashboard" element={<MentorDashboard/>} />
+
         {/* <Route path="/profile" element={<NavBar />} /> */}
       </Routes>
       {showScrollTop && (

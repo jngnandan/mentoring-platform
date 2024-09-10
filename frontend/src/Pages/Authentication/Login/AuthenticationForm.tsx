@@ -92,10 +92,10 @@ export default function AuthenticationForm() {
         <link rel="canonical" href="https://protocon.co.uk/login" />
       </Helmet>
 
-      <Container size={420} my={40}>
+      <Container  size={420} my={40}>
         <header>
           <Title ta="center" className={classes.title}>
-            Welcome back!
+            Sign in to your account
           </Title>
           <Text c="dimmed" size="sm" ta="center" mt={5}>
             Do not have an account yet?{' '}
@@ -108,7 +108,7 @@ export default function AuthenticationForm() {
         </header>
 
         <main>
-          <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+          <Paper withBorder shadow="md" p={30} mt={30} radius="md" >
             <Group grow mb="md" mt="md">
               <GoogleButton radius="xl">Google</GoogleButton>
               <TwitterButton radius="xl">Twitter</TwitterButton>

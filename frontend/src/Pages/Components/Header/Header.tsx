@@ -172,11 +172,14 @@ const Header: React.FC = () => {
                     </Menu.Item>
                   </Link>
                   
+                  <Link to='/mentor-dashboard'>
                   <Menu.Item leftSection={<IconSettings size={14} />}>
-                    Settings
+                    Mentor Dashboard
                   </Menu.Item>
+                  </Link>
 
-                  <Link to='/bookings'>
+
+                  <Link to='/profile'>
                     <Menu.Item leftSection={<IconBoxMultiple size={14} />}>
                       Bookings
                     </Menu.Item>
