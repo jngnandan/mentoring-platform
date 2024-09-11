@@ -1,9 +1,85 @@
-import React from 'react';
-import { Tabs, rem, Text, Paper, TextInput, Select, Textarea, Button, Image, Group, Alert, Radio, Checkbox, Container } from '@mantine/core';
+import React, { useState, useEffect } from 'react';
+import { Tabs, rem, Text, Paper, TextInput, Select, Textarea, Button, Image, Group, Alert, Radio, Checkbox, Container, Skeleton } from '@mantine/core';
 import { IconInfoCircle, IconUpload, IconChevronDown, IconUserCircle, IconCreditCard, IconCoin, IconLock, IconCalendar, IconChevronRight, IconBoxMultiple } from '@tabler/icons-react';
 
 export default function ProfileSettings() {
+  const [loading, setLoading] = useState(true);
   const iconStyle = { width: rem(16), height: rem(16) };
+
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const AccountFormSkeleton = () => (
+    <Paper shadow="sm" p="md" withBorder>
+      <Skeleton height={30} width="50%" mb="md" />
+      <Skeleton height={100} mb="md" />
+      <Group mb="md">
+        <Skeleton circle height={80} />
+        <Skeleton height={36} width={120} />
+      </Group>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[...Array(4)].map((_, index) => (
+          <Skeleton key={index} height={36} />
+        ))}
+      </div>
+      <Skeleton height={36} mt="md" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        {[...Array(2)].map((_, index) => (
+          <Skeleton key={index} height={36} />
+        ))}
+      </div>
+      <Skeleton height={100} mt="md" />
+      <Skeleton height={20} width="70%" mt="sm" />
+      <Skeleton height={36} width={120} mt="md" />
+    </Paper>
+  );
+
+  const BookingsContentSkeleton = () => (
+    <Container>
+      <Skeleton height={30} width="30%" mb="lg" />
+      <Skeleton height={20} width="70%" mb="md" />
+      <Skeleton height={80} mb="xl" />
+      <Skeleton height={40} mb="md" />
+      <Skeleton height={120} />
+    </Container>
+  );
+
+  const TimeZoneFormSkeleton = () => (
+    <Paper shadow="sm" p="md" withBorder className="mt-4">
+      <Skeleton height={30} width="50%" mb="md" />
+      <Skeleton height={20} width="80%" mb="md" />
+      <Skeleton height={36} mb="md" />
+      <Skeleton height={20} width="70%" mb="xs" />
+      {[...Array(5)].map((_, index) => (
+        <Skeleton key={index} height={24} width="60%" mb="sm" />
+      ))}
+      <Skeleton height={36} width={120} mt="md" />
+    </Paper>
+  );
+
+  const EmailPreferencesSkeleton = () => (
+    <Paper shadow="sm" p="md" withBorder className="mt-4">
+      <Skeleton height={30} width="50%" mb="md" />
+      <Skeleton height={20} width="80%" mb="md" />
+      {[...Array(3)].map((_, index) => (
+        <Skeleton key={index} height={24} width="90%" mb="sm" />
+      ))}
+      <Skeleton height={36} width={120} mt="md" />
+    </Paper>
+  );
+
+  const CloseAccountSkeleton = () => (
+    <Paper shadow="sm" p="md" withBorder className="mt-4">
+      <Skeleton height={30} width="50%" mb="md" />
+      <Skeleton height={20} width="80%" mb="md" />
+      <Skeleton height={36} width={120} />
+    </Paper>
+  );
 
   const AccountForm = () => (
     <Paper shadow="sm" p="md" withBorder>
@@ -169,27 +245,45 @@ export default function ProfileSettings() {
         </Tabs.List>
 
         <Tabs.Panel value="profile" pt="xs">
-          {/* <Text size="xl" weight={700} my="lg">Your Profile</Text> */}
-          <AccountForm />
-          <TimeZoneForm />
-          <EmailPreferences />
-          <CloseAccount />
+          {loading ? (
+            <>
+              <AccountFormSkeleton />
+              <TimeZoneFormSkeleton />
+              <EmailPreferencesSkeleton />
+              <CloseAccountSkeleton />
+            </>
+          ) : (
+            <>
+              <AccountForm />
+              <TimeZoneForm />
+              <EmailPreferences />
+              <CloseAccount />
+            </>
+          )}
         </Tabs.Panel>
 
         <Tabs.Panel value="bookings" pt="xs">
-          {/* <Text size="xl" weight={700} my="lg">Bookings</Text> */}
-          {/* Add bookings and billing content here */}
-          <BookingsContent />
+          {loading ? <BookingsContentSkeleton /> : <BookingsContent />}
         </Tabs.Panel>
 
         <Tabs.Panel value="balance" pt="xs">
-          <Text size="xl" weight={700} my="lg">Balance</Text>
-          {/* Add balance content here */}
+          {loading ? (
+            <Skeleton height={200} />
+          ) : (
+            <Text size="xl" weight={700} my="lg">Balance</Text>
+            // Add balance content here
+          )}
         </Tabs.Panel>
 
         <Tabs.Panel value="password" pt="xs">
-          <Text size="xl" weight={700} my="lg">Password</Text>
-          {/* Add password change content here */}
+          {loading ? (
+            <Skeleton height={200} />
+          ) : (
+            <>
+              <Text size="xl" weight={700} my="lg">Password</Text>
+              {/* Add password change content here */}
+            </>
+          )}
         </Tabs.Panel>
       </Tabs>
     </div>

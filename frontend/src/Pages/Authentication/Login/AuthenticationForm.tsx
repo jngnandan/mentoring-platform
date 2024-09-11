@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import {
   TextInput,
@@ -11,7 +11,7 @@ import {
   Container,
   Group,
   Button,
-  Loader,
+  Skeleton,
 } from '@mantine/core';
 import { Link, useNavigate } from 'react-router-dom';
 import GoogleButton from './GoogleButton.tsx';
@@ -42,30 +42,34 @@ export default function AuthenticationForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Use useNavigate for redirection
+  const [initialLoading, setInitialLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Simulate initial loading
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Reset error message on new submit
+    setError('');
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
       console.log('User signed in with Firebase:', user);
-
-      // Redirect to home page if login is successful
-      navigate('/mentors'); // Adjust the route to your home page
-
-      // Clear form if everything is fine
+      navigate('/mentors');
       setEmail('');
       setPassword('');
       setError('');
     } catch (err) {
       console.error('Error during login:', err);
       if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('Account does not exist. Please sign up.'); // Show error if user doesn't exist
+        setError('Account does not exist. Please sign up.');
       } else {
         setError(err.message || 'Failed to sign in. Please try again.');
       }
@@ -92,7 +96,7 @@ export default function AuthenticationForm() {
         <link rel="canonical" href="https://protocon.co.uk/login" />
       </Helmet>
 
-      <Container  size={420} my={40}>
+      <Container size={420} my={40}>
         <header>
           <Title ta="center" className={classes.title}>
             Sign in to your account
@@ -108,45 +112,61 @@ export default function AuthenticationForm() {
         </header>
 
         <main>
-          <Paper withBorder shadow="md" p={30} mt={30} radius="md" >
-            <Group grow mb="md" mt="md">
-              <GoogleButton radius="xl">Google</GoogleButton>
-              <TwitterButton radius="xl">Twitter</TwitterButton>
-            </Group>
+          <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+            {initialLoading ? (
+              <>
+                <Skeleton height={36} radius="xl" mb="md" />
+                <Skeleton height={36} radius="xl" mb="md" />
+                <Skeleton height={50} width="100%" mb="md" />
+                <Skeleton height={50} width="100%" mb="md" />
+                <Group justify="space-between" mt="lg">
+                  <Skeleton height={24} width={120} />
+                  <Skeleton height={24} width={120} />
+                </Group>
+                <Skeleton height={36} mt="xl" width="100%" />
+              </>
+            ) : (
+              <>
+                <Group grow mb="md" mt="md">
+                  <GoogleButton radius="xl">Google</GoogleButton>
+                  <TwitterButton radius="xl">Twitter</TwitterButton>
+                </Group>
 
-            {error && <Text color="red" size="sm" ta="center" role="alert">{error}</Text>}
+                {error && <Text color="red" size="sm" ta="center" role="alert">{error}</Text>}
 
-            <form onSubmit={handleSubmit}>
-              <TextInput
-                label="Email"
-                placeholder="you@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                mb="md"
-                aria-label="Email"
-              />
-              <PasswordInput
-                label="Password"
-                placeholder="Your password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                mb="md"
-                aria-label="Password"
-              />
-              <Group justify="space-between" mt="lg">
-                <Checkbox label="Remember me" aria-label="Remember me" />
-                <Link to='/forgot-password'>
-                  <Anchor component="button" size="sm">
-                    Forgot password?
-                  </Anchor>
-                </Link>
-              </Group>
-              <Button type="submit" fullWidth mt="xl" disabled={loading}>
-                {loading ? <Loader size="sm" /> : 'Sign in'}
-              </Button>
-            </form>
+                <form onSubmit={handleSubmit}>
+                  <TextInput
+                    label="Email"
+                    placeholder="you@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    mb="md"
+                    aria-label="Email"
+                  />
+                  <PasswordInput
+                    label="Password"
+                    placeholder="Your password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    mb="md"
+                    aria-label="Password"
+                  />
+                  <Group justify="space-between" mt="lg">
+                    <Checkbox label="Remember me" aria-label="Remember me" />
+                    <Link to='/forgot-password'>
+                      <Anchor component="button" size="sm">
+                        Forgot password?
+                      </Anchor>
+                    </Link>
+                  </Group>
+                  <Button type="submit" fullWidth mt="xl" disabled={loading}>
+                    Sign in
+                  </Button>
+                </form>
+              </>
+            )}
           </Paper>
         </main>
       </Container>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, Container, Title, Anchor, Group, rem } from '@mantine/core';
+import { Text, Container, Title, Anchor, Group, rem, Skeleton } from '@mantine/core';
 import { IconPalette, IconHome2, IconActivity, IconUsersGroup, IconChevronRight } from '@tabler/icons-react';
 import { Helmet } from 'react-helmet';
 import { createClient } from '@supabase/supabase-js';
@@ -49,6 +49,7 @@ function HomePage() {
 
   useEffect(() => {
     const fetchProfiles = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
         .select('*');
@@ -64,36 +65,74 @@ function HomePage() {
     fetchProfiles();
   }, []);
 
+  const renderSkeletonFields = () => (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 lg:mx-12 mt-4">
+      {[...Array(12)].map((_, index) => (
+        <Skeleton key={index} height={80} radius="md" animate={true} />
+      ))}
+    </div>
+  );
+
+  const renderSkeletonCategories = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 lg:mx-36 mt-8">
+      {[...Array(2)].map((_, index) => (
+        <Skeleton key={index} height={200} radius="md" animate={true} />
+      ))}
+    </div>
+  );
+
+  const renderSkeletonMentors = () => (
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+      {[...Array(4)].map((_, index) => (
+        <Skeleton key={index} height={300} radius="md" animate={true} />
+      ))}
+    </div>
+  );
+
   return (
     <div className="relative">
       <Helmet>
-        <title>Protocon Mentorship Platform | Empowering Growth Through Mentorship</title>
-        <meta name="description" content="Protocon is a mentorship platform offering personalized growth opportunities. Connect with mentors across various fields and boost your career." />
-        <meta name="keywords" content="mentorship, protocon, career growth, professional development, mentoring platform" />
-        <meta property="og:title" content="Protocon Mentorship Platform" />
-        <meta property="og:description" content="Empower your career with Protocon's mentorship platform. Connect with experienced mentors and achieve your professional goals." />
-        <meta property="og:image" content="URL_to_image_for_open_graph" />
-        <meta property="og:url" content="URL_to_your_page" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Protocon Mentorship Platform" />
-        <meta name="twitter:description" content="Empower your career with Protocon's mentorship platform. Connect with experienced mentors and achieve your professional goals." />
-        <meta name="twitter:image" content="URL_to_image_for_twitter" />
-      </Helmet>
+
+<title>Protocon Mentorship Platform | Empowering Growth Through Mentorship</title>
+
+<meta name="description" content="Protocon is a mentorship platform offering personalized growth opportunities. Connect with mentors across various fields and boost your career." />
+
+<meta name="keywords" content="mentorship, protocon, career growth, professional development, mentoring platform" />
+
+<meta property="og:title" content="Protocon Mentorship Platform" />
+
+<meta property="og:description" content="Empower your career with Protocon's mentorship platform. Connect with experienced mentors and achieve your professional goals." />
+
+<meta property="og:image" content="URL_to_image_for_open_graph" />
+
+<meta property="og:url" content="URL_to_your_page" />
+
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="twitter:title" content="Protocon Mentorship Platform" />
+
+<meta name="twitter:description" content="Empower your career with Protocon's mentorship platform. Connect with experienced mentors and achieve your professional goals." />
+
+<meta name="twitter:image" content="URL_to_image_for_twitter" />
+
+</Helmet>
 
       <HeroText />
 
       <section className="relative py-2">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 lg:mx-12 mt-4">
-            {fields.map((field, index) => (
-              <Link to='/mentors' key={index}>
-                <IconTextCard
-                  icon={field.icon}
-                  title={field.title}
-                />
-              </Link>
-            ))}
-          </div>
+          {loading ? renderSkeletonFields() : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 lg:mx-12 mt-4">
+              {fields.map((field, index) => (
+                <Link to='/mentors' key={index}>
+                  <IconTextCard
+                    icon={field.icon}
+                    title={field.title}
+                  />
+                </Link>
+              ))}
+            </div>
+          )}
         </Container>
       </section>
 
@@ -111,22 +150,24 @@ function HomePage() {
             </Text>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 lg:mx-36 mt-8">
-            {Categories.map((field, index) => (
-              <BigCard
-                key={index}
-                icon={field.icon}
-                title={field.title}
-                description='lorem ipsum'
-              />
-            ))}
-          </div>
+          {loading ? renderSkeletonCategories() : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 lg:mx-36 mt-8">
+              {Categories.map((field, index) => (
+                <BigCard
+                  key={index}
+                  icon={field.icon}
+                  title={field.title}
+                  description='lorem ipsum'
+                />
+              ))}
+            </div>
+          )}
         </Container>
       </section>
 
-      <section className="relative py-20 ">
+      <section className="relative py-20">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">
-          <Title className="text-center text-3xl font-bold mb-4 ">
+          <Title className="text-center text-3xl font-bold mb-4">
             Meet our{' '}
             <Text component="span" className="text-blue-600" inherit>
               Mentors
@@ -138,31 +179,33 @@ function HomePage() {
             </Text>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 ">
-            {profiles.slice(0, 4).map((profile) => (
-              <ArticleCard
-                key={profile.id}
-                id={profile.id}
-                profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
-                linkUrl={profile.linkUrl || '#'}
-                summary={profile.bio || 'No description available'}
-                first_name={profile.first_name || 'Unknown'}
-                last_name={profile.last_name || 'User'}
-                job={profile.job_title || 'No job title'}
-                bio={profile.bio || 'No bio available'}
-                company={profile.company || 'No company available'}
-                hobbies={profile.hobbies || 'No hobbies listed'}
-                achievements={profile.achievements || 'No achievements listed'}
-                contributions={profile.contributions || 'No contributions listed'}
-                created_at={profile.last_updated || 'Date not available'}
-                social_media_links={profile.social_media_links || 'No social media links available'}
-                bookings={profile.bookings || 'No bookings available'}
-                badgeText={profile.badgeText || 'Default Badge'}
-                badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
-                experience={profile.experience || '5'}
-              />
-            ))}
-          </div>
+          {loading ? renderSkeletonMentors() : (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+              {profiles.slice(0, 4).map((profile) => (
+                <ArticleCard
+                  key={profile.id}
+                  id={profile.id}
+                  profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
+                  linkUrl={profile.linkUrl || '#'}
+                  summary={profile.bio || 'No description available'}
+                  first_name={profile.first_name || 'Unknown'}
+                  last_name={profile.last_name || 'User'}
+                  job={profile.job_title || 'No job title'}
+                  bio={profile.bio || 'No bio available'}
+                  company={profile.company || 'No company available'}
+                  hobbies={profile.hobbies || 'No hobbies listed'}
+                  achievements={profile.achievements || 'No achievements listed'}
+                  contributions={profile.contributions || 'No contributions listed'}
+                  created_at={profile.last_updated || 'Date not available'}
+                  social_media_links={profile.social_media_links || 'No social media links available'}
+                  bookings={profile.bookings || 'No bookings available'}
+                  badgeText={profile.badgeText || 'Default Badge'}
+                  badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+                  experience={profile.experience || '5'}
+                />
+              ))}
+            </div>
+          )}
           <Anchor href="/mentors" size="sm" mt={4}>
             <Group>
               <Text>Find a Mentor</Text>
@@ -172,20 +215,7 @@ function HomePage() {
         </Container>
       </section>
 
-
-      
-
-      
-
-      
-
-      {/* <section className="relative py-20 bg-white">
-        <Container className="relative z-10 max-w-7xl mx-auto px-4">
-          <NewsletterSignup />
-        </Container>
-      </section> */}
       <NewsletterSignup />
-
 
       <FaqSimple />
       <FooterLink />

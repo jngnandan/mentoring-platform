@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Paper, Text, Alert, Group, Button, Image, TextInput, Select, Textarea,
-  Checkbox, Notification, MultiSelect, Chip, ActionIcon, Box, Grid
+  Checkbox, Notification, MultiSelect, Chip, ActionIcon, Box, Grid, Skeleton
 } from '@mantine/core';
 import { IconInfoCircle, IconUpload, IconChevronDown, IconBrandLinkedin, IconBrandTwitter } from '@tabler/icons-react';
 import { createClient } from '@supabase/supabase-js';
@@ -39,6 +39,9 @@ export default function AccountForm() {
         .from('profiles')
         .select('*')
         .limit(1);
+
+      // Simulate loading delay
+      await new Promise(resolve => setTimeout(resolve, 400));
 
       if (error) {
         setError('Error fetching profile: ' + error.message);
@@ -87,7 +90,37 @@ export default function AccountForm() {
     setProfile({ ...profile, skills: profile.skills.filter(s => s !== skill) });
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <Paper shadow="sm" p="xl" withBorder>
+        <Skeleton height={30} width="50%" mb="xl" />
+        <Skeleton height={100} mb="xl" />
+        <Group mb="lg" align="center">
+          <Skeleton circle height={100} />
+          <Skeleton height={36} width={120} />
+        </Group>
+        <Grid gutter="md">
+          {[...Array(4)].map((_, index) => (
+            <Grid.Col span={6} key={index}>
+              <Skeleton height={36} mb="md" />
+            </Grid.Col>
+          ))}
+        </Grid>
+        <Skeleton height={36} mt="md" mb="md" />
+        <Skeleton height={120} mb="xl" />
+        <Skeleton height={30} width="30%" mb="md" />
+        <Skeleton height={36} mb="xl" />
+        <Skeleton height={30} width="30%" mb="md" />
+        <Skeleton height={36} mb="xl" />
+        <Skeleton height={30} width="30%" mb="md" />
+        <Skeleton height={100} mb="xl" />
+        <Skeleton height={30} width="30%" mb="md" />
+        <Skeleton height={100} mb="xl" />
+        <Skeleton height={36} width={120} ml="auto" />
+      </Paper>
+    );
+  }
+
   if (error) return <div>{error}</div>;
   if (!profile) return <div>No profile data found.</div>;
 

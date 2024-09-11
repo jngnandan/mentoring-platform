@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ContentContext } from '../../context/ContentContext.tsx';
-import { Box, Flex, Loader, Button, Input, Breadcrumbs, Anchor, ScrollArea, Paper } from '@mantine/core';
+import { Box, Flex, Button, Input, Breadcrumbs, Anchor, ScrollArea, Paper, Skeleton } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
 import { IconSmartHome, IconWorld, IconSearch, IconAdjustments, IconClock, IconStar, IconBulb, IconPencil, IconChartBar, IconPalette, IconCode } from '@tabler/icons-react';
@@ -56,7 +56,6 @@ function Mentors() {
     const value = event.currentTarget.value;
     setSearchQuery(value);
 
-    // Filter suggestions based on current data
     if (value) {
       const localMatches = superProfiles.flatMap(profile => {
         const nameMatches = [
@@ -72,17 +71,16 @@ function Mentors() {
       if (localMatches.length > 0) {
         setSuggestions(localMatches);
       } else {
-        // If no local matches, call the ChatGPT API
         try {
           const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-            model: "gpt-3.5-turbo", // Using the cheapest GPT model
+            model: "gpt-3.5-turbo",
             messages: [
               { role: "user", content: `Suggest names, skills, or job titles based on: ${value}` }
             ],
-            max_tokens: 40 // Adjust this as necessary
+            max_tokens: 40
           }, {
             headers: {
-              'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`, // Use environment variable
+              'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
               'Content-Type': 'application/json'
             }
           });
@@ -159,78 +157,94 @@ function Mentors() {
       />
     ));
 
+  const renderSkeletonProfiles = () => (
+    <>
+      {[...Array(6)].map((_, index) => (
+        <Box key={index} mb="md">
+          <Skeleton height={200} radius="md" animate={true} />
+          <Skeleton height={20} mt="sm" width="60%" radius="xl" animate={true} />
+          <Skeleton height={15} mt="sm" width="40%" radius="xl" animate={true} />
+          <Skeleton height={10} mt="sm" width="80%" radius="xl" animate={true} />
+        </Box>
+      ))}
+    </>
+  );
+
+  const renderSkeletonCategories = () => (
+    <Flex gap="sm" style={{ display: 'inline-flex' }}>
+      {[...Array(8)].map((_, index) => (
+        <Skeleton key={index} height={36} width={100} radius="md" animate={true} />
+      ))}
+    </Flex>
+  );
+
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Helmet>
         <title>Find Mentors | Your Website Name</title>
         <meta name="description" content="Explore our curated list of mentors with diverse expertise. Find the perfect mentor to guide you on your journey." />
       </Helmet>
-      {loading ? (
-        <div className='flex flex-col justify-center items-center h-full'>
-          <Loader size={30} color="blue" />
-        </div>
-      ) : (
-        <Flex style={{ height: '100%' }}>
-          {!isMobile && (
-            <Box style={{ width: '250px', padding: '20px', borderRight: '1px solid #eaeaea' }}>
-              <FilterSearch />
-            </Box>
-          )}
-          <Box style={{ flex: '1', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-            <Box style={{ padding: '20px' }}>
-              <Breadcrumbs mb={20}>
-                <Link to="/"><IconSmartHome /></Link>
-                <Anchor>Mentors</Anchor>
-              </Breadcrumbs>
+      <Flex style={{ height: '100%' }}>
+        {!isMobile && (
+          <Box style={{ width: '250px', padding: '20px', borderRight: '1px solid #eaeaea' }}>
+            <FilterSearch />
+          </Box>
+        )}
+        <Box style={{ flex: '1', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+          <Box style={{ padding: '20px' }}>
+            <Breadcrumbs mb={20}>
+              <Link to="/"><IconSmartHome /></Link>
+              <Anchor>Mentors</Anchor>
+            </Breadcrumbs>
 
-              <Flex mb={20}>
-                <Input
-                  placeholder="Search profiles"
-                  leftSection={<IconSearch size={16} />}
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  onBlur={handleBlur}
-                  style={{ flex: 1, marginRight: '10px' }}
-                />
-                <Button
-                  leftSection={<IconAdjustments size={16} />}
-                  variant="default"
-                  color="gray"
-                >
-                  Filter
-                </Button>
-              </Flex>
-
-              {/* Suggestions Dropdown */}
-              {suggestions.length > 0 && (
-                <Paper padding="md" style={{ position: 'absolute', zIndex: 10 }}>
-                  {suggestions.map((suggestion, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      style={{
-                        padding: '5px',
-                        cursor: 'pointer',
-                        background: '#fff',
-                        borderBottom: '1px solid #eaeaea',
-                      }}
-                    >
-                      {suggestion}
-                    </div>
-                  ))}
-                </Paper>
-              )}
-
-              <ScrollArea
-                style={{
-                  overflowX: 'auto',
-                  whiteSpace: 'nowrap',
-                  marginBottom: '20px',
-                }}
-                scrollbarSize={0}
-                type="hover"
-                offsetScrollbars
+            <Flex mb={20}>
+              <Input
+                placeholder="Search profiles"
+                leftSection={<IconSearch size={16} />}
+                value={searchQuery}
+                onChange={handleSearch}
+                onBlur={handleBlur}
+                style={{ flex: 1, marginRight: '10px' }}
+              />
+              <Button
+                leftSection={<IconAdjustments size={16} />}
+                variant="default"
+                color="gray"
               >
+                Filter
+              </Button>
+            </Flex>
+
+            {suggestions.length > 0 && (
+              <Paper padding="md" style={{ position: 'absolute', zIndex: 10 }}>
+                {suggestions.map((suggestion, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    style={{
+                      padding: '5px',
+                      cursor: 'pointer',
+                      background: '#fff',
+                      borderBottom: '1px solid #eaeaea',
+                    }}
+                  >
+                    {suggestion}
+                  </div>
+                ))}
+              </Paper>
+            )}
+
+            <ScrollArea
+              style={{
+                overflowX: 'auto',
+                whiteSpace: 'nowrap',
+                marginBottom: '20px',
+              }}
+              scrollbarSize={0}
+              type="hover"
+              offsetScrollbars
+            >
+              {loading ? renderSkeletonCategories() : (
                 <Flex gap="sm" style={{ display: 'inline-flex' }}>
                   {categories.map((cat) => (
                     <Button
@@ -244,15 +258,15 @@ function Mentors() {
                     </Button>
                   ))}
                 </Flex>
-              </ScrollArea>
-            </Box>
-
-            <div className='grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-2 gap-3 mx-4 mt-0'>
-              {renderProfiles()}
-            </div>
+              )}
+            </ScrollArea>
           </Box>
-        </Flex>
-      )}
+
+          <div className='grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-2 gap-3 mx-4 mt-0'>
+            {loading ? renderSkeletonProfiles() : renderProfiles()}
+          </div>
+        </Box>
+      </Flex>
       <Box style={{ padding: '20px', borderTop: '1px solid #eaeaea' }}>
         {/* Footer Links Component */}
       </Box>

@@ -11,6 +11,7 @@ import {
   Group,
   Anchor,
   Loader,
+  Skeleton,
 } from '@mantine/core';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, signInWithGoogle, signInWithTwitter } from '../../../firebase';
@@ -26,7 +27,8 @@ export default function SignupForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [authChecking, setAuthChecking] = useState(true); // New state to track auth checking
+  const [authChecking, setAuthChecking] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,22 +36,29 @@ export default function SignupForm() {
       if (user) {
         navigate('/mentors');
       }
-      setAuthChecking(false); // Set false once auth checking is done
+      setAuthChecking(false);
     });
-    return () => unsubscribe();
+
+    // Simulate initial loading
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 400);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
   }, [navigate]);
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     const timeout = setTimeout(async () => {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const firebaseUser = userCredential.user;
         console.log('User signed up:', { displayName: `${firstName} ${lastName}`, email: firebaseUser.email });
-
         navigate('/mentors');
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
@@ -61,20 +70,47 @@ export default function SignupForm() {
         setLoading(false);
       }
     }, 500);
-
     return () => clearTimeout(timeout);
   };
 
-  // Conditionally show the loader if authentication is still being checked
   if (authChecking) {
     return (
       <div className='flex flex-row justify-center items-center'>
-      <Container size={420} my={40}>
-        <Loader size="lg" variant="dots" />
-      </Container>
+        <Container size={420} my={40}>
+          <Loader size="lg" variant="dots" />
+        </Container>
       </div>
     );
   }
+
+  const FormContent = () => (
+    <>
+      {error && <Alert color="red" mb="md">{error}</Alert>}
+      <form onSubmit={handleSignup}>
+        <Group grow mb="md" mt="md">
+          <GoogleButton radius="xl" onClick={signInWithGoogle}>Google</GoogleButton>
+          <TwitterButton radius="xl" onClick={signInWithTwitter}>Twitter</TwitterButton>
+        </Group>
+        <TextInput label="First Name" placeholder="Your First Name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+        <TextInput label="Last Name" placeholder="Your Last Name" required mt="md" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+        <TextInput label="Email" placeholder="you@example.com" required mt="md" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <PasswordInput label="Password" placeholder="Your password" required mt="md" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Button type="submit" fullWidth mt="xl" loading={loading}>Sign up</Button>
+      </form>
+    </>
+  );
+
+  const FormSkeleton = () => (
+    <>
+      <Skeleton height={36} radius="sm" mb="md" />
+      <Skeleton height={36} radius="sm" mb="md" />
+      <Skeleton height={50} radius="sm" mb="md" />
+      <Skeleton height={50} radius="sm" mb="md" />
+      <Skeleton height={50} radius="sm" mb="md" />
+      <Skeleton height={50} radius="sm" mb="md" />
+      <Skeleton height={36} radius="sm" mt="xl" />
+    </>
+  );
 
   return (
     <Container size={420} my={40}>
@@ -85,21 +121,8 @@ export default function SignupForm() {
           <Anchor size="sm" component="button">Login</Anchor>
         </Link>
       </Text>
-
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        {error && <Alert color="red" mb="md">{error}</Alert>}
-
-        <form onSubmit={handleSignup}>
-          <Group grow mb="md" mt="md">
-            <GoogleButton radius="xl" onClick={signInWithGoogle}>Google</GoogleButton>
-            <TwitterButton radius="xl" onClick={signInWithTwitter}>Twitter</TwitterButton>
-          </Group>
-          <TextInput label="First Name" placeholder="Your First Name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-          <TextInput label="Last Name" placeholder="Your Last Name" required mt="md" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-          <TextInput label="Email" placeholder="you@example.com" required mt="md" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <PasswordInput label="Password" placeholder="Your password" required mt="md" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button type="submit" fullWidth mt="xl" loading={loading}>Sign up</Button>
-        </form>
+        {initialLoading ? <FormSkeleton /> : <FormContent />}
       </Paper>
     </Container>
   );

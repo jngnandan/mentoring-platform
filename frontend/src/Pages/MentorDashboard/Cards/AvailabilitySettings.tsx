@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, Text, Button, Switch, Select, TextInput, Group } from '@mantine/core';
+import React, { useState, useEffect } from 'react';
+import { Card, Text, Button, Switch, Select, TextInput, Group, Skeleton } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import format from 'date-fns/format';
@@ -135,22 +135,7 @@ const CalendarView = () => {
     <Card shadow="sm" p="lg" radius="md" withBorder className="h-full">
       <Group position="apart" mb="md">
         <Text weight={500} size="xl">Calendar</Text>
-        {/* <Group>
-          <Button variant="outline" onClick={() => handleNavigate('TODAY')}>Today</Button>
-          <Button variant="outline" onClick={() => handleNavigate('PREV')}>
-            <IconChevronLeft size={14} />
-          </Button>
-          <Button variant="outline" onClick={() => handleNavigate('NEXT')}>
-            <IconChevronRight size={14} />
-          </Button>
-        </Group> */}
       </Group>
-      {/* <Group mb="md">
-        <Button variant={view === Views.MONTH ? 'filled' : 'outline'} onClick={() => setView(Views.MONTH)}>Month</Button>
-        <Button variant={view === Views.WEEK ? 'filled' : 'outline'} onClick={() => setView(Views.WEEK)}>Week</Button>
-        <Button variant={view === Views.DAY ? 'filled' : 'outline'} onClick={() => setView(Views.DAY)}>Day</Button>
-        <Button variant={view === Views.AGENDA ? 'filled' : 'outline'} onClick={() => setView(Views.AGENDA)}>Agenda</Button>
-      </Group> */}
       <div className="h-[500px] sm:h-full">
         <Calendar
           localizer={localizer}
@@ -168,7 +153,40 @@ const CalendarView = () => {
   );
 };
 
+const LoadingPlaceholder = () => (
+  <Card shadow="sm" p="lg" radius="md" withBorder className="h-full">
+    <Skeleton height={30} width="50%" mb="xl" />
+    <Skeleton height={400} mb="xl" />
+    <Group position="apart" mb="md">
+      <Skeleton height={36} width={100} />
+      <Skeleton height={36} width={100} />
+      <Skeleton height={36} width={100} />
+    </Group>
+  </Card>
+);
+
 export const CalendarWithAvailability = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-screen">
+        <div className="lg:col-span-8 h-[600px] lg:h-auto">
+          <LoadingPlaceholder />
+        </div>
+        <div className="lg:col-span-4 h-[600px] lg:h-auto overflow-y-auto">
+          <LoadingPlaceholder />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-screen">
       <div className="lg:col-span-8 h-[600px] lg:h-auto">
