@@ -50,7 +50,7 @@ export default function ProfileCard({
   return (
     <Link to={`/mentors/${id}`}>
     <Card withBorder radius="md" p="md" className="relative m-3">
-      <Text className="absolute top-2 right-2 text-gray-500 text-sm">Only 3 Spots Left</Text>
+      <Badge color='gray' variant='outline' className="absolute top-3 right-3 text-gray-500 text-sm">3 Spots Left</Badge>
       <Flex gap="md">
         {profilepic && (
         <Link to={`/mentors/${id}`}>

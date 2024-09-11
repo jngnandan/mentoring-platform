@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Text, Button, Switch, Select, TextInput, Group, Skeleton } from '@mantine/core';
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -25,10 +24,14 @@ const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satur
 
 const AvailabilitySettings = () => {
   const [availabilities, setAvailabilities] = useState(
-    weekDays.reduce((acc, day) => ({ ...acc, [day]: { enabled: true, times: ['10:00', '12:00', '14:00', '16:00'] } }), {})
+    weekDays.reduce((acc, day) => ({
+      ...acc,
+      [day]: { enabled: true, times: [] } // Initialize with empty times
+    }), {})
   );
   const [newDay, setNewDay] = useState('Everyday');
-  const [newTime, setNewTime] = useState('10:00');
+  const [newFromTime, setNewFromTime] = useState('10:00');
+  const [newToTime, setNewToTime] = useState('12:00');
 
   const toggleDay = (day) => {
     setAvailabilities(prev => ({
@@ -37,21 +40,22 @@ const AvailabilitySettings = () => {
     }));
   };
 
-  const removeTime = (day, time) => {
+  const removeTime = (day, timeRange) => {
     setAvailabilities(prev => ({
       ...prev,
-      [day]: { ...prev[day], times: prev[day].times.filter(t => t !== time) }
+      [day]: { ...prev[day], times: prev[day].times.filter(t => t !== timeRange) }
     }));
   };
 
   const addTime = () => {
+    const timeRange = `${newFromTime} - ${newToTime}`;
     if (newDay === 'Everyday') {
       setAvailabilities(prev => {
         const updated = {};
         Object.keys(prev).forEach(day => {
           updated[day] = {
             ...prev[day],
-            times: [...new Set([...prev[day].times, newTime])].sort()
+            times: [...new Set([...prev[day].times, timeRange])].sort()
           };
         });
         return updated;
@@ -61,7 +65,7 @@ const AvailabilitySettings = () => {
         ...prev,
         [newDay]: {
           ...prev[newDay],
-          times: [...new Set([...prev[newDay].times, newTime])].sort()
+          times: [...new Set([...prev[newDay].times, timeRange])].sort()
         }
       }));
     }
@@ -75,9 +79,9 @@ const AvailabilitySettings = () => {
           <Text className="w-full sm:w-auto">{day}</Text>
           <Switch checked={availabilities[day].enabled} onChange={() => toggleDay(day)} />
           <Group spacing="xs" className="w-full sm:w-auto mt-2 sm:mt-0">
-            {availabilities[day].times.map(time => (
-              <Button key={time} variant="light" size="xs" onClick={() => removeTime(day, time)}>
-                {time} ✕
+            {availabilities[day].times.map((timeRange, index) => (
+              <Button key={index} variant="light" size="xs" onClick={() => removeTime(day, timeRange)}>
+                {timeRange} ✕
               </Button>
             ))}
           </Group>
@@ -89,10 +93,19 @@ const AvailabilitySettings = () => {
           value={newDay}
           onChange={setNewDay}
         />
-        <TextInput value={newTime} onChange={(event) => setNewTime(event.currentTarget.value)} />
+        <TextInput
+          value={newFromTime}
+          onChange={(event) => setNewFromTime(event.currentTarget.value)}
+          placeholder="From (HH:MM)"
+        />
+        <TextInput
+          value={newToTime}
+          onChange={(event) => setNewToTime(event.currentTarget.value)}
+          placeholder="To (HH:MM)"
+        />
       </Group>
-      <Button onClick={addTime} fullWidth mt="sm">Add</Button>
       <Group position="right" mt="md" className="flex-col sm:flex-row">
+        <Button onClick={addTime} fullWidth mt="sm">Add</Button>
         <Button variant="outline" color="gray" fullWidth >Clear All</Button>
         <Button variant="outline" color="gray" fullWidth >Disable All</Button>
         <Button color="green" fullWidth >Save</Button>

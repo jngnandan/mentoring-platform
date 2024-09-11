@@ -13,7 +13,7 @@ import {
 } from '@tabler/icons-react';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import BookingCard from './Cards/BookingCard.tsx';
-import { CalendarWithAvailability } from './Cards/AvailabilitySettings.tsx'; // Import the new component
+import {CalendarWithAvailability} from './Cards/AvailabilitySettings.tsx'; // Import the new component
 import AccountForm from './Cards/AccountForm.tsx'
 
 interface NavbarLinkProps {
@@ -72,10 +72,10 @@ function TabContent({ label }: { label: string }) {
   }
   if (label === 'Account') {
     return (
-      <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
-        <Text size="xl" weight={700} mb="md">Account</Text>
+      // <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
+        // <Text size="xl" weight={700} mb="md">Account</Text>
         <AccountForm/>
-      </Card>
+      // </Card>
     );
   }
   return (

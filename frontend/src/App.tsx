@@ -17,7 +17,7 @@ import { ContactUs } from "./Pages/ContactPage/ContactUs.tsx";
 import { ForgotPassword } from "./Pages/Authentication/ForgotPassword/ForgotPassword.tsx";
 import Mentors from "./Pages/Mentors/Mentors.tsx";
 import MentorRegister from "./Pages/MentorRegister/MentorRegister.tsx";
-import MentorsPage from "./Pages/Mentors/MentorsPage/index.tsx";
+import MentorsPage from "./Pages/MentorsPage/index.tsx";
 
 // Components
 import Header from "./Pages/Components/Header/Header.tsx";

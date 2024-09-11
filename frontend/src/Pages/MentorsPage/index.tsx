@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import { IconBrandLinkedin, IconBrandTwitter, IconChevronLeft, IconBriefcase, IconCalendarStats, IconClock, IconMessage } from '@tabler/icons-react';
 import { Link, useParams } from 'react-router-dom';
-import { ContentContext } from '../../../context/ContentContext.tsx';
+import { ContentContext } from '../../context/ContentContext.tsx';
 import MentorshipPlans from './MentorshipPlans.tsx';
 
 const ProfilePage = () => {
@@ -115,7 +115,7 @@ const ProfilePage = () => {
     <Group position="apart" mb="xl">
       <Anchor component={Link} to="/mentors" size="sm">
         <Group spacing="xs">
-          <IconChevronLeft size={rem(12)} />
+          <IconChevronLeft style={{width: rem(20), height: rem(20)}} />
           <Text>Find a Mentor</Text>
         </Group>
       </Anchor>
@@ -143,11 +143,11 @@ const ProfilePage = () => {
                   <Text size="xl" weight={700}>{profile.first_name} {profile.last_name}</Text>
                   <Text color="dimmed">{profile.job}</Text>
                   <Group spacing="xs" mt={4}>
-                    <IconBriefcase size={rem(15)} />
+                    <IconBriefcase style={{width: rem(20), height: rem(20)}} />
                     <Text size="sm" color="dimmed">{profile.company}</Text>
                   </Group>
                   <Group spacing="xs" mt={4}>
-                    <IconCalendarStats size={rem(15)} />
+                    <IconCalendarStats style={{width: rem(20), height: rem(20)}}/>
                     <Text size="sm" color="dimmed">Active last week</Text>
                   </Group>
                 </Box>

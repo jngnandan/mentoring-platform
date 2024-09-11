@@ -1,30 +1,25 @@
 import React, { useState, useContext } from 'react';
 import { Group, Box, Collapse, ThemeIcon, Text, UnstyledButton, rem, Checkbox } from '@mantine/core';
-import { IconChevronRight } from '@tabler/icons-react';
+import { IconCalendarStats, IconChevronRight } from '@tabler/icons-react';
 import classes from './LinksGroup.module.css';
 import { ContentContext } from '../../../../context/ContentContext.tsx';
-
-interface LinkItem {
-  label: string;
-  link: string;
-}
 
 interface LinksGroupProps {
   icon: React.FC<any>;
   label: string;
   initiallyOpened?: boolean;
-  links?: LinkItem[];
+  links?: { label: string; link: string }[];
 }
 
 export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksGroupProps) {
   const { checkboxData, setCheckboxData } = useContext(ContentContext);
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
-  const [selectedLinks, setSelectedLinks] = useState<Record<string, boolean>>(
+  const [selectedLinks, setSelectedLinks] = useState(
     (hasLinks ? links : []).reduce((acc, link) => {
       acc[link.label] = false;
       return acc;
-    }, {} as Record<string, boolean>)
+    }, {})
   );
 
   const toggleLink = (label: string) => {
@@ -32,13 +27,12 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
       ...prevState,
       [label]: !prevState[label],
     }));
-    
     const updatedCheckboxData = {
       ...checkboxData,
       [label]: !selectedLinks[label],
     };
     setCheckboxData(updatedCheckboxData);
-    console.log(`Checkbox "${label}" is now ${!selectedLinks[label] ? 'checked' : 'unchecked'}`);
+    console.log(`Checkbox "${label}" is now ${!selectedLinks[label] ? true : false}`);
   };
 
   const items = (hasLinks ? links : []).map((link) => (
@@ -55,7 +49,9 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
       <Checkbox
         checked={selectedLinks[link.label]}
         onChange={() => toggleLink(link.label)}
-        style={{ marginRight: '8px' }}
+        style={{
+          marginRight: '0px', // Reduced margin
+        }}
       />
       <Text
         component="a"
@@ -65,7 +61,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
           event.preventDefault();
           toggleLink(link.label);
         }}
-        style={{ borderLeft: 'none', boxShadow: 'none' }}
+        style={{ borderLeft: 'none', boxShadow: 'none', marginLeft: '0px' }} // Added marginLeft: '0px'
       >
         {link.label}
       </Text>
@@ -77,7 +73,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
       <UnstyledButton onClick={() => setOpened((o) => !o)} className={classes.control}>
         <Group justify="space-between" gap={0}>
           <Box style={{ display: 'flex', alignItems: 'center' }}>
-            <ThemeIcon variant="light" color="gray" size={30}>
+            <ThemeIcon variant="light" color='gray' size={30}>
               <Icon style={{ width: rem(18), height: rem(18) }} />
             </ThemeIcon>
             <Box ml="md">{label}</Box>
@@ -97,7 +93,9 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
       </UnstyledButton>
       {hasLinks ? (
         <Collapse in={opened}>
-          <div style={{ borderLeft: 'none', boxShadow: 'none' }}>{items}</div>
+          <div style={{ borderLeft: 'none', boxShadow: 'none' }}>
+            {items}
+          </div>
         </Collapse>
       ) : null}
     </>

@@ -137,17 +137,17 @@ export default function AccountForm() {
       </Alert>
 
       <Group mb="lg" align="center">
-        <Image
-          src={profile.profilepic || "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"}
-          alt="Profile"
-          radius="xl"
-          width={100}
-          height={100}
-        />
-        <Button leftIcon={<IconUpload size={18} />} variant="outline" size="md">
-          Upload Photo
-        </Button>
-      </Group>
+  <img
+    src={profile.profilepic || "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"}
+    alt="Profile"
+    style={{ borderRadius: '4%'}}
+    withBoarder
+    sizes='lg'
+  />
+  <Button leftIcon={<IconUpload size={18} />} variant="outline" size="md">
+    Upload Photo
+  </Button>
+</Group>
 
       <Grid gutter="md">
         <Grid.Col span={6}>
@@ -225,6 +225,7 @@ export default function AccountForm() {
         onChange={(e) => setProfile({ ...profile, summary: e.target.value })}
         minRows={4}
         mt="md"
+        autosize
       />
 
       <Text size="lg" weight={700} mt="xl" mb="md">Skills</Text>
