@@ -9,10 +9,10 @@ import { Link } from 'react-router-dom';
 import FooterLink from '../Components/Footer/FooterLinks.tsx';
 import { HeroText } from './HeroText/HeroText.tsx';
 import { FaqSimple } from '../Components/FAQ/FaqSimple.tsx';
-import { IconTextCard } from '../Components/CardWithCheckbox/CheckboxCard.tsx';
+import { IconTextCard } from '../Components/IconTextCard/IconTextCard.tsx';
 import { BigCard } from '../Components/BigCard/BigCard.tsx';
 import ArticleCard from '../Components/ArticleCard/ArticleCard.tsx';
-import NewsletterSignup from '../NewsLetter/NewsletterSignup.js';
+import NewsletterSignup from './NewsLetter/NewsletterSignup.js';
 
 import classes from '../Home/HomePage.module.css';
 import { Dots } from './HeroText/Dots.tsx';
@@ -82,9 +82,7 @@ function HomePage() {
 
       <HeroText />
 
-      <section className="relative py-20 bg-gradient-to-b from-white via-blue-100 to-white">
-        <Dots className="absolute left-0 top-0 text-blue-100 opacity-50" />
-        <Dots className="absolute right-0 top-20 text-blue-100 opacity-50" />
+      <section className="relative py-2">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 lg:mx-12 mt-4">
             {fields.map((field, index) => (
@@ -99,10 +97,8 @@ function HomePage() {
         </Container>
       </section>
 
-      <section className="relative py-20 bg-gradient-to-b from-white via-white to-blue-100">
-        <Dots className="absolute left-0 bottom-0 text-blue-200 opacity-50" />
-        <Dots className="absolute right-0 top-0 text-blue-200 opacity-50" />
-        <Container className="relative z-10 max-w-7xl mx-auto px-4 ">
+      <section className="relative py-2">
+        <Container className="relative z-10 max-w-7xl mx-auto px-4">
           <Title className="text-center text-3xl font-bold mb-4">
             We offer services{' '}
             <Text component="span" className="text-blue-600" inherit>
@@ -128,10 +124,7 @@ function HomePage() {
         </Container>
       </section>
 
-      <section className="relative py-20 bg-gradient-to-b from-blue-100 via-blue-100 to-gray-50">
-        <Dots className="absolute left-0 top-1/4 text-blue-200 opacity-50" />
-        <Dots className="absolute right-0 bottom-1/4 text-blue-200 opacity-50" />
-        <Dots className="absolute right-0 top-20 text-blue-200 opacity-50" />
+      <section className="relative py-20 ">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">
           <Title className="text-center text-3xl font-bold mb-4 ">
             Meet our{' '}
@@ -145,30 +138,30 @@ function HomePage() {
             </Text>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
-          {profiles.slice(0, 4).map((profile) => (
-            <ArticleCard
-              key={profile.id}
-              id={profile.id}
-              profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
-              linkUrl={profile.linkUrl || '#'}
-              summary={profile.bio || 'No description available'}
-              first_name={profile.first_name || 'Unknown'}
-              last_name={profile.last_name || 'User'}
-              job={profile.job_title || 'No job title'}
-              bio={profile.bio || 'No bio available'}
-              company={profile.company || 'No company available'}
-              hobbies={profile.hobbies || 'No hobbies listed'}
-              achievements={profile.achievements || 'No achievements listed'}
-              contributions={profile.contributions || 'No contributions listed'}
-              created_at={profile.last_updated || 'Date not available'}
-              social_media_links={profile.social_media_links || 'No social media links available'}
-              bookings={profile.bookings || 'No bookings available'}
-              badgeText={profile.badgeText || 'Default Badge'}
-              badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
-              experience={profile.experience || '5'}
-            />
-          ))}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 ">
+            {profiles.slice(0, 4).map((profile) => (
+              <ArticleCard
+                key={profile.id}
+                id={profile.id}
+                profilepic={profile.profilepic || 'https://via.placeholder.com/150'}
+                linkUrl={profile.linkUrl || '#'}
+                summary={profile.bio || 'No description available'}
+                first_name={profile.first_name || 'Unknown'}
+                last_name={profile.last_name || 'User'}
+                job={profile.job_title || 'No job title'}
+                bio={profile.bio || 'No bio available'}
+                company={profile.company || 'No company available'}
+                hobbies={profile.hobbies || 'No hobbies listed'}
+                achievements={profile.achievements || 'No achievements listed'}
+                contributions={profile.contributions || 'No contributions listed'}
+                created_at={profile.last_updated || 'Date not available'}
+                social_media_links={profile.social_media_links || 'No social media links available'}
+                bookings={profile.bookings || 'No bookings available'}
+                badgeText={profile.badgeText || 'Default Badge'}
+                badgeGradient={profile.badgeGradient || { from: 'gray', to: 'white' }}
+                experience={profile.experience || '5'}
+              />
+            ))}
           </div>
           <Anchor href="/mentors" size="sm" mt={4}>
             <Group>
@@ -179,11 +172,20 @@ function HomePage() {
         </Container>
       </section>
 
-      <section className="relative py-20 bg-gradient-to-b from-blue-100 to-white">
+
+      
+
+      
+
+      
+
+      {/* <section className="relative py-20 bg-white">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">
           <NewsletterSignup />
         </Container>
-      </section>
+      </section> */}
+      <NewsletterSignup />
+
 
       <FaqSimple />
       <FooterLink />

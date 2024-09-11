@@ -9,7 +9,7 @@
   border: 1px solid var(--mantine-color-gray-3);
   border-radius: var(--mantine-radius-sm);
   padding: var(--mantine-spacing-lg);
-  background-color: var(--mantine-color-white);
+  /* background-color: var(--mantine-color-white); */
   transition: background-color 0.3s; /* Add a transition effect for hover */
 }
 

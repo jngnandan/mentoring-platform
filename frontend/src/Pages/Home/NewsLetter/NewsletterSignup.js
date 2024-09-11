@@ -26,7 +26,7 @@ export default function NewsletterSignup() {
   };
 
   return (
-    <Container my={40} size="sm">
+    <Container my={40} size="md">
       <Title align="center" mb="md">Subscribe to our Newsletter</Title>
       <Grid justify="center">
         <Grid.Col span={8} md={8} lg={6}>
@@ -38,9 +38,8 @@ export default function NewsletterSignup() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                mb="md"
               />
-              <Button type="submit" fullWidth mt="xl" disabled={loading}>
+              <Button type="submit" className='w/2' mt="md" disabled={loading}>
                 {loading ? 'Submitting...' : 'Subscribe'}
               </Button>
               {message && <Text mt="md" align="center">{message}</Text>}
