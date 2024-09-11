@@ -97,7 +97,7 @@ function HomePage() {
         </Container>
       </section>
 
-      <section className="relative py-2">
+      <section className="relative mt-28 my-10">
         <Container className="relative z-10 max-w-7xl mx-auto px-4">
           <Title className="text-center text-3xl font-bold mb-4">
             We offer services{' '}

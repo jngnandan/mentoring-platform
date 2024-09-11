@@ -14,16 +14,16 @@ import SignupForm from "./Pages/Authentication/Signup/SignupForm.tsx";
 // import ComparisionPage from "./Pages/ComparisionPage/ComparisionPage.tsx";
 import About from "./Pages/About/index.tsx";
 import { ContactUs } from "./Pages/ContactPage/ContactUs.tsx";
-import { ForgotPassword } from "./Pages/ForgotPassword/ForgotPassword.tsx";
+import { ForgotPassword } from "./Pages/Authentication/ForgotPassword/ForgotPassword.tsx";
 import Mentors from "./Pages/Mentors/Mentors.tsx";
 import MentorRegister from "./Pages/MentorRegister/MentorRegister.tsx";
-import MentorsPage from "./Pages/MentorsPage/index.tsx";
+import MentorsPage from "./Pages/Mentors/MentorsPage/index.tsx";
 
 // Components
 import Header from "./Pages/Components/Header/Header.tsx";
 import FooterLinks from "./Pages/Components/Footer/FooterLinks.tsx";
-import CookieConsentBanner from './Pages/Cookies/index.js';
-import NavBar from './Pages/NavBar/NavbarSimple.tsx';
+import CookieConsentBanner from './Pages/Components/Cookies/index.js';
+import NavBar from './Pages/AccountProfile/ProfileSettings.tsx';
 import ProtectedRoute from './ProtectedRoute.js';
 import MentorDashboard from './Pages/MentorDashboard/MentorDashboard.tsx';
 

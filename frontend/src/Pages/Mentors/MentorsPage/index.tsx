@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import { IconBrandLinkedin, IconBrandTwitter, IconChevronLeft, IconBriefcase, IconCalendarStats, IconClock, IconMessage } from '@tabler/icons-react';
 import { Link, useParams } from 'react-router-dom';
-import { ContentContext } from '../../context/ContentContext.tsx';
+import { ContentContext } from '../../../context/ContentContext.tsx';
 import MentorshipPlans from './MentorshipPlans.tsx';
 
 const ProfilePage = () => {

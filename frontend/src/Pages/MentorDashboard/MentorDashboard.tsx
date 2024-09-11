@@ -14,6 +14,7 @@ import {
 import { MantineLogo } from '@mantinex/mantine-logo';
 import BookingCard from './Cards/BookingCard.tsx';
 import { CalendarWithAvailability } from './Cards/AvailabilitySettings.tsx'; // Import the new component
+import AccountForm from './Cards/AccountForm.tsx'
 
 interface NavbarLinkProps {
   icon: typeof IconHome2;
@@ -41,11 +42,11 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 }
 
 const mockdata = [
+  { icon: IconUser, label: 'Account' },
+  { icon: IconCalendarStats, label: 'Availability' },
   { icon: IconHome2, label: 'Home' },
   { icon: IconGauge, label: 'Dashboard' },
   { icon: IconDeviceDesktopAnalytics, label: 'Analytics' },
-  { icon: IconCalendarStats, label: 'Availability' },
-  { icon: IconUser, label: 'Account' },
   { icon: IconFingerprint, label: 'Security' },
   { icon: IconSettings, label: 'Settings' },
 ];
@@ -69,6 +70,14 @@ function TabContent({ label }: { label: string }) {
   if (label === 'Availability') {
     return <CalendarWithAvailability />;
   }
+  if (label === 'Account') {
+    return (
+      <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
+        <Text size="xl" weight={700} mb="md">Account</Text>
+        <AccountForm/>
+      </Card>
+    );
+  }
   return (
     <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
       <Text size="xl" weight={500} mb="md">{label}</Text>
@@ -76,6 +85,7 @@ function TabContent({ label }: { label: string }) {
     </Card>
   );
 }
+
 
 export default function MentorDashboard() {
   const [active, setActive] = useState(1); // Set default to Dashboard
