@@ -188,7 +188,7 @@ function HomePage() {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       >
-        <section className="relative py-2">
+        <section className="relative py-2 py-10">
           <Container className="relative z-10 max-w-7xl mx-auto px-4">
             {loading ? (
               renderSkeletonFields()
@@ -210,7 +210,7 @@ function HomePage() {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       >
-        <section className="relative mt-28 my-10">
+        <section className="relative mt-28 my-16">
           <Container className="relative z-10 max-w-7xl mx-auto px-4">
             <Title className="text-center text-3xl font-bold mb-4">
               We offer services{" "}
@@ -306,7 +306,7 @@ function HomePage() {
             <Anchor href="/mentors" size="sm" mt={4}>
               <Group>
                 <Text>Find a Mentor</Text>
-                <IconChevronRight size={rem(12)} />
+                <IconChevronRight size={rem(12)} style={{width: rem(12), height: rem(12)}} />
               </Group>
             </Anchor>
           </Container>

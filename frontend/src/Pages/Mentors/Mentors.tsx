@@ -16,6 +16,7 @@ import {
   ScrollArea,
   Paper,
   Skeleton,
+  Group,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { Link } from "react-router-dom";
@@ -54,20 +55,27 @@ const categories = [
   { value: "engineering", label: "Engineering", icon: IconCode },
 ];
 
-const BlurSection = ({ children, id, activeSection, setActiveSection }) => {
-  const sectionRef = useRef(null);
+const BlurSection: React.FC<BlurSectionProps> = ({
+  children,
+  id,
+  activeSection,
+  setActiveSection,
+}) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setActiveSection(id);
-        }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(id);
+          }
+        });
       },
       {
         root: null,
-        rootMargin: "-45% 0px -45% 0px",
-        threshold: 0,
+        rootMargin: "-10% 0px -10% 0px",
+        threshold: [0, 0.1, 0.5, 1],
       }
     );
 
@@ -87,8 +95,8 @@ const BlurSection = ({ children, id, activeSection, setActiveSection }) => {
       ref={sectionRef}
       className={`transition-all duration-500 ease-out ${
         activeSection === id
-          ? "filter-none opacity-100 scale-100"
-          : "blur-sm opacity-50 scale-95"
+          ? "opacity-100 scale-100 blur-none"
+          : "opacity-50 scale-95 blur-sm"
       }`}
     >
       {children}
@@ -314,7 +322,7 @@ function Mentors() {
             activeSection={activeSection}
             setActiveSection={handleSetActiveSection}
           >
-            <Box className="p-5">
+            <Box className="p-5" mt={58}>
               <Breadcrumbs mb={20}>
                 <Link to="/">
                   <IconSmartHome className="text-gray-500" />

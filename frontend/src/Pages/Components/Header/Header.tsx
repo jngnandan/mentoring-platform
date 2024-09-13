@@ -17,6 +17,7 @@ import {
   LoadingOverlay,
   Modal,
   Stack,
+  Image
 } from "@mantine/core";
 import {
   IconNotification,
@@ -34,6 +35,7 @@ import {
 import protocon from "../../../Images/protocon.png";
 import { useContent } from "../../../context/ContentContext.tsx";
 import Demo from "./Demo.tsx";
+import classes from './HeaderMegaMenu.module.css'
 
 const Header: React.FC = () => {
   const [drawerOpened, setDrawerOpened] = useState(false);
@@ -75,22 +77,22 @@ const Header: React.FC = () => {
   const isHomePage = location.pathname === "/";
 
   return (
-    <Box className="pb-4 pt-4">
+    <Box className="">
       <header
         className={`${
           isHomePage ? "relative" : "fixed w-full top-0 z-50"
-        } bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 transition-all duration-300`}
+        }  bg-opacity-10 backdrop-filter backdrop-blur-sm transition-all duration-300`}
       >
-        <Group justify="space-between" className="h-full px-4">
+        <Group justify="space-between" className="h-full px-4 lg:pr-8 lg:pl-6">
           <Link to="/">
-            <img src={protocon} alt="protocon" className="w-36" />
+            <Image src={protocon} h={50} w='auto' alt="protocon" className="w-36 my-2" />
           </Link>
 
           <Group visibleFrom="sm" spacing="xs">
             {isLoggedIn ? (
               <Menu shadow="md" width={200}>
                 <Menu.Target>
-                  <UnstyledButton className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md rounded-full p-2 transition-all duration-300">
+                  <UnstyledButton className="bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md rounded-full p-2 transition-all duration-300">
                     <Group>
                       <Avatar color="blue" radius="xl">
                         {user?.email?.[0].toUpperCase() || (
@@ -101,7 +103,7 @@ const Header: React.FC = () => {
                     </Group>
                   </UnstyledButton>
                 </Menu.Target>
-                <Menu.Dropdown className="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-200 dark:border-gray-700">
+                <Menu.Dropdown className="bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-200 dark:border-gray-700">
                   <Link to="/profile">
                     <Menu.Item leftSection={<IconUserCircle size={14} />}>
                       Account
@@ -130,7 +132,7 @@ const Header: React.FC = () => {
                 <Link to="/login">
                   <Button
                     variant="default"
-                    className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300"
+                    className="bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300"
                   >
                     Log in
                   </Button>
@@ -162,120 +164,93 @@ const Header: React.FC = () => {
       >
         <Text>Are you sure you want to log out?</Text>
         <Group mt="md" justify="flex-end">
-          <Button variant="outline" onClick={() => setLogoutModalOpened(false)}>
-            Cancel
-          </Button>
-          <Button color="red" onClick={handleLogoutConfirm}>
-            Logout
-          </Button>
+          <Button variant="outline" onClick={() => setLogoutModalOpened(false)}>Cancel</Button>
+          <Button color="red" onClick={handleLogoutConfirm}>Logout</Button>
         </Group>
       </Modal>
 
       <Drawer
-        opened={drawerOpened}
-        onClose={() => setDrawerOpened(false)}
-        size="100%"
-        padding="md"
-        title="Navigation"
-        zIndex={1000000}
-        className="bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 backdrop-filter backdrop-blur-lg"
-      >
-        <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
-          <Divider my="sm" />
+  opened={drawerOpened}
+  onClose={() => setDrawerOpened(false)}
+  size="100%"
+  padding="md"
+  title="Navigation"
+  zIndex={1000000} // Add these classes for transparency and blur
+>
 
-          <Stack spacing="md" className="px-4">
-            <Link
-              to="/"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              Home
-            </Link>
-            <Link
-              to="/mentors"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              Mentors
-            </Link>
-            <Link
-              to="/about"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              About Us
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              Contact Us
-            </Link>
+  <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
+    <Divider my="sm" />
 
-            <Divider my="sm" />
+    <Stack spacing="md" align="stretch">
+      <Stack spacing="xs" align="stretch">
+        <Link to="/" className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`} onClick={() => setDrawerOpened(false)}>
+          Home
+        </Link>
+      </Stack>
+      <Stack spacing="xs" align="stretch">
+        <Link to="/mentors" className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`} onClick={() => setDrawerOpened(false)}>
+          Mentors
+        </Link>
+      </Stack>
+      <Stack spacing="xs" align="stretch">
+        <Link to="/about" className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`} onClick={() => setDrawerOpened(false)}>
+          About Us
+        </Link>
+      </Stack>
+      <Stack spacing="xs" align="stretch">
+        <Link to="/contact" className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`} onClick={() => setDrawerOpened(false)}>
+          Contact Us
+        </Link>
+      </Stack>
 
-            {isLoggedIn ? (
-              <>
-                <Link
-                  to="/profile"
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-                  onClick={() => setDrawerOpened(false)}
-                >
-                  Account
-                </Link>
-                <Link
-                  to="/mentor-dashboard"
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-                  onClick={() => setDrawerOpened(false)}
-                >
-                  Mentor Dashboard
-                </Link>
-                <Link
-                  to="/profile"
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-                  onClick={() => setDrawerOpened(false)}
-                >
-                  Bookings
-                </Link>
-                <UnstyledButton onClick={handleLogoutClick} className="w-full">
-                  <Button
-                    className="w-full mt-4"
-                    onClick={() => setDrawerOpened(false)}
-                    leftSection={<IconLogout size={16} />}
-                  >
-                    Logout
-                  </Button>
-                </UnstyledButton>
-              </>
-            ) : (
-              <Stack spacing="md" className="ml-3">
-                <Link to="/login">
-                  <Button
-                    onClick={() => setDrawerOpened(false)}
-                    variant="default"
-                    className="w-full"
-                  >
-                    Log in
-                  </Button>
-                </Link>
-                <Link to="/signup">
-                  <Button
-                    onClick={() => setDrawerOpened(false)}
-                    className="w-full"
-                  >
-                    Sign up
-                  </Button>
-                </Link>
-              </Stack>
-            )}
+      <Divider my="sm" />
+
+      {isLoggedIn ? (
+        <>
+          <Stack spacing="xs" align="stretch">
+            <Link to="/profile" className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`} onClick={() => setDrawerOpened(false)}>
+              Account
+            </Link>
           </Stack>
+          <Stack spacing="xs" align="stretch">
+            <Link to="/mentor-dashboard" className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`} onClick={() => setDrawerOpened(false)}>
+              Mentor Dashboard
+            </Link>
+          </Stack>
+          <Stack spacing="xs" align="stretch">
+            <Link to="/profile" className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`} onClick={() => setDrawerOpened(false)}>
+              Bookings
+            </Link>
+          </Stack>
+          <Stack spacing="xs" align="stretch">
+            <UnstyledButton onClick={handleLogoutClick} className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`}>
+              <Button className="mt-4" onClick={() => setDrawerOpened(false)} leftSection={<IconLogout size={16} />}>
+                Logout
+              </Button>
+            </UnstyledButton>
+          </Stack>
+        </>
+      ) : (
+        <Stack spacing="md" ml={14}>
+          <Stack spacing="xs" align="stretch">
+            <Link to="/login">
+              <Button onClick={() => setDrawerOpened(false)} variant="default">Log in</Button>
+            </Link>
+          </Stack>
+          <Stack spacing="xs" align="stretch">
+            <Link to="/signup">
+              <Button onClick={() => setDrawerOpened(false)}>Sign up</Button>
+            </Link>
+          </Stack>
+        </Stack>
+      )}
+    </Stack>
 
-          <Group justify="right" className="pb-8 px-4 mt-8">
-            <Demo />
-          </Group>
-        </ScrollArea>
-      </Drawer>
+    <Group justify="right" pb="xl" px="md">
+      <Demo />
+    </Group>
+  </ScrollArea>
+</Drawer>
 
       <LoadingOverlay visible={isLoggingOut} overlayBlur={2} />
     </Box>

@@ -145,7 +145,7 @@ const CalendarView = () => {
   };
 
   return (
-    <Card shadow="sm" p="lg" radius="md" withBorder className="h-full">
+    <Card shadow="sm" p="lg" radius="md" withBorder className="h-full" mt={56}>
       <Group position="apart" mb="md">
         <Text weight={500} size="xl">Calendar</Text>
       </Group>
@@ -167,7 +167,7 @@ const CalendarView = () => {
 };
 
 const LoadingPlaceholder = () => (
-  <Card shadow="sm" p="lg" radius="md" withBorder className="h-full">
+  <Card shadow="sm" p="lg" radius="md" withBorder className="h-full" mt={56}>
     <Skeleton height={30} width="50%" mb="xl" />
     <Skeleton height={400} mb="xl" />
     <Group position="apart" mb="md">

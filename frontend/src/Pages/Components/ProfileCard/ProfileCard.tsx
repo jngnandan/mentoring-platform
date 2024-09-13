@@ -72,13 +72,13 @@ export default function ProfileCard({
         }`}
         ref={cardRef}
       >
-        <Badge
+        {/* <Badge
           color="gray"
           variant="outline"
           className="absolute top-3 right-3 text-gray-500 text-sm"
         >
           3 Spots Left
-        </Badge>
+        </Badge> */}
         <Flex gap="md">
           {profilepic && (
             <Link to={`/mentors/${id}`}>
@@ -133,14 +133,15 @@ export default function ProfileCard({
           </a>
         </Text>
         <Group mt="md" spacing="xs">
-          {[hobbies, achievements, contributions]
-            .filter(Boolean)
-            .map((item, index) => (
-              <Badge key={index} variant="light">
-                {item}
-              </Badge>
-            ))}
-        </Group>
+  {[hobbies, achievements, contributions]
+    .filter(Boolean) // Filter out any falsy values
+    .slice(0, 3) // Limit to the first 3 items
+    .map((item, index) => (
+      <Badge key={index} variant="light" className="line-clamp-1">
+        {item}
+      </Badge>
+    ))}
+</Group>
         <Flex justify="space-between" align="center" mt="xl">
           <div>
             <Text size="xs" color="dimmed">

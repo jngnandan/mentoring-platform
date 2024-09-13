@@ -79,7 +79,7 @@ function TabContent({ label }: { label: string }) {
     );
   }
   return (
-    <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
+    <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow" mt={56}>
       <Text size="xl" weight={500} mb="md">{label}</Text>
       <Text>This is the content for the {label} tab.</Text>
     </Card>

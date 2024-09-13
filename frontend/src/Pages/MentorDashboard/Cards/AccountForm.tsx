@@ -92,7 +92,7 @@ export default function AccountForm() {
 
   if (loading) {
     return (
-      <Paper shadow="sm" p="xl" withBorder>
+      <Paper shadow="sm" p="xl" withBorder mt={56}>
         <Skeleton height={30} width="50%" mb="xl" />
         <Skeleton height={100} mb="xl" />
         <Group mb="lg" align="center">
@@ -125,7 +125,7 @@ export default function AccountForm() {
   if (!profile) return <div>No profile data found.</div>;
 
   return (
-    <Paper shadow="sm" p="xl" withBorder>
+    <Paper shadow="sm" p="xl" withBorder mt={56}>
       <Text size="xl" weight={700} mb="lg">Personal Information</Text>
 
       <Alert icon={<IconInfoCircle size="1.5rem" />} title="Tips" color="blue" mb="lg" radius="md">

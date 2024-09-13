@@ -195,7 +195,7 @@ const MentorsPage = () => {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       >
-        <Group position="apart" mb="xl">
+        <Group position="apart" className="mt-20 mb-6">
           <Anchor component={Link} to="/mentors" size="sm">
             <Group spacing="xs">
               <IconChevronLeft style={{ width: rem(20), height: rem(20) }} />

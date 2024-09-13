@@ -6,7 +6,7 @@ function BookingCard() {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder my={4}>
+    <Card shadow="sm" padding="lg" radius="md" withBorder my={4} >
       <Group position="apart" mb="xs">
         <div>
           <Text weight={500}>John Greesham</Text>
