@@ -391,15 +391,15 @@ function Mentors() {
             </Box>
           </BlurSection>
 
-          <BlurSection
+          {/* <BlurSection
             id="profiles"
             activeSection={activeSection}
             setActiveSection={handleSetActiveSection}
-          >
+          > */}
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-2 gap-3 mx-4 mt-0">
               {loading ? renderSkeletonProfiles() : renderProfiles()}
             </div>
-          </BlurSection>
+          {/* </BlurSection> */}
         </Box>
       </Flex>
       <Box className="p-5 border-t border-gray-200 dark:border-gray-700">
