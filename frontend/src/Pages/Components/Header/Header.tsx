@@ -34,6 +34,7 @@ import {
 import protocon from "../../../Images/protocon.png";
 import { useContent } from "../../../context/ContentContext.tsx";
 import Demo from "./Demo.tsx";
+import classes from "./HeaderMegaMenu.module.css";
 
 const Header: React.FC = () => {
   const [drawerOpened, setDrawerOpened] = useState(false);
@@ -79,7 +80,7 @@ const Header: React.FC = () => {
       <header
         className={`${
           isHomePage ? "relative" : "fixed w-full top-0 z-50"
-        } bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 transition-all duration-300`}
+        } bg-white bg-opacity-10 backdrop-filter backdrop-blur-md border-b border-gray-200 dark:border-gray-700 transition-all duration-300`}
       >
         <Group justify="space-between" className="h-full px-4">
           <Link to="/">
@@ -178,105 +179,124 @@ const Header: React.FC = () => {
         padding="md"
         title="Navigation"
         zIndex={1000000}
-        className="bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 backdrop-filter backdrop-blur-lg"
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
 
-          <Stack spacing="md" className="px-4">
-            <Link
-              to="/"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              Home
-            </Link>
-            <Link
-              to="/mentors"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              Mentors
-            </Link>
-            <Link
-              to="/about"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              About Us
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-              onClick={() => setDrawerOpened(false)}
-            >
-              Contact Us
-            </Link>
+          {/* Using Stack for mobile navigation with individual stacks for each item */}
+          <Stack spacing="md" align="stretch">
+            <Stack spacing="xs" align="stretch">
+              <Link
+                to="/"
+                className={classes.link}
+                onClick={() => setDrawerOpened(false)}
+              >
+                Home
+              </Link>
+            </Stack>
+            <Stack spacing="xs" align="stretch">
+              <Link
+                to="/mentors"
+                className={classes.link}
+                onClick={() => setDrawerOpened(false)}
+              >
+                Mentors
+              </Link>
+            </Stack>
+            <Stack spacing="xs" align="stretch">
+              <Link
+                to="/about"
+                className={classes.link}
+                onClick={() => setDrawerOpened(false)}
+              >
+                About Us
+              </Link>
+            </Stack>
+            <Stack spacing="xs" align="stretch">
+              <Link
+                to="/contact"
+                className={classes.link}
+                onClick={() => setDrawerOpened(false)}
+              >
+                Contact Us
+              </Link>
+            </Stack>
 
             <Divider my="sm" />
 
+            {/* Display account-related links for logged-in users */}
             {isLoggedIn ? (
               <>
-                <Link
-                  to="/profile"
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-                  onClick={() => setDrawerOpened(false)}
-                >
-                  Account
-                </Link>
-                <Link
-                  to="/mentor-dashboard"
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-                  onClick={() => setDrawerOpened(false)}
-                >
-                  Mentor Dashboard
-                </Link>
-                <Link
-                  to="/profile"
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
-                  onClick={() => setDrawerOpened(false)}
-                >
-                  Bookings
-                </Link>
-                <UnstyledButton onClick={handleLogoutClick} className="w-full">
-                  <Button
-                    className="w-full mt-4"
+                <Stack spacing="xs" align="stretch">
+                  <Link
+                    to="/profile"
+                    className={classes.link}
                     onClick={() => setDrawerOpened(false)}
-                    leftSection={<IconLogout size={16} />}
                   >
-                    Logout
-                  </Button>
-                </UnstyledButton>
+                    Account
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <Link
+                    to="/mentor-dashboard"
+                    className={classes.link}
+                    onClick={() => setDrawerOpened(false)}
+                  >
+                    Mentor Dashboard
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <Link
+                    to="/profile"
+                    className={classes.link}
+                    onClick={() => setDrawerOpened(false)}
+                  >
+                    Bookings
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <UnstyledButton
+                    onClick={handleLogoutClick}
+                    className={classes.link}
+                  >
+                    <Button
+                      className="mt-4"
+                      onClick={() => setDrawerOpened(false)}
+                      leftSection={<IconLogout size={16} />}
+                    >
+                      Logout
+                    </Button>
+                  </UnstyledButton>
+                </Stack>
               </>
             ) : (
-              <Stack spacing="md" className="ml-3">
-                <Link to="/login">
-                  <Button
-                    onClick={() => setDrawerOpened(false)}
-                    variant="default"
-                    className="w-full"
-                  >
-                    Log in
-                  </Button>
-                </Link>
-                <Link to="/signup">
-                  <Button
-                    onClick={() => setDrawerOpened(false)}
-                    className="w-full"
-                  >
-                    Sign up
-                  </Button>
-                </Link>
+              <Stack spacing="md" ml={14}>
+                <Stack spacing="xs" align="stretch">
+                  <Link to="/login">
+                    <Button
+                      onClick={() => setDrawerOpened(false)}
+                      variant="default"
+                    >
+                      Log in
+                    </Button>
+                  </Link>
+                </Stack>
+                <Stack spacing="xs" align="stretch">
+                  <Link to="/signup">
+                    <Button onClick={() => setDrawerOpened(false)}>
+                      Sign up
+                    </Button>
+                  </Link>
+                </Stack>
               </Stack>
             )}
           </Stack>
 
-          <Group justify="right" className="pb-8 px-4 mt-8">
+          <Group justify="right" pb="xl" px="md">
             <Demo />
           </Group>
         </ScrollArea>
       </Drawer>
-
       <LoadingOverlay visible={isLoggingOut} overlayBlur={2} />
     </Box>
   );

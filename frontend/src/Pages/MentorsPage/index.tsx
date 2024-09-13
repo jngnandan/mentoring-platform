@@ -190,23 +190,23 @@ const MentorsPage = () => {
 
   return (
     <Container size="lg">
-      <BlurSection
+      {/* <BlurSection
         id="header"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
-        <Group position="apart" mb="xl">
-          <Anchor component={Link} to="/mentors" size="sm">
-            <Group spacing="xs">
-              <IconChevronLeft style={{ width: rem(20), height: rem(20) }} />
-              <Text>Find a Mentor</Text>
-            </Group>
-          </Anchor>
-          <Text size="sm" color="dimmed">
-            {profile.first_name} {profile.last_name}
-          </Text>
-        </Group>
-      </BlurSection>
+      > */}
+      <Group position="apart" mb="lg" mt="xl">
+        <Anchor component={Link} to="/mentors" size="sm">
+          <Group spacing="xs">
+            <IconChevronLeft style={{ width: rem(20), height: rem(20) }} />
+            <Text>Find a Mentor</Text>
+          </Group>
+        </Anchor>
+        <Text size="sm" color="dimmed">
+          {profile.first_name} {profile.last_name}
+        </Text>
+      </Group>
+      {/* </BlurSection> */}
 
       <BlurSection
         id="profile"

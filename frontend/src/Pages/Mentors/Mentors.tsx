@@ -308,7 +308,7 @@ function Mentors() {
             <FilterSearch />
           </Box>
         )}
-        <Box className="flex-1 flex flex-col overflow-auto">
+        <Box className="flex-1 flex flex-col overflow-auto my-6">
           <BlurSection
             id="search"
             activeSection={activeSection}
