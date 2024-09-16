@@ -31,30 +31,6 @@ interface ContentContextType {
   authDispatch: React.Dispatch<AuthAction>;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
-  products: string;
-  setProducts: React.Dispatch<React.SetStateAction<string>>;
-  compareProducts: string;
-  setCompareProducts: React.Dispatch<React.SetStateAction<string>>;
-  dataFromBackend: any[];
-  setDataFromBackend: React.Dispatch<React.SetStateAction<any[]>>;
-  appleData: any[];
-  samsungData: any[];
-  fetchSamsungData: () => Promise<void>;
-  xiaomiData: any[];
-  fetchXiaomiData: () => Promise<void>;
-  oneplusData: any[];
-  fetchOneplusData: () => Promise<void>;
-  fetchGoogleData: () => Promise<void>;
-  googleData: any[];
-  fetchMotorolaData: () => Promise<void>;
-  motorolaData: any[];
-  loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  fetchAppleData: () => Promise<void>;
-  checkboxData: string[];
-  setCheckboxData: React.Dispatch<React.SetStateAction<string[]>>;
-  mobilesData: any[];
-  fetchMobilesData: (brand: string) => Promise<any[]>;
   profilesData: any[];
   fetchProfilesData: () => Promise<void>;
   fetchProfileById: (id: string) => Promise<any>;
@@ -69,21 +45,9 @@ export const ContentContext = createContext<ContentContextType | undefined>(unde
 
 export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authState, authDispatch] = useReducer(authReducer, { user: null, loading: true });
-  const [products, setProducts] = useState<string>('super');
-  const [compareProducts, setCompareProducts] = useState<string>('Wow');
-  const [dataFromBackend, setDataFromBackend] = useState<any[]>([]);
-  const [appleData, setAppleData] = useState<any[]>([]);
-  const [samsungData, setSamsungData] = useState<any[]>([]);
-  const [xiaomiData, setXiaomiData] = useState<any[]>([]);
-  const [oneplusData, setOneplusData] = useState<any[]>([]);
-  const [motorolaData, setMotorolaData] = useState<any[]>([]);
-  const [googleData, setGoogleData] = useState<any[]>([]);
-  const [mobilesData, setMobilesData] = useState<any[]>([]);
-  const [checkboxData, setCheckboxData] = useState<string[]>(['cool']);
   const [profilesData, setProfilesData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [superProfiles, setSuperProfiles] = useState<any[]>([]);
-  
   const [colorScheme, setColorScheme] = useState<string>('light'); // Default to light
 
   const backendPort = 3002;
@@ -152,42 +116,6 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`http://${domainName}:${backendPort}/`);
-      if (!response.ok) throw new Error('Failed to fetch data');
-      const data = await response.json();
-      setDataFromBackend(data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMobilesData = async (brand: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://${domainName}:${backendPort}/mobiles/${brand}`);
-      if (!response.ok) throw new Error('Failed to fetch data');
-      const data = await response.json();
-      setMobilesData(data);
-      return data;
-    } catch (error) {
-      console.error(`Error fetching ${brand} data:`, error);
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchAppleData = async () => fetchMobilesData('apple');
-  const fetchSamsungData = async () => fetchMobilesData('samsung');
-  const fetchXiaomiData = async () => fetchMobilesData('xiaomi');
-  const fetchOneplusData = async () => fetchMobilesData('oneplus');
-  const fetchMotorolaData = async () => fetchMobilesData('motorola');
-  const fetchGoogleData = async () => fetchMobilesData('google');
-
   const fetchProfilesData = async () => {
     try {
       setLoading(true);
@@ -221,13 +149,6 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   useEffect(() => {
-    fetchData();
-    fetchAppleData();
-    fetchSamsungData();
-    fetchXiaomiData();
-    fetchOneplusData();
-    fetchMotorolaData();
-    fetchGoogleData();
     fetchProfilesData();
     fetchSuperbaseProfiles();
   }, []);
@@ -237,30 +158,6 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     authDispatch,
     signIn,
     signOut,
-    products,
-    setProducts,
-    compareProducts,
-    setCompareProducts,
-    dataFromBackend,
-    setDataFromBackend,
-    appleData,
-    samsungData,
-    fetchSamsungData,
-    xiaomiData,
-    fetchXiaomiData,
-    oneplusData,
-    fetchOneplusData,
-    googleData,
-    fetchGoogleData,
-    motorolaData,
-    fetchMotorolaData,
-    loading,
-    setLoading,
-    fetchAppleData,
-    checkboxData,
-    setCheckboxData,
-    mobilesData,
-    fetchMobilesData,
     profilesData,
     fetchProfilesData,
     fetchProfileById,
