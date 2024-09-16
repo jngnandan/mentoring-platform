@@ -113,7 +113,7 @@ export default function SignupForm() {
   );
 
   return (
-    <Container size={420} my={40}>
+    <Container size={420} my={96}>
       <Title ta="center" className={classes.title}>Sign up for an account</Title>
       <Text c="dimmed" size="sm" ta="center" mt={5}>
         Already have an account?{' '}

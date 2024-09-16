@@ -232,6 +232,7 @@ function Mentors() {
   const renderProfiles = () =>
     filteredProfiles.map((profile) => (
       <ProfileCard
+        skills={profile.skills}
         key={profile.id}
         id={profile.id}
         profilepic={profile.profilepic || "https://via.placeholder.com/150"}
@@ -312,7 +313,7 @@ function Mentors() {
       </Helmet>
       <Flex className="flex-grow">
         {!isMobile && (
-          <Box className="w-64 p-5 border-r border-gray-200 dark:border-gray-700">
+          <Box className="w-56 p-5 border-r">
             <FilterSearch />
           </Box>
         )}
@@ -402,7 +403,7 @@ function Mentors() {
           {/* </BlurSection> */}
         </Box>
       </Flex>
-      <Box className="p-5 border-t border-gray-200 dark:border-gray-700">
+      <Box className="p-5 border-t">
         {/* Footer Links Component */}
       </Box>
     </div>

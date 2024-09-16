@@ -72,7 +72,7 @@ const AvailabilitySettings = () => {
   };
 
   return (
-    <Card shadow="sm" p="lg" radius="md" withBorder className="h-full">
+    <Card shadow="sm" p="lg" radius="md" withBorder className="h-full mt-14">
       <Text weight={500} size="lg" mb="md">Posting Times</Text>
       {weekDays.map(day => (
         <Group key={day} position="apart" mb="xs" className="flex-wrap">

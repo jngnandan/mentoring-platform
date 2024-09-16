@@ -59,7 +59,7 @@ export default function FilterSearch() {
   ));
 
   return (
-    <nav className={classes.navbar}>
+    <nav className={classes.navbar} className='mt-14'>
       <div className={classes.header}>
         {/* Your header content */}
       </div>

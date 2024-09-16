@@ -54,7 +54,7 @@ const mockdata = [
 function TabContent({ label }: { label: string }) {
   if (label === 'Dashboard') {
     return (
-      <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
+      <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 mt-14 flex-grow">
         <Text size="xl" weight={700} mb="md">Dashboard</Text>
         <Tabs defaultValue="bookings">
           <Tabs.Panel value="bookings" pt="xs">
@@ -102,9 +102,9 @@ export default function MentorDashboard() {
   return (
     <div className="flex h-screen">
       <nav className="w-[80px] p-4 flex flex-col border-r border-gray-200 dark:border-gray-700">
-        <Center>
+        {/* <Center>
           <MantineLogo type="mark" size={30} />
-        </Center>
+        </Center> */}
         <div className="flex-1 mt-[50px]">
           <Stack justify="center" gap={0}>
             {links}

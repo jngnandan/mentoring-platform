@@ -12,7 +12,27 @@ import {
 import { IconStar, IconGift } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
-// ... (keep the existing interface and other imports)
+interface ProfileCardProps {
+  id: string;
+  profilepic: string;
+  linkUrl: string;
+  summary: string;
+  first_name: string;
+  last_name: string;
+  job: string;
+  bio: string;
+  company: string;
+  hobbies: string;
+  achievements: string;
+  contributions: string;
+  created_at: string;
+  social_media_links: string;
+  bookings: string;
+  badgeText: string;
+  badgeGradient: { from: string; to: string };
+  experience: string;
+  skills?: string; // Change this to string
+}
 
 export default function ProfileCard({
   id,
@@ -33,6 +53,7 @@ export default function ProfileCard({
   badgeText,
   badgeGradient,
   experience,
+  skills = "[]", // Default to an empty array as a string
 }: ProfileCardProps) {
   const name = `${first_name} ${last_name}`;
   const [isVisible, setIsVisible] = useState(false);
@@ -45,7 +66,7 @@ export default function ProfileCard({
       },
       {
         root: null,
-        rootMargin: "-10% 0px -10% 0px",
+        rootMargin: "0% 0px 0% 0px",
         threshold: 0,
       }
     );
@@ -61,24 +82,18 @@ export default function ProfileCard({
     };
   }, []);
 
+  // Parse skills string into an array
+  const skillArray = JSON.parse(skills); // Parse the skills string
+
   return (
     <Link to={`/mentors/${id}`}>
       <Card
         withBorder
         radius="md"
         p="md"
-        className={`relative m-3 transition-all duration-500 ease-out ${
-          isVisible ? "opacity-100 scale-100" : "opacity-50 scale-95 blur-sm"
-        }`}
+        className={`relative m-3 transition-all duration-500 ease-out opacity-100 scale-100`}
         ref={cardRef}
       >
-        {/* <Badge
-          color="gray"
-          variant="outline"
-          className="absolute top-3 right-3 text-gray-500 text-sm"
-        >
-          3 Spots Left
-        </Badge> */}
         <Flex gap="md">
           {profilepic && (
             <Link to={`/mentors/${id}`}>
@@ -132,16 +147,22 @@ export default function ProfileCard({
             {linkUrl}
           </a>
         </Text>
-        <Group mt="md" spacing="xs">
-  {[hobbies, achievements, contributions]
-    .filter(Boolean) // Filter out any falsy values
-    .slice(0, 3) // Limit to the first 3 items
-    .map((item, index) => (
-      <Badge key={index} variant="light" className="line-clamp-1">
-        {item}
-      </Badge>
-    ))}
-</Group>
+        {skillArray.length > 0 && (
+          <Group mt="md" spacing="xs">
+            {skillArray
+              .slice(0, 5)
+              .map((skill, index) => (
+                <Badge key={index} variant="light" size="sm">
+                  {skill}
+                </Badge>
+              ))}
+            {skillArray.length > 5 && (
+              <Text size="md" color="dimmed">
+                +{skillArray.length - 5} more
+              </Text>
+            )}
+          </Group>
+        )}
         <Flex justify="space-between" align="center" mt="xl">
           <div>
             <Text size="xs" color="dimmed">
