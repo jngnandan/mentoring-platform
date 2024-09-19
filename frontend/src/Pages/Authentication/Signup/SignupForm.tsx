@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import {
   TextInput,
   PasswordInput,
@@ -6,19 +7,21 @@ import {
   Title,
   Text,
   Container,
-  Button,
-  Alert,
   Group,
+  Button,
   Anchor,
-  Loader,
+  Alert,
   Skeleton,
+  rem,
 } from '@mantine/core';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, signInWithGoogle, signInWithTwitter } from '../../../firebase';
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import classes from './AuthenticationTitle.module.css';
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { IconUser, IconMail, IconLock } from '@tabler/icons-react';
 import GoogleButton from './GoogleButton.tsx';
 import TwitterButton from './TwitterButton.tsx';
+import classes from './AuthenticationTitle.module.css';
+
+const auth = getAuth();
 
 export default function SignupForm() {
   const [firstName, setFirstName] = useState('');
@@ -26,104 +29,146 @@ export default function SignupForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [authChecking, setAuthChecking] = useState(true);
+  const [error, setError] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate('/mentors');
-      }
-      setAuthChecking(false);
-    });
-
-    // Simulate initial loading
     const timer = setTimeout(() => {
       setInitialLoading(false);
     }, 400);
-
-    return () => {
-      unsubscribe();
-      clearTimeout(timer);
-    };
-  }, [navigate]);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const timeout = setTimeout(async () => {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const firebaseUser = userCredential.user;
-        console.log('User signed up:', { displayName: `${firstName} ${lastName}`, email: firebaseUser.email });
-        navigate('/mentors');
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          setError('This email is already registered. Please try logging in.');
-        } else {
-          setError(error.message || 'An error occurred during signup. Please try again.');
-        }
-      } finally {
-        setLoading(false);
+  
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+  
+      await sendEmailVerification(firebaseUser);
+      console.log('User signed up:', { displayName: `${firstName} ${lastName}`, email: firebaseUser.email });
+  
+      setError('Verification email sent! Please check your inbox to confirm your account.');
+  
+      navigate('/');
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please try logging in.');
+      } else {
+        setError(error.message || 'An error occurred during signup. Please try again.');
       }
-    }, 500);
-    return () => clearTimeout(timeout);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (authChecking) {
-    return (
-      <div className='flex flex-row justify-center items-center'>
-        <Container size={420} my={40}>
-          <Loader size="lg" variant="dots" />
-        </Container>
-      </div>
-    );
-  }
+  const pageTitle = "Sign Up | Protocon";
+  const pageDescription = "Create an account on Protocon to connect with mentors and start your learning journey.";
 
-  const FormContent = () => (
-    <>
-      {error && <Alert color="red" mb="md">{error}</Alert>}
-      <form onSubmit={handleSignup}>
-        <Group grow mb="md" mt="md">
-          <GoogleButton radius="xl" onClick={signInWithGoogle}>Google</GoogleButton>
-          <TwitterButton radius="xl" onClick={signInWithTwitter}>Twitter</TwitterButton>
-        </Group>
-        <TextInput label="First Name" placeholder="Your First Name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-        <TextInput label="Last Name" placeholder="Your Last Name" required mt="md" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-        <TextInput label="Email" placeholder="you@example.com" required mt="md" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <PasswordInput label="Password" placeholder="Your password" required mt="md" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <Button type="submit" fullWidth mt="xl" loading={loading}>Sign up</Button>
-      </form>
-    </>
-  );
-
-  const FormSkeleton = () => (
-    <>
-      <Skeleton height={36} radius="sm" mb="md" />
-      <Skeleton height={36} radius="sm" mb="md" />
-      <Skeleton height={50} radius="sm" mb="md" />
-      <Skeleton height={50} radius="sm" mb="md" />
-      <Skeleton height={50} radius="sm" mb="md" />
-      <Skeleton height={50} radius="sm" mb="md" />
-      <Skeleton height={36} radius="sm" mt="xl" />
-    </>
-  );
+  const iconStyle = { width: rem(18), height: rem(18) };
+  const userIcon = <IconUser style={iconStyle} />;
+  const emailIcon = <IconMail style={iconStyle} />;
+  const lockIcon = <IconLock style={iconStyle} />;
 
   return (
-    <Container size={420} my={96}>
-      <Title ta="center" className={classes.title}>Sign up for an account</Title>
-      <Text c="dimmed" size="sm" ta="center" mt={5}>
-        Already have an account?{' '}
-        <Link to='/login'>
-          <Anchor size="sm" component="button">Login</Anchor>
-        </Link>
-      </Text>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        {initialLoading ? <FormSkeleton /> : <FormContent />}
-      </Paper>
-    </Container>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://protocon.co.uk/signup" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <link rel="canonical" href="https://protocon.co.uk/signup" />
+      </Helmet>
+
+      <Container size={420} my={96}>
+        <Title ta="center" className={classes.title}>
+          Create an account
+        </Title>
+        <Text c="dimmed" size="sm" ta="center" mt={5}>
+          Already have an account?{' '}
+          <Link to="/login">
+            <Anchor size="sm" component="button">
+              Login
+            </Anchor>
+          </Link>
+        </Text>
+
+        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+          {initialLoading ? (
+            <>
+              <Skeleton height={36} radius="xl" mb="md" />
+              <Skeleton height={36} radius="xl" mb="md" />
+              <Skeleton height={36} radius="xl" mb="md" />
+              <Skeleton height={36} radius="xl" mb="md" />
+              <Skeleton height={50} width="100%" mb="md" />
+            </>
+          ) : (
+            <>
+              <Group grow mb="md" mt="md">
+                <GoogleButton radius="xl">Google</GoogleButton>
+                <TwitterButton radius="xl">Twitter</TwitterButton>
+              </Group>
+
+              {error && <Alert color="red" mb="md">{error}</Alert>}
+
+              <form onSubmit={handleSignup}>
+                <TextInput
+                  label="First Name"
+                  placeholder="Your First Name"
+                  required
+                  leftSection={userIcon}
+                  leftSectionPointerEvents="none"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  mb="md"
+                />
+                <TextInput
+                  label="Last Name"
+                  placeholder="Your Last Name"
+                  required
+                  leftSection={userIcon}
+                  leftSectionPointerEvents="none"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  mb="md"
+                />
+                <TextInput
+                  label="Email"
+                  placeholder="you@example.com"
+                  required
+                  leftSection={emailIcon}
+                  leftSectionPointerEvents="none"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  mb="md"
+                />
+                <PasswordInput
+                  label="Password"
+                  placeholder="Your password"
+                  required
+                  leftSection={lockIcon}
+                  leftSectionPointerEvents="none"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  mb="md"
+                />
+                <Button type="submit" fullWidth mt="xl" loading={loading}>
+                  Sign up
+                </Button>
+              </form>
+            </>
+          )}
+        </Paper>
+      </Container>
+    </>
   );
 }

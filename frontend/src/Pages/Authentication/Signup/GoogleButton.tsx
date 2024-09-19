@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, ButtonProps } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { signInWithGoogle } from '../../../firebase'; // Use signInWithGoogle now
+import { onAuthStateChanged } from 'firebase/auth';
+import { signInWithGoogle, auth } from '../../../firebase.js'; // Ensure this is correctly pointing to your firebase utility functions
 
 function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -12,7 +13,6 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
       style={{ width: '0.9rem', height: '0.9rem' }}
       {...props}
     >
-      {/* SVG paths for Google logo */}
       <path
         fill="#4285F4"
         d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
@@ -34,17 +34,37 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 }
 
 export default function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is already authenticated
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        // If the user is logged in, redirect them to the "mentors" page
+        navigate('/mentors');
+      }
+    });
+
+    // Cleanup the listener on component unmount
+    return () => unsubscribe();
+  }, [navigate]);
 
   const handleClick = async () => {
     try {
-      const user = await signInWithGoogle(); // Use signInWithGoogle
-      navigate('/welcome'); // Redirect to the welcome page after signup
+      await signInWithGoogle();
+      navigate('/mentors'); // Redirect to the "mentors" page after successful sign-in
     } catch (error) {
-      console.error('Error during Google Sign-Up:', error);
-      // Handle error, maybe show a notification to the user
+      console.error('Error signing in with Google:', error);
+      // Handle errors, show notifications, etc.
     }
   };
+
+  if (user) {
+    // If the user is already authenticated, you can hide the login button or show a loading state
+    return null;
+  }
 
   return <Button leftSection={<GoogleIcon />} variant="default" onClick={handleClick} {...props} />;
 }

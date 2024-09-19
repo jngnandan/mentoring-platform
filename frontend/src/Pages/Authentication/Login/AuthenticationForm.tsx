@@ -12,12 +12,14 @@ import {
   Group,
   Button,
   Skeleton,
+  rem,
 } from '@mantine/core';
 import { Link, useNavigate } from 'react-router-dom';
-import GoogleButton from './GoogleButton.tsx';
-import TwitterButton from './TwitterButton.tsx';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
+import { IconMail, IconLock,  } from '@tabler/icons-react';
+import GoogleButton from './GoogleButton.tsx';
+import TwitterButton from './TwitterButton.tsx';
 import classes from './AuthenticationTitle.module.css';
 
 // Firebase configuration
@@ -81,6 +83,10 @@ export default function AuthenticationForm() {
   const pageTitle = "Login | Protocon";
   const pageDescription = "Sign in to Protocon to connect with mentors and start your learning journey.";
 
+  const iconStyle = { width: rem(18), height: rem(18) };
+  const emailIcon = <IconMail style={iconStyle} />;
+  const lockIcon = <IconLock style={iconStyle} />;
+
   return (
     <>
       <Helmet>
@@ -139,6 +145,8 @@ export default function AuthenticationForm() {
                     label="Email"
                     placeholder="you@example.com"
                     required
+                    leftSection={emailIcon}
+                    leftSectionPointerEvents="none"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     mb="md"
@@ -148,6 +156,8 @@ export default function AuthenticationForm() {
                     label="Password"
                     placeholder="Your password"
                     required
+                    leftSection={lockIcon}
+                    leftSectionPointerEvents="none"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     mb="md"
@@ -161,7 +171,7 @@ export default function AuthenticationForm() {
                       </Anchor>
                     </Link>
                   </Group>
-                  <Button type="submit" fullWidth mt="xl" disabled={loading}>
+                  <Button type="submit" fullWidth mt="xl" loading={loading}>
                     Sign in
                   </Button>
                 </form>
