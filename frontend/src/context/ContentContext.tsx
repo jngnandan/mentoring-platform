@@ -26,6 +26,17 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
+interface Notification {
+  id: number;
+  type: 'booking' | 'announcement';
+  action?: string;
+  user?: string;
+  avatar?: string;
+  title?: string;
+  link: string;
+  read: boolean;
+}
+
 interface ContentContextType {
   authState: AuthState;
   authDispatch: React.Dispatch<AuthAction>;
@@ -37,8 +48,14 @@ interface ContentContextType {
   superProfiles: any[];
   setSuperProfiles: React.Dispatch<React.SetStateAction<any[]>>;
   fetchSuperbaseProfiles: () => Promise<void>;
-  colorScheme: string; // Added for dark mode
-  toggleColorScheme: () => void; // Function to toggle color scheme
+  colorScheme: string;
+  toggleColorScheme: () => void;
+  notifications: Notification[];
+  addNotification: (notification: Omit<Notification, 'id' | 'read'>) => void;
+  markNotificationAsRead: (id: number) => void;
+  markAllNotificationsAsRead: () => void;
+  clearAllNotifications: () => void;
+  unreadNotificationsCount: number;
 }
 
 export const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -48,7 +65,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [profilesData, setProfilesData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [superProfiles, setSuperProfiles] = useState<any[]>([]);
-  const [colorScheme, setColorScheme] = useState<string>('light'); // Default to light
+  const [colorScheme, setColorScheme] = useState<string>('light');
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const backendPort = 3002;
   const domainName = "localhost";
@@ -148,6 +166,33 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setColorScheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
+  const addNotification = (notification: Omit<Notification, 'id' | 'read'>) => {
+    setNotifications(prev => [
+      ...prev,
+      { ...notification, id: Date.now(), read: false }
+    ]);
+  };
+
+  const markNotificationAsRead = (id: number) => {
+    setNotifications(prev =>
+      prev.map(notif =>
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    );
+  };
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications(prev =>
+      prev.map(notif => ({ ...notif, read: true }))
+    );
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const unreadNotificationsCount = notifications.filter(n => !n.read).length;
+
   useEffect(() => {
     fetchProfilesData();
     fetchSuperbaseProfiles();
@@ -164,8 +209,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     superProfiles,
     setSuperProfiles,
     fetchSuperbaseProfiles,
-    colorScheme, 
-    toggleColorScheme // Added to toggle color scheme
+    colorScheme,
+    toggleColorScheme,
+    notifications,
+    addNotification,
+    markNotificationAsRead,
+    markAllNotificationsAsRead,
+    clearAllNotifications,
+    unreadNotificationsCount
   };
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;

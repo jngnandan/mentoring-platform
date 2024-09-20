@@ -20,6 +20,7 @@ import { IconUser, IconMail, IconLock } from '@tabler/icons-react';
 import GoogleButton from './GoogleButton.tsx';
 import TwitterButton from './TwitterButton.tsx';
 import classes from './AuthenticationTitle.module.css';
+import { useContent } from '../../../context/ContentContext.tsx'; // Adjust the import path as needed
 
 const auth = getAuth();
 
@@ -32,6 +33,7 @@ export default function SignupForm() {
   const [error, setError] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
   const navigate = useNavigate();
+  const { addNotification } = useContent();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,6 +54,13 @@ export default function SignupForm() {
       await sendEmailVerification(firebaseUser);
       console.log('User signed up:', { displayName: `${firstName} ${lastName}`, email: firebaseUser.email });
   
+      // Send push notification
+      addNotification({
+        type: 'announcement',
+        title: 'Account Created Successfully',
+        link: '/profile',
+      });
+
       setError('Verification email sent! Please check your inbox to confirm your account.');
   
       navigate('/');
