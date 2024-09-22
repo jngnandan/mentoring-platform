@@ -7,6 +7,12 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const locales = {
   'en-US': enUS,
@@ -22,7 +28,7 @@ const localizer = dateFnsLocalizer({
 
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const AvailabilitySettings = () => {
+const AvailabilitySettings = ({ onAvailabilityChange, userId }) => {
   const [availabilities, setAvailabilities] = useState(
     weekDays.reduce((acc, day) => ({
       ...acc,
@@ -71,6 +77,27 @@ const AvailabilitySettings = () => {
     }
   };
 
+  const saveAvailability = async () => {
+    try {
+      const availabilityData = JSON.stringify(availabilities);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ availability: availabilityData }) // Ensure your column is named 'availability'
+        .match({ id: userId }); // Assuming 'id' is the unique identifier for the profile
+
+      if (error) throw error;
+
+      // Optionally notify the user of a successful save
+      console.log("Availability saved successfully!");
+    } catch (error) {
+      console.error("Error saving availability:", error);
+    }
+  };
+
+  useEffect(() => {
+    onAvailabilityChange(availabilities);
+  }, [availabilities]);
+
   return (
     <Card shadow="sm" p="lg" radius="md" withBorder className="h-full mt-14">
       <Text weight={500} size="lg" mb="md">Posting Times</Text>
@@ -108,41 +135,15 @@ const AvailabilitySettings = () => {
         <Button onClick={addTime} fullWidth mt="sm">Add</Button>
         <Button variant="outline" color="gray" fullWidth >Clear All</Button>
         <Button variant="outline" color="gray" fullWidth >Disable All</Button>
-        <Button color="green" fullWidth >Save</Button>
+        <Button color="green" fullWidth onClick={saveAvailability}>Save</Button> {/* Save button */}
       </Group>
     </Card>
   );
 };
 
-const CalendarView = () => {
+const CalendarView = ({ events }) => {
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState(Views.MONTH);
-  const [events] = useState([
-    {
-      title: 'Sample Event',
-      start: new Date(2023, 8, 10, 10, 0),
-      end: new Date(2023, 8, 10, 12, 0),
-    },
-    // Add more events as needed
-  ]);
-
-  const handleNavigate = (action) => {
-    const newDate = new Date(date);
-    switch (action) {
-      case 'PREV':
-        newDate.setMonth(newDate.getMonth() - 1);
-        break;
-      case 'NEXT':
-        newDate.setMonth(newDate.getMonth() + 1);
-        break;
-      case 'TODAY':
-        newDate.setTime(new Date().getTime());
-        break;
-      default:
-        break;
-    }
-    setDate(newDate);
-  };
 
   return (
     <Card shadow="sm" p="lg" radius="md" withBorder className="h-full" mt={56}>
@@ -180,9 +181,42 @@ const LoadingPlaceholder = () => (
 
 export const CalendarWithAvailability = () => {
   const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState([]);
+  const userId = "YOUR_USER_ID"; // Replace this with the actual user ID
+
+  const handleAvailabilityChange = (availabilities) => {
+    const newEvents = [];
+
+    for (const day of weekDays) {
+      if (availabilities[day].enabled) {
+        availabilities[day].times.forEach(timeRange => {
+          const start = new Date();
+          const end = new Date();
+          const [startTime, endTime] = timeRange.split(' - ');
+
+          const today = new Date();
+          const dayIndex = weekDays.indexOf(day);
+          const daysToAdd = (dayIndex - today.getDay() + 7) % 7;
+
+          start.setDate(today.getDate() + daysToAdd);
+          end.setDate(today.getDate() + daysToAdd);
+
+          start.setHours(parseInt(startTime.split(':')[0]), parseInt(startTime.split(':')[1]), 0);
+          end.setHours(parseInt(endTime.split(':')[0]), parseInt(endTime.split(':')[1]), 0);
+
+          newEvents.push({
+            title: `${day} Availability`,
+            start,
+            end,
+          });
+        });
+      }
+    }
+
+    setEvents(newEvents);
+  };
 
   useEffect(() => {
-    // Simulate loading delay
     const timer = setTimeout(() => setLoading(false), 400);
     return () => clearTimeout(timer);
   }, []);
@@ -203,10 +237,10 @@ export const CalendarWithAvailability = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-screen">
       <div className="lg:col-span-8 h-[600px] lg:h-auto">
-        <CalendarView />
+        <CalendarView events={events} />
       </div>
       <div className="lg:col-span-4 h-[600px] lg:h-auto overflow-y-auto">
-        <AvailabilitySettings />
+        <AvailabilitySettings onAvailabilityChange={handleAvailabilityChange} userId={userId} /> {/* Pass userId to AvailabilitySettings */}
       </div>
     </div>
   );
