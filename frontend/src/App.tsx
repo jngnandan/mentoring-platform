@@ -85,7 +85,15 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/mentor-register" element={<MentorRegister />} />
+         <Route
+          path="/mentor-register"
+          element={
+            <ProtectedRoute>
+              <MentorRegister />
+            </ProtectedRoute>
+          }
+        />
+        {/* <Route path="/mentor-register" element={<MentorRegister />} /> */}
         <Route path="/mentors/:id" element={<MentorsPage />} />
         <Route path="/mentor-dashboard" element={<MentorDashboard/>} />
 

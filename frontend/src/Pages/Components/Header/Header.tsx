@@ -33,11 +33,15 @@ import {
   IconBoxMultiple,
   IconBellRinging,
   IconAt,
+  IconLayoutGrid
 } from "@tabler/icons-react";
 import protocon from "../../../Images/protocon.png";
 import { useContent } from "../../../context/ContentContext.tsx";
 import Demo from "./Demo.tsx";
 import classes from './HeaderMegaMenu.module.css';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
 
 const Header: React.FC = () => {
   const [drawerOpened, setDrawerOpened] = useState(false);
@@ -81,6 +85,32 @@ const Header: React.FC = () => {
   const handleMarkAllAsRead = () => {
     markAllNotificationsAsRead();
     clearAllNotifications();
+  };
+
+  const handleSwitchToMentoring = async () => {
+    if (user && user.email) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          // Profile exists, redirect to mentor dashboard
+          navigate('/mentor-dashboard');
+        } else {
+          // Profile doesn't exist, redirect to mentor registration
+          navigate('/mentor-register');
+        }
+      } catch (error) {
+        console.error('Error checking mentor profile:', error);
+        // Fallback to mentor registration in case of error
+        navigate('/mentor-register');
+      }
+    }
   };
 
   const isHomePage = location.pathname === "/";
@@ -203,16 +233,17 @@ const Header: React.FC = () => {
                       Account
                     </Menu.Item>
                   </Link>
-                  <Link to="/mentor-dashboard">
+                  {/* <Link to="/mentor-dashboard">
                     <Menu.Item leftSection={<IconSettings size={14} />}>
                       Mentor Dashboard
                     </Menu.Item>
-                  </Link>
-                  <Link to="/profile">
-                    <Menu.Item leftSection={<IconBoxMultiple size={14} />}>
-                      Bookings
-                    </Menu.Item>
-                  </Link>
+                  </Link> */}
+                  <Menu.Item 
+                    leftSection={<IconLayoutGrid size={14} />}
+                    onClick={handleSwitchToMentoring}
+                  >
+                    Switch to Mentoring
+                  </Menu.Item>
                   <Menu.Item leftSection={<IconLogout size={14} />} onClick={handleLogoutClick}>
                     Logout
                   </Menu.Item>
@@ -322,13 +353,15 @@ const Header: React.FC = () => {
                 >
                   Mentor Dashboard
                 </Link>
-                <Link
-                  to="/profile"
+                <UnstyledButton
+                  onClick={() => {
+                    handleSwitchToMentoring();
+                    setDrawerOpened(false);
+                  }}
                   className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`}
-                  onClick={() => setDrawerOpened(false)}
                 >
-                  Bookings
-                </Link>
+                  Switch to Mentoring
+                </UnstyledButton>
                 <UnstyledButton
                   onClick={handleLogoutClick}
                   className={`bg-opacity-20 hover:bg-opacity-30 backdrop-filter backdrop-blur-md transition-all duration-300 ${classes.link}`}
