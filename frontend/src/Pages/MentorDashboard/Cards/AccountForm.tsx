@@ -1,15 +1,101 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Paper, Text, Alert, Group, Button, Image, TextInput, Select, Textarea,
-  Checkbox, Notification, MultiSelect, Chip, ActionIcon, Box, Grid, Skeleton
+  Paper, Text, Alert, Group, Button, TextInput, Select, Textarea,
+  Notification, MultiSelect, Box, Grid, Skeleton, Modal,
+  PillsInput, Pill, Combobox, CheckIcon, useCombobox, Loader
 } from '@mantine/core';
-import { IconInfoCircle, IconUpload, IconChevronDown, IconBrandLinkedin, IconBrandTwitter } from '@tabler/icons-react';
+import { IconInfoCircle, IconUpload, IconChevronDown, IconBrandLinkedin, IconBrandTwitter, IconTrash } from '@tabler/icons-react';
 import { createClient } from '@supabase/supabase-js';
+import { getAuth, deleteUser } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Cloudinary configuration
+// const cloudinary = require('cloudinary').v2;
+// cloudinary.config({
+//   cloud_name: 'dgcfly5zo',
+//   api_key: '176928181688396',
+//   api_secret: 'K5nDfwF7QFPLbhKxs8XqUwNgYAk'
+// });
+
+const PillsInputField = ({ value = [], onChange, placeholder }) => {
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+    onDropdownOpen: () => combobox.updateSelectedOptionIndex('active'),
+  });
+
+  const [search, setSearch] = useState('');
+
+  const handleValueSelect = (val) => {
+    if (val.trim() !== '' && !value.includes(val.trim())) {
+      onChange([...value, val.trim()]);
+    }
+    setSearch('');
+  };
+
+  const handleValueRemove = (val) => {
+    onChange(value.filter((v) => v !== val));
+  };
+
+  const values = value.map((item) => (
+    <Pill key={item} withRemoveButton onRemove={() => handleValueRemove(item)}>
+      {item}
+    </Pill>
+  ));
+
+  const options = value
+    .filter((item) => item.toLowerCase().includes(search.trim().toLowerCase()))
+    .map((item) => (
+      <Combobox.Option value={item} key={item}>
+        <Group gap="sm">
+          {value.includes(item) ? <CheckIcon size={12} /> : null}
+          <span>{item}</span>
+        </Group>
+      </Combobox.Option>
+    ));
+
+  return (
+    <Combobox store={combobox} onOptionSubmit={handleValueSelect}>
+      <Combobox.DropdownTarget>
+        <PillsInput onClick={() => combobox.openDropdown()}>
+          <Pill.Group>
+            {values}
+            <Combobox.EventsTarget>
+              <PillsInput.Field
+                onFocus={() => combobox.openDropdown()}
+                onBlur={() => combobox.closeDropdown()}
+                value={search}
+                placeholder={placeholder}
+                onChange={(event) => {
+                  combobox.updateSelectedOptionIndex();
+                  setSearch(event.currentTarget.value);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && search.trim() !== '') {
+                    event.preventDefault();
+                    handleValueSelect(search.trim());
+                  } else if (event.key === 'Backspace' && search.length === 0) {
+                    event.preventDefault();
+                    handleValueRemove(value[value.length - 1]);
+                  }
+                }}
+              />
+            </Combobox.EventsTarget>
+          </Pill.Group>
+        </PillsInput>
+      </Combobox.DropdownTarget>
+      <Combobox.Dropdown>
+        <Combobox.Options>
+          {options.length > 0 ? options : <Combobox.Empty>Type to add new items</Combobox.Empty>}
+        </Combobox.Options>
+      </Combobox.Dropdown>
+    </Combobox>
+  );
+};
 
 export default function AccountForm() {
   const [profile, setProfile] = useState({
@@ -26,43 +112,54 @@ export default function AccountForm() {
     hobbies: [],
     achievements: [],
     contributions: [],
-    employment: []
+    employment: [],
+    profilepic: ''
   });
   const [loading, setLoading] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
-  const [newSkill, setNewSkill] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        setError('No authenticated user found.');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .limit(1);
-
-      // Simulate loading delay
-      await new Promise(resolve => setTimeout(resolve, 400));
+        .eq('email', currentUser.email)
+        .single();
 
       if (error) {
         setError('Error fetching profile: ' + error.message);
-      } else if (data.length > 0) {
-        const fetchedProfile = data[0];
+      } else if (data) {
         setProfile({
-          ...fetchedProfile,
-          skills: Array.isArray(fetchedProfile.skills) ? fetchedProfile.skills : [],
-          hobbies: Array.isArray(fetchedProfile.hobbies) ? fetchedProfile.hobbies : [],
-          achievements: Array.isArray(fetchedProfile.achievements) ? fetchedProfile.achievements : [],
-          contributions: Array.isArray(fetchedProfile.contributions) ? fetchedProfile.contributions : [],
-          employment: Array.isArray(fetchedProfile.employment) ? fetchedProfile.employment : []
+          ...data,
+          skills: Array.isArray(data.skills) ? data.skills : [],
+          hobbies: Array.isArray(data.hobbies) ? data.hobbies : [],
+          achievements: Array.isArray(data.achievements) ? data.achievements : [],
+          contributions: Array.isArray(data.contributions) ? data.contributions : [],
+          employment: Array.isArray(data.employment) ? data.employment : []
         });
       } else {
-        setError('No profile data found.');
+        setError('No profile data found for the current user.');
       }
       setLoading(false);
     };
 
     fetchProfile();
   }, []);
+
+  
 
   const handleUpdateProfile = async () => {
     const { error } = await supabase
@@ -79,15 +176,71 @@ export default function AccountForm() {
     }
   };
 
-  const addSkill = () => {
-    if (newSkill && !profile.skills.includes(newSkill)) {
-      setProfile({ ...profile, skills: [...profile.skills, newSkill] });
-      setNewSkill('');
+  const handleInputChange = (name, value) => {
+    setProfile((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'protocon');
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinary.config().cloud_name}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      if (data.secure_url) {
+        handleInputChange('profilepic', data.secure_url);
+        setSuccessMessage('Profile picture updated successfully!');
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setError('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
-  const removeSkill = (skill) => {
-    setProfile({ ...profile, skills: profile.skills.filter(s => s !== skill) });
+  const handleDeleteAccount = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      try {
+        // Delete user data from Supabase
+        const { error: supabaseError } = await supabase
+          .from('profiles')
+          .delete()
+          .eq('id', profile.id);
+
+        if (supabaseError) throw supabaseError;
+
+        // Delete user from Firebase
+        await deleteUser(user);
+
+        // Navigate to home page or login page
+        navigate('/');
+      } catch (error) {
+        console.error('Error deleting account:', error);
+        setError('Failed to delete account. Please try again.');
+      } finally {
+        setDeleteModalOpen(false);
+      }
+    } else {
+      setError('No authenticated user found.');
+    }
   };
 
   if (loading) {
@@ -137,17 +290,31 @@ export default function AccountForm() {
       </Alert>
 
       <Group mb="lg" align="center">
-  <img
-    src={profile.profilepic || "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"}
-    alt="Profile"
-    style={{ borderRadius: '4%'}}
-    withBoarder
-    sizes='lg'
-  />
-  <Button leftIcon={<IconUpload size={18} />} variant="outline" size="md">
-    Upload Photo
-  </Button>
-</Group>
+        <div style={{ position: 'relative', width: '100px', height: '100px' }}>
+          {uploadingImage ? (
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(255,255,255,0.7)' }}>
+              <Loader size="sm" />
+            </div>
+          ) : null}
+          <img
+            src={profile.profilepic || "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"}
+            alt="Profile"
+            style={{ borderRadius: '4%', width: '100px', height: '100px', objectFit: 'cover' }}
+          />
+        </div>
+        <input
+          type="file"
+          id="profilePicUpload"
+          style={{ display: 'none' }}
+          onChange={handlePhotoUpload}
+          accept="image/*"
+        />
+        <label htmlFor="profilePicUpload">
+          <Button component="span" leftIcon={<IconUpload size={18} />} variant="outline" size="md">
+            Upload Photo
+          </Button>
+        </label>
+      </Group>
 
       <Grid gutter="md">
         <Grid.Col span={6}>
@@ -155,7 +322,7 @@ export default function AccountForm() {
             label="First Name"
             placeholder="First Name"
             value={profile.first_name}
-            onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
+            onChange={(e) => handleInputChange('first_name', e.target.value)}
             required
           />
         </Grid.Col>
@@ -164,7 +331,7 @@ export default function AccountForm() {
             label="Last Name"
             placeholder="Last Name"
             value={profile.last_name}
-            onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
+            onChange={(e) => handleInputChange('last_name', e.target.value)}
             required
           />
         </Grid.Col>
@@ -173,7 +340,7 @@ export default function AccountForm() {
             label="Email"
             placeholder="Email"
             value={profile.email}
-            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+            onChange={(e) => handleInputChange('email', e.target.value)}
             required
           />
         </Grid.Col>
@@ -183,7 +350,7 @@ export default function AccountForm() {
             placeholder="Select Location"
             data={['United Kingdom', 'United States', 'Canada', 'Australia']}
             value={profile.location}
-            onChange={(value) => setProfile({ ...profile, location: value })}
+            onChange={(value) => handleInputChange('location', value)}
             rightSection={<IconChevronDown size={14} />}
           />
         </Grid.Col>
@@ -193,7 +360,7 @@ export default function AccountForm() {
         label="Job Title"
         placeholder="Job Title"
         value={profile.job}
-        onChange={(e) => setProfile({ ...profile, job: e.target.value })}
+        onChange={(e) => handleInputChange('job', e.target.value)}
         mt="md"
       />
 
@@ -203,7 +370,7 @@ export default function AccountForm() {
             label="LinkedIn"
             placeholder="LinkedIn URL"
             value={profile.linkedin_url}
-            onChange={(e) => setProfile({ ...profile, linkedin_url: e.target.value })}
+            onChange={(e) => handleInputChange('linkedin_url', e.target.value)}
             icon={<IconBrandLinkedin size={18} />}
           />
         </Grid.Col>
@@ -212,7 +379,7 @@ export default function AccountForm() {
             label="Twitter"
             placeholder="Twitter URL"
             value={profile.twitter_url}
-            onChange={(e) => setProfile({ ...profile, twitter_url: e.target.value })}
+            onChange={(e) => handleInputChange('twitter_url', e.target.value)}
             icon={<IconBrandTwitter size={18} />}
           />
         </Grid.Col>
@@ -222,65 +389,39 @@ export default function AccountForm() {
         label="Profile Summary"
         placeholder="Write a brief summary about yourself"
         value={profile.summary}
-        onChange={(e) => setProfile({ ...profile, summary: e.target.value })}
+        onChange={(e) => handleInputChange('summary', e.target.value)}
         minRows={4}
         mt="md"
         autosize
       />
 
       <Text size="lg" weight={700} mt="xl" mb="md">Skills</Text>
-      <Group spacing={5} mb="sm">
-        {profile.skills.map((skill, index) => (
-          <Chip
-            key={index}
-            checked={true}
-            variant="filled"
-            onDelete={() => removeSkill(skill)}
-          >
-            {skill}
-          </Chip>
-        ))}
-      </Group>
-      <Group>
-        <TextInput
-          placeholder="Add a new skill"
-          value={newSkill}
-          onChange={(e) => setNewSkill(e.target.value)}
-          style={{ flex: 1 }}
-        />
-        <Button onClick={addSkill}>Add Skill</Button>
-      </Group>
+
+<Text size="lg" weight={700} mt="xl" mb="md">Skills</Text>
+<PillsInputField
+  value={profile.skills || []} // Ensure it's an array
+  onChange={(value) => handleInputChange('skills', value)}
+  placeholder="Add skills"
+/>
 
       <Text size="lg" weight={700} mt="xl" mb="md">Hobbies</Text>
-      <MultiSelect
-        data={profile.hobbies}
-        placeholder="Select or add hobbies"
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Add ${query}`}
-        onCreate={(query) => {
-          const item = { value: query, label: query };
-          setProfile({ ...profile, hobbies: [...profile.hobbies, query] });
-          return item;
-        }}
+      <PillsInputField
         value={profile.hobbies}
-        onChange={(value) => setProfile({ ...profile, hobbies: value })}
+        onChange={(value) => handleInputChange('hobbies', value)}
+        placeholder="Add hobbies"
       />
 
       <Text size="lg" weight={700} mt="xl" mb="md">Achievements</Text>
-      <Textarea
-        placeholder="List your achievements"
-        value={profile.achievements.join('\n')}
-        onChange={(e) => setProfile({ ...profile, achievements: e.target.value.split('\n') })}
-        minRows={3}
+      <PillsInputField
+        value={profile.achievements}
+        onChange={(value) => handleInputChange('achievements', value)}
+        placeholder="Add achievements"
       />
-
       <Text size="lg" weight={700} mt="xl" mb="md">Contributions</Text>
-      <Textarea
-        placeholder="List your contributions"
-        value={profile.contributions.join('\n')}
-        onChange={(e) => setProfile({ ...profile, contributions: e.target.value.split('\n') })}
-        minRows={3}
+      <PillsInputField
+        value={profile.contributions}
+        onChange={(value) => handleInputChange('contributions', value)}
+        placeholder="Add contributions"
       />
 
       <Text size="lg" weight={700} mt="xl" mb="md">Employment History</Text>
@@ -293,7 +434,7 @@ export default function AccountForm() {
             onChange={(e) => {
               const updatedEmployment = [...profile.employment];
               updatedEmployment[index].job = e.target.value;
-              setProfile({ ...profile, employment: updatedEmployment });
+              handleInputChange('employment', updatedEmployment);
             }}
             mb="sm"
           />
@@ -304,7 +445,7 @@ export default function AccountForm() {
             onChange={(e) => {
               const updatedEmployment = [...profile.employment];
               updatedEmployment[index].company = e.target.value;
-              setProfile({ ...profile, employment: updatedEmployment });
+              handleInputChange('employment', updatedEmployment);
             }}
             mb="sm"
           />
@@ -316,7 +457,7 @@ export default function AccountForm() {
               onChange={(e) => {
                 const updatedEmployment = [...profile.employment];
                 updatedEmployment[index].start_date = e.target.value;
-                setProfile({ ...profile, employment: updatedEmployment });
+                handleInputChange('employment', updatedEmployment);
               }}
             />
             <TextInput
@@ -326,25 +467,30 @@ export default function AccountForm() {
               onChange={(e) => {
                 const updatedEmployment = [...profile.employment];
                 updatedEmployment[index].end_date = e.target.value;
-                setProfile({ ...profile, employment: updatedEmployment });
+                handleInputChange('employment', updatedEmployment);
               }}
             />
           </Group>
         </Box>
       ))}
       <Button
-        onClick={() => setProfile({
-          ...profile,
-          employment: [...profile.employment, { job: '', company: '', start_date: '', end_date: '' }]
-        })}
+        onClick={() => handleInputChange('employment', [...profile.employment, { job: '', company: '', start_date: '', end_date: '' }])}
         variant="outline"
         mb="lg"
       >
         Add Employment
       </Button>
 
-      <Group position="right" mt="xl">
+      <Group position="apart" mt="xl">
         <Button onClick={handleUpdateProfile} size="lg">Update Profile</Button>
+        <Button 
+          color="red" 
+          variant='outline'
+          leftIcon={<IconTrash size={14} />}
+          onClick={() => setDeleteModalOpen(true)}
+        >
+          Close Account
+        </Button>
       </Group>
 
       {successMessage && (
@@ -352,6 +498,24 @@ export default function AccountForm() {
           {successMessage}
         </Notification>
       )}
+
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Close your account"
+        size="md"
+      >
+        <Text size="sm" mb="xl">
+          Once you delete your account, there's no going back. Please be certain!
+        </Text>
+        <Button 
+          color="red" 
+          fullWidth 
+          onClick={handleDeleteAccount}
+        >
+          Delete account
+        </Button>
+      </Modal>
     </Paper>
   );
 }
