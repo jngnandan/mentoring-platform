@@ -9,13 +9,21 @@ import '@mantine/core/styles.css';
 import { MedusaProvider } from 'medusa-react';
 import { Client } from '@medusajs/medusa-js';
 import { QueryClient } from "@tanstack/react-query";
-import Demo from './Pages/Components/Header/Demo.tsx'; // Correct relative import
+import Demo from './Pages/Components/Header/Demo.tsx'; // Ensure relative import path is correct
+
+// Load the bearer token securely from environment variables
+const medusaBearerToken = process.env.REACT_APP_MEDUSA_BEARER_TOKEN;
+
+// Check if the token is loaded successfully
+if (!medusaBearerToken) {
+  console.error("Medusa bearer token is missing. Please ensure it's set in your environment variables.");
+}
 
 // Create the Medusa client with the Publishable API key
 const medusaClient = new Client({
-  baseUrl: 'http://localhost:9000',
+  baseUrl: process.env.REACT_APP_MEDUSA_BASE_URL || 'http://localhost:9000', // Ensure baseUrl is set via env for production
   maxRetries: 3,
-  bearerToken: 'productspk_01J6Z89AZ36TPD4JZTE2P3BKNXSep 4th 2024, 8:30:51', // Ensure to keep this secure in production
+  bearerToken: medusaBearerToken, // Secure the token
 });
 
 // Create a QueryClient instance
@@ -43,13 +51,15 @@ const theme = createTheme({
   },
 });
 
+// Render the app
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <MedusaProvider client={medusaClient} queryClientProviderProps={{ client: queryClient }}>
         <ContentProvider>
-          {/* <Demo />  */}
+          {/* Uncomment the Demo component if needed */}
+          {/* <Demo /> */}
           <App />
         </ContentProvider>
       </MedusaProvider>

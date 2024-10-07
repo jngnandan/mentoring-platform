@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import {
   Container,
   Card,
@@ -17,19 +18,37 @@ import {
   rem,
   Modal,
   Textarea,
+  Alert,
 } from "@mantine/core";
 import {
   IconBrandLinkedin,
   IconBrandTwitter,
-  IconChevronLeft,
+  IconChevronRight,
   IconBriefcase,
   IconCalendarStats,
   IconClock,
   IconMessage,
+  IconAlertCircle,
 } from "@tabler/icons-react";
-import { Link, useParams } from "react-router-dom";
 import { ContentContext } from "../../context/ContentContext.tsx";
 import MentorshipPlans from "./MentorshipPlans.tsx";
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import PaymentForm from '../PaymentForm.tsx';
+
+// Attempt to load Stripe
+let stripePromise;
+try {
+  const stripeKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+  console.log("Stripe Key:", stripeKey); // For debugging, remove in production
+  if (stripeKey) {
+    stripePromise = loadStripe(stripeKey);
+  } else {
+    console.error("Stripe publishable key is not set in environment variables.");
+  }
+} catch (error) {
+  console.error("Error loading Stripe:", error);
+}
 
 const BlurSection: React.FC<BlurSectionProps> = ({
   children,
@@ -81,6 +100,7 @@ const BlurSection: React.FC<BlurSectionProps> = ({
 };
 
 const MentorsPage = () => {
+  const navigate = useNavigate();
   const { superProfiles } = useContext(ContentContext);
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
@@ -88,6 +108,8 @@ const MentorsPage = () => {
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [activeSection, setActiveSection] = useState("profile");
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [stripeError, setStripeError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -101,12 +123,24 @@ const MentorsPage = () => {
       setLoading(false);
     };
     fetchProfile();
+
+    // Log all environment variables for debugging
+    console.log("Environment Variables:", process.env);
   }, [id, superProfiles]);
 
   const handleSendMessage = () => {
     console.log("Sending message:", messageText);
     setMessageModalOpen(false);
     setMessageText("");
+  };
+
+  const handlePayAndSchedule = () => {
+    if (!stripePromise) {
+      setStripeError("Payment system is not available. Please try again later.");
+      return;
+    }
+    setShowPaymentForm(true);
+    setStripeError(null);
   };
 
   const renderSkeletonProfile = () => (
@@ -190,29 +224,18 @@ const MentorsPage = () => {
 
   return (
     <Container size="lg">
-      <BlurSection
-        id="header"
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-      >
-        <Group position="apart" className="mt-20 mb-6">
-          <Anchor component={Link} to="/mentors" size="sm">
-            <Group spacing="xs">
-              <IconChevronLeft style={{ width: rem(20), height: rem(20) }} />
-              <Text>Find a Mentor</Text>
-            </Group>
-          </Anchor>
-          <Text size="sm" color="dimmed">
-            {profile.first_name} {profile.last_name}
-          </Text>
-        </Group>
-      </BlurSection>
+      <Group position="apart" className="mt-20 mb-6">
+        <Anchor component={Link} to="/mentors" size="sm">
+          <Group pl={'xs'}>
+            <Text>Find a Mentor</Text>
+            <IconChevronRight style={{ width: rem(20), height: rem(20) }} />
+          </Group>
+        </Anchor>
+        <Text size="sm" color="dimmed">
+          {profile.first_name} {profile.last_name}
+        </Text>
+      </Group>
 
-      <BlurSection
-        id="profile"
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-      ></BlurSection>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="col-span-1 md:col-span-2 lg:col-span-2">
           <Card withBorder p="lg">
@@ -338,9 +361,31 @@ const MentorsPage = () => {
                     <List.Item>Career guidance</List.Item>
                     <List.Item>Code reviews</List.Item>
                   </List>
-                  <Button fullWidth color="blue" mt="md">
-                    Apply now
-                  </Button>
+                  {stripeError && (
+                    <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" mt="md">
+                      {stripeError}
+                    </Alert>
+                  )}
+                  {showPaymentForm ? (
+                    stripePromise ? (
+                      <Elements stripe={stripePromise}>
+                        <PaymentForm />
+                      </Elements>
+                    ) : (
+                      <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" mt="md">
+                        Unable to load payment system. Please try again later.
+                      </Alert>
+                    )
+                  ) : (
+                    <Button 
+                      fullWidth 
+                      color="blue" 
+                      mt="md" 
+                      onClick={handlePayAndSchedule}
+                    >
+                      Pay and Schedule Appointment
+                    </Button>
+                  )}
                 </Card>
               </Tabs.Panel>
 
@@ -349,13 +394,7 @@ const MentorsPage = () => {
               </Tabs.Panel>
             </Tabs>
           </Card>
-          {/* </BlurSection> */}
 
-          {/* <BlurSection
-            id="skills"
-            activeSection={activeSection}
-            setActiveSection={setActiveSection}
-          > */}
           <Card withBorder mt="xl">
             <Text size="lg" weight={700} mb="md">
               Skills
@@ -368,13 +407,7 @@ const MentorsPage = () => {
               ))}
             </Group>
           </Card>
-          {/* </BlurSection> */}
 
-          {/* <BlurSection
-            id="achievements"
-            activeSection={activeSection}
-            setActiveSection={setActiveSection}
-          > */}
           <Card withBorder mt="xl">
             <Text size="lg" weight={700} mb="md">
               Achievements
@@ -385,13 +418,7 @@ const MentorsPage = () => {
               ))}
             </List>
           </Card>
-          {/* </BlurSection> */}
 
-          {/* <BlurSection
-            id="contributions"
-            activeSection={activeSection}
-            setActiveSection={setActiveSection}
-          > */}
           <Card withBorder mt="xl">
             <Text size="lg" weight={700} mb="md">
               Contributions
@@ -402,16 +429,9 @@ const MentorsPage = () => {
               ))}
             </List>
           </Card>
-          {/* </BlurSection> */}
         </div>
 
-        {/* <BlurSection
-          id="mentorship-plans"
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        > */}
         <MentorshipPlans />
-        {/* </BlurSection> */}
       </div>
 
       <Modal
@@ -431,7 +451,7 @@ const MentorsPage = () => {
           <Anchor>
             some tips to help you introduce yourself best to the mentor
           </Anchor>
-          .
+          
         </Text>
         <Text weight={500} mb="xs">
           Your message
@@ -453,19 +473,6 @@ const MentorsPage = () => {
           Send message
         </Button>
       </Modal>
-
-      <BlurSection
-        id="footer"
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-      >
-        <Box component="footer" mt="xl" pb="xl">
-          <Text align="center" size="sm" color="dimmed">
-            Your trusted source to find highly-vetted mentors & industry
-            professionals to move your career ahead.
-          </Text>
-        </Box>
-      </BlurSection>
     </Container>
   );
 };

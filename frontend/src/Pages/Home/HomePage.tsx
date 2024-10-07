@@ -52,8 +52,18 @@ const fields = [
 ];
 
 const Categories = [
-  { icon: IconUsersGroup, title: "Group Mentoring" },
-  { icon: IconActivity, title: "One-on-One Mentoring" },
+  // { icon: IconUsersGroup, title: "Group Mentoring", description: " " },
+  // { icon: IconActivity, title: "One-on-One Mentoring", description: " " },
+  {
+    icon: IconUsersGroup,
+    title: "Group Mentoring",
+    description: "Collaborative learning sessions where multiple mentees benefit from the guidance of one or more experienced mentors. Ideal for fostering peer support and diverse perspectives."
+  },
+  {
+    icon: IconActivity,
+    title: "One-on-One Mentoring",
+    description: "Personalized, in-depth mentoring sessions tailored to individual needs. Perfect for focused skill development and addressing specific career challenges."
+  },
 ];
 
 // New BlurSection component
@@ -175,19 +185,19 @@ function HomePage() {
         <meta name="twitter:image" content="URL_to_image_for_twitter" />
       </Helmet>
 
-      <BlurSection
+      {/* <BlurSection
         id="hero"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
+      > */}
         <HeroText />
-      </BlurSection>
+      {/* </BlurSection> */}
 
-      <BlurSection
+      {/* <BlurSection
         id="fields"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
+      > */}
         <section className="relative py-2 py-10">
           <Container className="relative z-10 max-w-7xl mx-auto px-4">
             {loading ? (
@@ -203,13 +213,13 @@ function HomePage() {
             )}
           </Container>
         </section>
-      </BlurSection>
+      {/* </BlurSection> */}
 
-      <BlurSection
+      {/* <BlurSection
         id="services"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
+      > */}
         <section className="relative mt-28 my-16">
           <Container className="relative z-10 max-w-7xl mx-auto px-4">
             <Title className="text-center text-3xl font-bold mb-4">
@@ -234,20 +244,20 @@ function HomePage() {
                     key={index}
                     icon={field.icon}
                     title={field.title}
-                    description="lorem ipsum"
+                    description={field.description}
                   />
                 ))}
               </div>
             )}
           </Container>
         </section>
-      </BlurSection>
+      {/* </BlurSection> */}
 
-      <BlurSection
+      {/* <BlurSection
         id="mentors"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
+      > */}
         <section className="relative py-20">
           <Container className="relative z-10 max-w-7xl mx-auto px-4">
             <Title className="text-center text-3xl font-bold mb-4">
@@ -266,7 +276,7 @@ function HomePage() {
             {loading ? (
               renderSkeletonMentors()
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mt-6">
                 {profiles.slice(0, 4).map((profile) => (
                   <ArticleCard
                     key={profile.id}
@@ -311,31 +321,31 @@ function HomePage() {
             </Anchor>
           </Container>
         </section>
-      </BlurSection>
+      {/* </BlurSection> */}
 
-      <BlurSection
+      {/* <BlurSection
         id="newsletter"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
+      > */}
         <NewsletterSignup />
-      </BlurSection>
+      {/* </BlurSection> */}
 
-      <BlurSection
+      {/* <BlurSection
         id="faq"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
+      > */}
         <FaqSimple />
-      </BlurSection>
+      {/* </BlurSection> */}
 
-      <BlurSection
+      {/* <BlurSection
         id="footer"
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-      >
+      > */}
         <FooterLink />
-      </BlurSection>
+      {/* </BlurSection> */}
     </div>
   );
 }

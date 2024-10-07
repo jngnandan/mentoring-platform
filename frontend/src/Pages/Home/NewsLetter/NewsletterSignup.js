@@ -26,7 +26,7 @@ export default function NewsletterSignup() {
   };
 
   return (
-    <Container my={80} size="md">
+    <Container my={80} size="lg">
       <Title align="center" mb="md">Subscribe to our Newsletter</Title>
       <Grid justify="center">
         <Grid.Col span={8} md={8} lg={6}>

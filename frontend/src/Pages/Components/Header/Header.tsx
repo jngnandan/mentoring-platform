@@ -175,12 +175,13 @@ const Header: React.FC = () => {
             {isLoggedIn && (
               <Menu shadow="md" width={320}>
                 <Menu.Target>
-                  <Indicator inline disabled={!notificationVisible} color="red" size={12}>
+                  <Indicator inline disabled={!notificationVisible} color="red" size={6}>
                     <ActionIcon 
                       size={42} 
                       variant="default" 
                       onClick={toggleNotification}
                       aria-label="Notifications"
+                      radius={100}
                     >
                       <IconNotification style={{ width: rem(24), height: rem(24) }} />
                     </ActionIcon>

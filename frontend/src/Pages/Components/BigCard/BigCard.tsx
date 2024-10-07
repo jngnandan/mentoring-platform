@@ -7,10 +7,10 @@ export function BigCard({ icon: Icon, title, description }) {
       <Icon size={44} stroke={1.2} className="mr-4" />
 
       <div>
-        <Text fw={500} className="ml-2 mb-2 leading-snug text-lg font-semibold">
+        <Text fw={500} mt='sm' className="ml-2 mb-2 text-xl">
           {title}
         </Text>
-        <Text size="sm" className="text-gray-500">
+        <Text size="sm" mt='md' className="text-gray-500">
           {description}
         </Text>
       </div>

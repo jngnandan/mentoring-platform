@@ -27,6 +27,10 @@ import NavBar from './Pages/AccountProfile/ProfileSettings.tsx';
 import ProtectedRoute from './ProtectedRoute.js';
 import MentorDashboard from './Pages/MentorDashboard/MentorDashboard.tsx';
 
+import PaymenForm from '../../frontend/src/Pages/PaymentForm.tsx'
+import PaymentPage from './Pages/PaymentPage.tsx';
+
+
 // Create the Medusa client
 const medusaClient = new Client({
   baseUrl: 'http://localhost:9000',
@@ -97,6 +101,8 @@ function App() {
         <Route path="/mentors/:id" element={<MentorsPage />} />
         <Route path="/mentor-dashboard" element={<MentorDashboard/>} />
 
+        <Route path='/payment' element={<PaymentPage/>}/>
+
         {/* <Route path="/profile" element={<NavBar />} /> */}
       </Routes>
       {showScrollTop && (
@@ -110,7 +116,7 @@ function App() {
           }}
         >
           <IconArrowUp size="1rem" />
-          Scroll top
+          {/* Scroll top */}
         </Button>
       )}
       {/* <FooterLinks /> */}

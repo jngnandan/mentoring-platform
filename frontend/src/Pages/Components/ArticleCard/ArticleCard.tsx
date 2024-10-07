@@ -1,6 +1,6 @@
 import React from 'react';
 import { IconBookmark, IconBriefcase, IconBuilding } from '@tabler/icons-react';
-import { Card, Image, Text, ActionIcon, Badge, Group, useMantineTheme, rem, Box } from '@mantine/core';
+import { Card, Image, Text, ActionIcon, Badge, Group, useMantineTheme, rem, Box, Flex} from '@mantine/core';
 import { Link } from 'react-router-dom';
 
 interface ArticleCardProps {
@@ -47,11 +47,11 @@ export default function ArticleCard({
         </Link>
       </Card.Section>
 
-      <Badge className="absolute top-2 right-3 pointer-events-none" variant="gradient" gradient={badgeGradient}>
+      {/* <Badge className="absolute top-2 right-3 pointer-events-none" variant="gradient" gradient={badgeGradient}>
         {badgeText}
-      </Badge>
+      </Badge> */}
 
-      <Text className="block mt-4 mb-1 font-medium text-lg" fw={500} component={Link} to={`/article/${id}`}>
+      <Text mt='sm' className="block mb-1 font-medium text-lg" fw={500} component={Link} to={`/article/${id}`}>
         {`${first_name} ${last_name}`}
       </Text>
 
@@ -75,17 +75,20 @@ export default function ArticleCard({
         </div>
       )}
 
-      <Group position="apart" className="flex justify-between mt-4">
-        <Group spacing="xs">
-          <Box>
-            <Text fz="xs" c="dimmed">Experience</Text>
-            <Text fz="sm" fw={500}>{`${experience} years`}</Text>
-          </Box>
-        </Group>
-        <ActionIcon className="bg-gray-100 hover:bg-gray-200">
-          <IconBookmark color='white' style={{ width: rem(20), height: rem(20) }} />
-        </ActionIcon>
-      </Group>
+<Flex justify="space-between" align="center" mt="md">
+      {/* Experience Section */}
+      <Flex align="center">
+        <Box>
+          <Text fz="xs" c="dimmed">Experience</Text>
+          <Text fz="sm" fw={500}>{`${experience} years`}</Text>
+        </Box>
+      </Flex>
+
+      {/* Bookmark Icon */}
+      <ActionIcon variant="default" className="bg-gray-100 hover:bg-gray-200">
+        <IconBookmark color="gray" style={{ width: rem(20), height: rem(20) }} />
+      </ActionIcon>
+    </Flex>
     </Card>
   );
 }
