@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Center, Tooltip, UnstyledButton, Stack, rem, Text, Card, Tabs } from '@mantine/core';
 import {
   IconHome2,
-  IconGauge,
-  IconDeviceDesktopAnalytics,
+  IconLayoutDashboard,
+  IconMessage,
   IconFingerprint,
   IconCalendarStats,
   IconUser,
@@ -15,6 +15,7 @@ import { MantineLogo } from '@mantinex/mantine-logo';
 import BookingCard from './Cards/BookingCard.tsx';
 import {CalendarWithAvailability} from './Cards/AvailabilitySettings.tsx'; // Import the new component
 import AccountForm from './Cards/AccountForm.tsx'
+import Messages from './Cards/Messages.tsx';
 
 interface NavbarLinkProps {
   icon: typeof IconHome2;
@@ -45,14 +46,14 @@ const mockdata = [
   { icon: IconUser, label: 'Account' },
   { icon: IconCalendarStats, label: 'Availability' },
   { icon: IconHome2, label: 'Home' },
-  { icon: IconGauge, label: 'Dashboard' },
-  { icon: IconDeviceDesktopAnalytics, label: 'Analytics' },
+  { icon: IconLayoutDashboard, label: 'Bookings' },
+  { icon: IconMessage, label: 'Messages' },
   { icon: IconFingerprint, label: 'Security' },
   { icon: IconSettings, label: 'Settings' },
 ];
 
 function TabContent({ label }: { label: string }) {
-  if (label === 'Dashboard') {
+  if (label === 'Bookings') {
     return (
       <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 mt-14 flex-grow">
         <Text size="xl" weight={700} mb="md">Dashboard</Text>
@@ -75,6 +76,14 @@ function TabContent({ label }: { label: string }) {
       // <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
         // <Text size="xl" weight={700} mb="md">Account</Text>
         <AccountForm/>
+      // </Card>
+    );
+  }
+  if (label === 'Messages') {
+    return (
+      // <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 flex-grow">
+        // <Text size="xl" weight={700} mb="md">Account</Text>
+        <Messages/>
       // </Card>
     );
   }
