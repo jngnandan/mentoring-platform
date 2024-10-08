@@ -54,6 +54,7 @@
     "react-router-dom": "^6.16.0",
     "react-scripts": "^5.0.1",
     "react-window": "^1.8.9",
+    "recharts": "^2.12.7",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.6",
     "url": "^0.11.3",
