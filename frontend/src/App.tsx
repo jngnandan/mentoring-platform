@@ -29,6 +29,7 @@ import MentorDashboard from './Pages/MentorDashboard/MentorDashboard.tsx';
 
 import PaymenForm from '../../frontend/src/Pages/PaymentForm.tsx'
 import PaymentPage from './Pages/PaymentPage.tsx';
+import Privacy from './Pages/Terms/Privacy.tsx';
 
 
 // Create the Medusa client
@@ -73,6 +74,9 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<SignupForm />} />
+        <Route path="/privacy" element={<Privacy/>} />
+
+
         <Route
           path="/mentors"
           element={

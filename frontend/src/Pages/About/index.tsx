@@ -1,212 +1,80 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Card, Image, Text, Badge, Button, Loader } from '@mantine/core';
-import { ContentContext } from '../../context/ContentContext.tsx';
-import supabase from '../../supabaseClient'; // Note: No need for .js extension
+import React from 'react';
+import { Container, Title, Text, ThemeIcon, Paper, Stack, Group, Image, Card } from '@mantine/core';
+import { IconBulb, IconUsers, IconBook, IconChartBar, IconNetwork } from '@tabler/icons-react';
 
-
-function About() {
-  const { compareProducts, setCompareProducts } = useContext(ContentContext);
-  const [products, setProducts] = useState([]);
-  const [supabaseProducts, setSupabaseProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [isSupabaseLoading, setIsSupabaseLoading] = useState(true);
-  const [isSupabaseError, setIsSupabaseError] = useState(false);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-
-      try {
-        const response = await fetch('http://localhost:9000/store/products', {
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch products, status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Fetched products:', data);
-
-        if (Array.isArray(data.products)) {
-          setProducts(data.products);
-        } else {
-          throw new Error('Unexpected response format');
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    const fetchSupabaseProducts = async () => {
-      setIsSupabaseLoading(true);
-
-      try {
-        const { data, error } = await supabase
-          .from('products') // Make sure to match the table name
-          .select('*');
-
-        if (error) {
-          throw new Error(`Failed to fetch Supabase products: ${error.message}`);
-        }
-
-        console.log('Fetched Supabase products:', data);
-
-        if (Array.isArray(data)) {
-          setSupabaseProducts(data);
-        } else {
-          throw new Error('Unexpected response format');
-        }
-      } catch (error) {
-        console.error('Error fetching Supabase products:', error);
-        setIsSupabaseError(true);
-      } finally {
-        setIsSupabaseLoading(false);
-      }
-    };
-
-    fetchSupabaseProducts();
-  }, []);
+export default function AboutProtocon() {
+  const offerings = [
+    { icon: IconUsers, title: "Personalized Mentorship Matching", description: "Based on skills, goals, and industry" },
+    { icon: IconBulb, title: "Virtual Meeting Spaces", description: "For seamless mentor-mentee interactions" },
+    { icon: IconBook, title: "Resource Libraries", description: "Curated by industry experts" },
+    { icon: IconChartBar, title: "Progress Tracking Tools", description: "To measure and celebrate growth" },
+    { icon: IconNetwork, title: "Networking Opportunities", description: "With professionals across various fields" },
+  ];
 
   return (
-    <div className="mx-4 mt-10">
-      <Card withBorder radius="md" className="py-8 px-6">
-        <Text size="xl" fw={600} className="text-center pb-10">
-          About
-        </Text>
-        <Text>
-          Welcome to [Your Company Name], where innovation meets excellence. Since our inception in [year], we've been on a
-          mission to [briefly describe your company's mission]. Our commitment to quality and customer satisfaction drives
-          everything we do.
-        </Text>
-      </Card>
+    <Container size="lg" py="xl" className="my-20">
+      <Paper withBorder shadow="md" p="xl" radius="sm">
+        <Stack spacing="xl">
+          <Group position="center" spacing="lg">
+            {/* <Image
+              src="/protocon-logo.png"  // Replace with actual logo path
+              alt="Protocon Logo"
+              width={60}
+              height={60}
+            /> */}
+            <Title order={1} align="center" sx={(theme) => ({
+              fontSize: theme.fontSizes.xl * 2,
+              fontWeight: 700,
+              color: theme.colors.blue[7],
+            })}>
+              About Protocon
+            </Title>
+          </Group>
 
-      <Card withBorder radius="md" className="py-8 px-6 mt-10">
-        <Text size="xl" fw={600} className="text-center pb-10">
-          Products from API
-        </Text>
-        {isLoading ? (
-          <div className="flex justify-center items-center">
-            <Loader color="gray" />
-          </div>
-        ) : isError ? (
-          <div className="text-center">
-            <Text color="red">Error loading products!</Text>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center">
-            <Text>No products available.</Text>
-          </div>
-        ) : (
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((product) => (
-              <Card key={product.id} shadow="sm" padding="lg" radius="md" withBorder className="flex flex-col">
-                <Card.Section>
-                  <Image
-                    src={product.thumbnail}
-                    height={160}
-                    alt={product.title}
-                  />
-                </Card.Section>
+          <Card p="lg" radius="sm" withBorder>
+            <Title order={2} size="h3" mb="md" color="blue">Welcome to Protocon</Title>
+            <Text size="md">
+              Founded in 2024, Protocon is on a mission to revolutionize mentorship across various professional fields.
+              We believe that knowledge sharing and guided learning are key to personal and professional development.
+            </Text>
+          </Card>
+          
+          <Card p="lg" radius="sm" withBorder>
+            <Title order={3} size="h4" mb="md" color="blue">Our Mission</Title>
+            <Text size="md">
+              At Protocon, we're committed to fostering a community where knowledge flows freely and every interaction
+              opens doors to new possibilities. Join us in shaping the future of professional development through
+              meaningful mentorship connections.
+            </Text>
+          </Card>
 
-                <div className="flex justify-between mt-2 mb-2">
-                  <Text fw={500} className="truncate">{product.title}</Text>
-                  <Badge color="pink">On Sale</Badge>
-                </div>
+          <Card p="lg" radius="sm" withBorder>
+            <Title order={3} size="h4" mb="md" color="blue">What We Do</Title>
+            <Text size="md">
+              Our platform connects aspiring professionals with experienced mentors, creating a dynamic ecosystem of
+              learning and collaboration. Whether you're looking to advance in tech, business, arts, or any other field,
+              Protocon provides the tools and connections you need to thrive.
+            </Text>
+          </Card>
 
-                <Text size="sm" className="text-gray-500 line-clamp-2">
-                  {product.description}
-                </Text>
-
-                <Text className="mt-2">
-                  Price: {product.variants[0].prices[0].amount / 100} {product.variants[0].prices[0].currency_code.toUpperCase()}
-                </Text>
-
-                <Button
-                  color="blue"
-                  fullWidth
-                  mt="md"
-                  radius="md"
-                  onClick={() => {
-                    setCompareProducts([...compareProducts, product]);
-                  }}
-                >
-                  Add to Compare
-                </Button>
-              </Card>
-            ))}
-          </div>
-        )}
-      </Card>
-
-      {/* New Section for Supabase Products */}
-      <Card withBorder radius="md" className="py-8 px-6 mt-10">
-        <Text size="xl" fw={600} className="text-center pb-10">
-          Products from Supabase
-        </Text>
-        {isSupabaseLoading ? (
-          <div className="flex justify-center items-center">
-            <Loader color="gray" />
-          </div>
-        ) : isSupabaseError ? (
-          <div className="text-center">
-            <Text color="red">Error loading Supabase products!</Text>
-          </div>
-        ) : supabaseProducts.length === 0 ? (
-          <div className="text-center">
-            <Text>No Supabase products available.</Text>
-          </div>
-        ) : (
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {supabaseProducts.map((product) => (
-              <Card key={product.id} shadow="sm" padding="lg" radius="md" withBorder className="flex flex-col">
-                <Card.Section>
-                  <Image
-                    src={product.thumbnail}
-                    height={160}
-                    alt={product.title}
-                  />
-                </Card.Section>
-
-                <div className="flex justify-between mt-2 mb-2">
-                  <Text fw={500} className="truncate">{product.title}</Text>
-                  <Badge color="pink">On Sale</Badge>
-                </div>
-
-                <Text size="sm" className="text-gray-500 line-clamp-2">
-                  {product.description}
-                </Text>
-
-                <Text className="mt-2">
-                  Price: {product.variants[0].prices[0].amount / 100} {product.variants[0].prices[0].currency_code.toUpperCase()}
-                </Text>
-
-                <Button
-                  color="blue"
-                  fullWidth
-                  mt="md"
-                  radius="md"
-                  onClick={() => {
-                    setCompareProducts([...compareProducts, product]);
-                  }}
-                >
-                  Add to Compare
-                </Button>
-              </Card>
-            ))}
-          </div>
-        )}
-      </Card>
-    </div>
+          <Card p="lg" radius="sm" withBorder>
+            <Title order={3} size="h4" mb="md" color="blue">What We Offer</Title>
+            <Stack spacing="md">
+              {offerings.map((item, index) => (
+                <Group key={index} noWrap align="flex-start" spacing="md">
+                  <ThemeIcon size={40} radius="sm" variant="light" color="blue">
+                    <item.icon size={24} />
+                  </ThemeIcon>
+                  <div>
+                    <Text weight={600} size="md">{item.title}</Text>
+                    <Text size="sm" color="dimmed">{item.description}</Text>
+                  </div>
+                </Group>
+              ))}
+            </Stack>
+          </Card>
+        </Stack>
+      </Paper>
+    </Container>
   );
 }
-
-export default About;

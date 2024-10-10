@@ -6,7 +6,7 @@
       var(--mantine-color-blue-7) 100%
     );
     border-radius: var(--mantine-radius-md);
-    padding: calc(var(--mantine-spacing-xl) * 2.5);
+    padding: calc(var(--mantine-spacing-xl) * 2);
   
     @media (max-width: $mantine-breakpoint-sm) {
       padding: calc(var(--mantine-spacing-xl) * 1.5);

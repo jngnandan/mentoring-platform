@@ -5,6 +5,7 @@ import {
   IconLayoutDashboard,
   IconMessage,
   IconFingerprint,
+  IconPuzzle,
   IconCalendarStats,
   IconUser,
   IconSettings,
@@ -17,6 +18,7 @@ import {CalendarWithAvailability} from './Cards/AvailabilitySettings.tsx'; // Im
 import AccountForm from './Cards/AccountForm.tsx'
 import Messages from './Cards/Messages.tsx';
 import HomeDashboard from './Cards/HomeDashboard.tsx';
+import ExtensionsConnections from './Cards/ExtensionsConnections.tsx';
 
 interface NavbarLinkProps {
   icon: typeof IconHome2;
@@ -49,7 +51,8 @@ const mockdata = [
   { icon: IconHome2, label: 'Home' },
   { icon: IconLayoutDashboard, label: 'Bookings' },
   { icon: IconMessage, label: 'Messages' },
-  // { icon: IconFingerprint, label: 'Security' },
+  { icon: IconPuzzle, label: 'Extensions' },
+
   // { icon: IconSettings, label: 'Settings' },
 ];
 
@@ -88,6 +91,11 @@ function TabContent({ label }: { label: string }) {
   if (label === 'Home') {
     return (
         <HomeDashboard/>
+    );
+  }
+  if (label === 'Extensions') {
+    return (
+        <ExtensionsConnections/>
     );
   }
   return (

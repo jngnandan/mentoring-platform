@@ -42,7 +42,7 @@ export function ContactUs() {
         <link rel="canonical" href="https://protocon.co.uk/contact" />
       </Helmet>
 
-      <div className='p-6'>
+      <div className='p-6 border border-1 rounded-sm my-20'>
         <div className={classes.wrapper}>
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>
             <div>
