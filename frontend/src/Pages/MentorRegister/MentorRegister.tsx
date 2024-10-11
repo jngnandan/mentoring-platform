@@ -11,7 +11,6 @@ import {
   Button,
   Image,
   FileInput,
-  Radio,
   Grid,
   Accordion,
   PillsInput,
@@ -25,9 +24,11 @@ import {
   Select,
   Autocomplete,
   AutocompleteProps,
+  Progress,
+  Checkbox,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
-import { IconBrandAngular, IconBrandReact, IconBrandVue, IconBriefcase, IconTools,  IconChartBar, IconCode, IconLoader, IconPhoto, IconRocket, IconTrash, IconUser, IconCurrencyDollar, IconUserPlus, IconChartPie, IconHeartbeat, IconGavel, IconSchool, IconHome, IconHeadset, IconTruck, IconClipboardList, IconMicroscope, IconDeviceLaptop, IconPhone, IconCheck, IconUpload } from '@tabler/icons-react';
+import { IconBrandAngular, IconBrandReact, IconBrandVue, IconBriefcase, IconTools, IconChartBar, IconCode, IconLoader, IconPhoto, IconRocket, IconTrash, IconUser, IconCurrencyDollar, IconUserPlus, IconChartPie, IconHeartbeat, IconGavel, IconSchool, IconHome, IconHeadset, IconTruck, IconClipboardList, IconMicroscope, IconDeviceLaptop, IconPhone, IconCheck, IconUpload } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createClient } from "@supabase/supabase-js";
 import { getAuth } from 'firebase/auth';
@@ -37,12 +38,6 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-// const cloudinary = require('cloudinary').v2;
-
-
-// import React, { useState } from 'react';
-// import { PillsInput, Pill, Combobox, Group, useCombobox, Text, Stack } from '@mantine/core';
-// import { IconCheck } from '@tabler/icons-react';
 
 const PillsInputField = ({ value = [], onChange, placeholder, description }) => {
   const combobox = useCombobox({
@@ -81,8 +76,8 @@ const PillsInputField = ({ value = [], onChange, placeholder, description }) => 
     )) : [];
 
   return (
-    <Stack >
-            {description && <Text size="xs" color="dimmed">{description}</Text>}
+    <Stack>
+      {description && <Text size="xs" color="dimmed">{description}</Text>}
       <Combobox store={combobox} onOptionSubmit={handleValueSelect}>
         <Combobox.DropdownTarget>
           <PillsInput onClick={() => combobox.openDropdown()}>
@@ -122,43 +117,40 @@ const PillsInputField = ({ value = [], onChange, placeholder, description }) => 
   );
 };
 
-// export default PillsInputField;
-
 const careerFields = [
   { value: 'Engineering', label: 'Engineering', icon: IconBriefcase },
   { value: 'Design', label: 'Design', icon: IconTools },
   { value: 'Marketing', label: 'Marketing', icon: IconChartBar },
   { value: 'Sales', label: 'Sales', icon: IconUser },
   { value: 'Product Management', label: 'Product Management', icon: IconRocket },
-  { value: 'Finance', label: 'Finance', icon: IconCurrencyDollar }, // Finance-related careers
-  { value: 'Human Resources', label: 'Human Resources', icon: IconUserPlus }, // HR roles
-  { value: 'Data Science', label: 'Data Science', icon: IconChartPie }, // Data science field
-  { value: 'Information Technology', label: 'Information Technology', icon: IconDeviceLaptop }, // IT careers
-  { value: 'Healthcare', label: 'Healthcare', icon: IconHeartbeat }, // Healthcare professions
-  { value: 'Legal', label: 'Legal', icon: IconGavel }, // Legal careers
-  { value: 'Education', label: 'Education', icon: IconSchool }, // Educational roles
-  { value: 'Real Estate', label: 'Real Estate', icon: IconHome }, // Real estate field
-  { value: 'Customer Service', label: 'Customer Service', icon: IconHeadset }, // Customer service roles
-  { value: 'Logistics', label: 'Logistics', icon: IconTruck }, // Logistics and supply chain
-  { value: 'Administration', label: 'Administration', icon: IconClipboardList }, // Administrative roles
-  { value: 'Public Relations', label: 'Public Relations', icon: IconPhone }, // PR field
-  { value: 'Research', label: 'Research', icon: IconMicroscope }, // Research careers
+  { value: 'Finance', label: 'Finance', icon: IconCurrencyDollar },
+  { value: 'Human Resources', label: 'Human Resources', icon: IconUserPlus },
+  { value: 'Data Science', label: 'Data Science', icon: IconChartPie },
+  { value: 'Information Technology', label: 'Information Technology', icon: IconDeviceLaptop },
+  { value: 'Healthcare', label: 'Healthcare', icon: IconHeartbeat },
+  { value: 'Legal', label: 'Legal', icon: IconGavel },
+  { value: 'Education', label: 'Education', icon: IconSchool },
+  { value: 'Real Estate', label: 'Real Estate', icon: IconHome },
+  { value: 'Customer Service', label: 'Customer Service', icon: IconHeadset },
+  { value: 'Logistics', label: 'Logistics', icon: IconTruck },
+  { value: 'Administration', label: 'Administration', icon: IconClipboardList },
+  { value: 'Public Relations', label: 'Public Relations', icon: IconPhone },
+  { value: 'Research', label: 'Research', icon: IconMicroscope },
 ];
 
-
-// Render each option in the autocomplete dropdown
 const renderAutocompleteOption: AutocompleteProps['renderOption'] = ({ option }) => {
-  const Icon = option.icon; // Get the icon for the current option
+  const Icon = option.icon;
   return (
     <Group gap="sm">
-      <Icon size={18} style={{ marginRight: 10 }} /> {/* Career field icon */}
-      <Text size="sm">{option.label}</Text> {/* Display only the career field name */}
+      <Icon size={18} style={{ marginRight: 10 }} />
+      <Text size="sm">{option.label}</Text>
     </Group>
   );
 };
 
 export default function MentorRegister() {
-  const [selectedOption, setSelectedOption] = useState('option1');
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = 4;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [formData, setFormData] = useState({
@@ -256,14 +248,14 @@ export default function MentorRegister() {
 
   const validateCurrentStep = async () => {
     const newErrors = {};
-    const requiredFields = {
-      option1: ['username', 'first_name', 'last_name'],
-      option2: ['category','job', 'company', 'summary'],
-      option3: ['skills'],
-      option4: []
-    };
+    const requiredFields = [
+      ['username', 'first_name', 'last_name'],
+      ['category', 'job', 'company', 'summary'],
+      ['skills'],
+      []
+    ];
 
-    for (const field of requiredFields[selectedOption]) {
+    for (const field of requiredFields[currentStep]) {
       if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
         newErrors[field] = `Please enter your ${field.replace('_', ' ')}`;
       }
@@ -275,11 +267,14 @@ export default function MentorRegister() {
 
   const handleNextClick = async () => {
     const isValid = await validateCurrentStep();
-    if (isValid) {
-      const options = ['option1', 'option2', 'option3', 'option4'];
-      const currentIndex = options.indexOf(selectedOption);
-      const nextIndex = (currentIndex + 1) % options.length;
-      setSelectedOption(options[nextIndex]);
+    if (isValid && currentStep < totalSteps - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBackClick = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -372,53 +367,27 @@ export default function MentorRegister() {
     }));
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'protocon');
 
-
-// cloudinary.config({
-//     cloud_name: 'your_cloud_name',
-//     api_key: 'your_api_key',
-//     api_secret: 'your_api_secret',
-// });
-
-// const generateSignature = (fileName) => {
-//     const timestamp = Math.floor(Date.now() / 1000);
-//     const signature = cloudinary.utils.sign_request(
-//         {
-//             timestamp,
-//             folder: 'your_folder',
-//             upload_preset: 'protocon',
-//         },
-//         cloudinary.config().api_secret
-//     );
-
-//     return { signature, timestamp };
-// };
-
-
-const uploadToCloudinary = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', 'protocon'); // Ensure this is your correct preset
-
-  try {
+    try {
       setUploading(true);
       setError(null);
       const response = await axios.post(
-          `https://api.cloudinary.com/v1_1/dgcfly5zo/image/upload`, // Your actual cloud name
-          formData
+        `https://api.cloudinary.com/v1_1/dgcfly5zo/image/upload`,
+        formData
       );
-      return response.data.secure_url; // Return the URL if upload is successful
-  } catch (err) {
+      return response.data.secure_url;
+    } catch (err) {
       console.error('Error uploading to Cloudinary:', err.response ? err.response.data : err);
       setError('Failed to upload image. Please try again.');
       return null;
-  } finally {
+    } finally {
       setUploading(false);
-  }
-};
+    }
+  };
 
   const handleFileUpload = async (file) => {
     if (file) {
@@ -428,6 +397,13 @@ const uploadToCloudinary = async (file) => {
       }
     }
   };
+
+  // Function to get progress percentage
+  const getProgressPercentage = (step) => ((step + 1) / totalSteps) * 100;
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Container size={800} my={96}>
@@ -441,55 +417,55 @@ const uploadToCloudinary = async (file) => {
         </Link>
       </Text>
 
-      <div className="flex justify-center items-center min-w-screen mt-4"> {/* Minimum height to center vertically */}
-      <Group className="flex justify-center"> {/* Centering the Group */}
-        {['option1', 'option2', 'option3', 'option4'].map((option) => (
-          <div key={option} className='flex items-center'> {/* Added margin for spacing */}
-            <Radio
-              value={option}
-              checked={selectedOption === option}
-              onChange={() => setSelectedOption(option)}
-            />
-          </div>
-        ))}
-      </Group>
-    </div>
+      <div className="w-2/3 mx-auto"> {/* Reduced width and centered */}
+  <Group grow gap={5} mt={30}>
+    {[0, 1, 2, 3].map((step) => (
+      <Progress
+        key={step}
+        size="sm"
+        radius="sm"
+        color="blue"
+        value={currentStep >= step ? 100 : 0}
+      />
+    ))}
+  </Group>
+</div>
+   
 
-
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder shadow="md" p={26} mt={26} radius="md">
         <Grid gutter="lg">
           <Grid.Col span={4}>
-          <Group position="center" direction="column">
-      <Image
-        radius="md"
-        h={160}
-        w={140}
-        src={formData.profilepic || "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-10.png"}
-        alt="Profile picture"
-      />
-      <FileInput
-        icon={<IconUpload size={14} />}
-        label="Upload Profile Picture"
-        placeholder="Upload"
-        accept="image/*"
-        onChange={handleFileUpload}
-        disabled={uploading}
-        styles={{
-          input: {
-            '&[data-disabled]': {
-              backgroundColor: '#f1f3f5',
-              color: '#adb5bd',
-              opacity: 0.6,
-            },
-          },
-        }}
-      />
-      {uploading && <Loader size="sm" />}
-      {error && <Text color="red" size="xs">{error}</Text>}
-    </Group>
+            <Group position="center" direction="column">
+              <Image
+                radius="md"
+                h={160}
+                w={140}
+                src={formData.profilepic || "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-10.png"}
+                alt="Profile picture"
+              />
+              <FileInput
+                icon={<IconUpload size={14} />}
+                label="Upload Profile Picture"
+                placeholder="Upload"
+                accept="image/*"
+                onChange={handleFileUpload}
+                disabled={uploading}
+                styles={{
+                  input: {
+                    '&[data-disabled]': {
+                      backgroundColor: '#f1f3f5',
+                      color: '#adb5bd',
+                      opacity: 0.6,
+                    },
+                  },
+                }}
+              />
+              {uploading && <Loader size="sm" />}
+              {error && <Text color="red" size="xs">{error}</Text>}
+            </Group>
           </Grid.Col>
           <Grid.Col span={8}>
-            {selectedOption === 'option1' && (
+            {currentStep === 0 && (
               <>
                 <TextInput
                   label="Username"
@@ -502,11 +478,10 @@ const uploadToCloudinary = async (file) => {
                   rightSection={isCheckingUsername ? <Loader size="xs" /> : null}
                   styles={{
                     input: {
-                      color: 'gray', // Set the input text color to gray.
+                      color: 'gray',
                     },
                   }}
                 />
-
                 <TextInput
                   label="Email"
                   value={formData.email}
@@ -524,7 +499,7 @@ const uploadToCloudinary = async (file) => {
                   error={errors.first_name}
                   styles={{
                     input: {
-                      color: 'gray', // Set the input text color to gray.
+                      color: 'gray',
                     },
                   }}
                 />
@@ -538,32 +513,31 @@ const uploadToCloudinary = async (file) => {
                   error={errors.last_name}
                   styles={{
                     input: {
-                      color: 'gray', // Set the input text color to gray.
+                      color: 'gray',
                     },
                   }}
                 />
               </>
             )}
 
-            {selectedOption === 'option2' && (
+            {currentStep === 1 && (
               <>
-              
-              <Autocomplete
-                data={careerFields}
-                renderOption={renderAutocompleteOption}
-                maxDropdownHeight={300}
-                label="Select Career Field"
-                placeholder="Search for a career"
-                styles={{
-                  input: {
-                    color: 'gray',
-                  },
-                }}
-                error={errors.category}
-                value={formData.category}
-                onChange={(value) => handleInputChange('category', value)}
-                required
-              />
+                <Autocomplete
+                  data={careerFields}
+                  renderOption={renderAutocompleteOption}
+                  maxDropdownHeight={300}
+                  label="Select Career Field"
+                  placeholder="Search for a career"
+                  styles={{
+                    input: {
+                      color: 'gray',
+                    },
+                  }}
+                  error={errors.category}
+                  value={formData.category}
+                  onChange={(value) => handleInputChange('category', value)}
+                  required
+                />
                 <TextInput
                   className='mt-4'
                   label="Job Title"
@@ -574,13 +548,10 @@ const uploadToCloudinary = async (file) => {
                   error={errors.job}
                   styles={{
                     input: {
-                      color: 'gray', // Set the input text color to gray.
+                      color: 'gray',
                     },
                   }}
                 />
-
-
-
                 <TextInput
                   label="Company"
                   placeholder="Your company"
@@ -591,7 +562,7 @@ const uploadToCloudinary = async (file) => {
                   error={errors.company}
                   styles={{
                     input: {
-                      color: 'gray', // Set the input text color to gray.
+                      color: 'gray',
                     },
                   }}
                 />
@@ -606,48 +577,45 @@ const uploadToCloudinary = async (file) => {
                   error={errors.summary}
                   styles={{
                     input: {
-                      color: 'gray', // Set the input text color to gray.
+                      color: 'gray',
                     },
                   }}
                 />
               </>
             )}
 
-{selectedOption === 'option3' && (
-  <div className='grid grid-cols-1 gap-3'>
-    <PillsInputField
-      value={formData.skills}
-      onChange={(value) => handleInputChange('skills', value)}
-      placeholder="Add skills"
-      category="skills"
-      description="Press Enter or Return key"
-    />
-    {errors.skills && <Text color="red" size="sm">{errors.skills}</Text>}
-    <PillsInputField
-      value={formData.hobbies}
-      onChange={(value) => handleInputChange('hobbies', value)}
-      placeholder="Add hobbies"
-      category="hobbies"
-      // description="Share your personal interests and hobbies"
-    />
-    <PillsInputField
-      value={formData.achievements}
-      onChange={(value) => handleInputChange('achievements', value)}
-      placeholder="Add achievements"
-      category="achievements"
-      // description="List your notable accomplishments"
-    />
-    <PillsInputField
-      value={formData.contributions}
-      onChange={(value) => handleInputChange('contributions', value)}
-      placeholder="Add contributions"
-      category="contributions"
-      // description="Mention your contributions to projects or communities"
-    />
-  </div>
-)}
+            {currentStep === 2 && (
+              <div className='grid grid-cols-1 gap-3'>
+                <PillsInputField
+                  value={formData.skills}
+                  onChange={(value) => handleInputChange('skills', value)}
+                  placeholder="Add skills"
+                  category="skills"
+                  description="Press Enter or Return key"
+                />
+                {errors.skills && <Text color="red" size="sm">{errors.skills}</Text>}
+                <PillsInputField
+                  value={formData.hobbies}
+                  onChange={(value) => handleInputChange('hobbies', value)}
+                  placeholder="Add hobbies"
+                  category="hobbies"
+                />
+                <PillsInputField
+                  value={formData.achievements}
+                  onChange={(value) => handleInputChange('achievements', value)}
+                  placeholder="Add achievements"
+                  category="achievements"
+                />
+                <PillsInputField
+                  value={formData.contributions}
+                  onChange={(value) => handleInputChange('contributions', value)}
+                  placeholder="Add contributions"
+                  category="contributions"
+                />
+              </div>
+            )}
 
-            {selectedOption === 'option4' && (
+            {currentStep === 3 && (
               <>
                 <TextInput
                   label="X (Twitter) URL"
@@ -714,7 +682,7 @@ const uploadToCloudinary = async (file) => {
                               placeholder="Add times (e.g., 09:00-17:00)"
                               style={{ flex: 2 }}
                             />
-                            <Radio
+                            <Checkbox
                               checked={enabled}
                               onChange={(event) => handleAvailabilityChange(day, 'enabled', event.currentTarget.checked)}
                             />
@@ -757,16 +725,12 @@ const uploadToCloudinary = async (file) => {
             <Group position="apart" mt="xl">
               <Button 
                 variant="default" 
-                onClick={() => setSelectedOption(prev => {
-                  const options = ['option1', 'option2', 'option3', 'option4'];
-                  const currentIndex = options.indexOf(prev);
-                  return options[(currentIndex - 1 + options.length) % options.length];
-                })}
-                disabled={selectedOption === 'option1'}
+                onClick={handleBackClick}
+                disabled={currentStep === 0}
               >
                 Back
               </Button>
-              {selectedOption !== 'option4' ? (
+              {currentStep !== totalSteps - 1 ? (
                 <Button onClick={handleNextClick}>Next</Button>
               ) : (
                 <Button onClick={handleSubmit} loading={isSubmitting} disabled={isSubmitting}>
