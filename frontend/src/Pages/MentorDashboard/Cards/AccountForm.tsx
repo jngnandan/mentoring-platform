@@ -14,14 +14,6 @@ const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Cloudinary configuration
-// const cloudinary = require('cloudinary').v2;
-// cloudinary.config({
-//   cloud_name: 'dgcfly5zo',
-//   api_key: '176928181688396',
-//   api_secret: 'K5nDfwF7QFPLbhKxs8XqUwNgYAk'
-// });
-
 const PillsInputField = ({ value = [], onChange, placeholder }) => {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -133,50 +125,64 @@ export default function AccountForm() {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('email', currentUser.email)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('email', currentUser.email)
+          .single();
 
-      if (error) {
+        if (error) throw error;
+
+        if (data) {
+          console.log("Fetched profile data:", data); // Debug log
+          setProfile({
+            ...data,
+            skills: Array.isArray(data.skills) ? data.skills : [],
+            hobbies: Array.isArray(data.hobbies) ? data.hobbies : [],
+            achievements: Array.isArray(data.achievements) ? data.achievements : [],
+            contributions: Array.isArray(data.contributions) ? data.contributions : [],
+            employment: Array.isArray(data.employment) ? data.employment : []
+          });
+        } else {
+          setError('No profile data found for the current user.');
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
         setError('Error fetching profile: ' + error.message);
-      } else if (data) {
-        setProfile({
-          ...data,
-          skills: Array.isArray(data.skills) ? data.skills : [],
-          hobbies: Array.isArray(data.hobbies) ? data.hobbies : [],
-          achievements: Array.isArray(data.achievements) ? data.achievements : [],
-          contributions: Array.isArray(data.contributions) ? data.contributions : [],
-          employment: Array.isArray(data.employment) ? data.employment : []
-        });
-      } else {
-        setError('No profile data found for the current user.');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchProfile();
   }, []);
 
-  
+  useEffect(() => {
+    console.log("Updated profile state:", profile); // Debug log
+  }, [profile]);
 
   const handleUpdateProfile = async () => {
-    const { error } = await supabase
-      .from('profiles')
-      .update(profile)
-      .eq('id', profile.id);
-
-    if (error) {
+    console.log("Profile before update:", profile); // Ensure that the skills are correctly set
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update(profile)
+        .eq('id', profile.id);
+  
+      if (error) throw error;
+  
+      setSuccessMessage('Profile updated successfully!');
+      setError(null);
+    } catch (error) {
+      console.error("Error updating profile:", error);
       setError('Error updating profile: ' + error.message);
       setSuccessMessage('');
-    } else {
-      setSuccessMessage('Profile updated successfully!');
-      setError('');
     }
   };
 
   const handleInputChange = (name, value) => {
+    console.log(`Updating ${name} with value:`, value); // Debug the skills update
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -191,7 +197,7 @@ export default function AccountForm() {
       formData.append('upload_preset', 'protocon');
 
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudinary.config().cloud_name}/image/upload`,
+        `https://api.cloudinary.com/v1_1/dgcfly5zo/image/upload`,
         {
           method: 'POST',
           body: formData,
@@ -396,13 +402,11 @@ export default function AccountForm() {
       />
 
       <Text size="lg" weight={700} mt="xl" mb="md">Skills</Text>
-
-<Text size="lg" weight={700} mt="xl" mb="md">Skills</Text>
-<PillsInputField
-  value={profile.skills || []} // Ensure it's an array
-  onChange={(value) => handleInputChange('skills', value)}
-  placeholder="Add skills"
-/>
+      <PillsInputField
+        value={profile.skills}
+        onChange={(value) => handleInputChange('skills', value)}
+        placeholder="Add skills"
+      />
 
       <Text size="lg" weight={700} mt="xl" mb="md">Hobbies</Text>
       <PillsInputField
@@ -410,14 +414,7 @@ export default function AccountForm() {
         onChange={(value) => handleInputChange('hobbies', value)}
         placeholder="Add hobbies"
       />
-
-      <Text size="lg" weight={700} mt="xl" mb="md">Achievements</Text>
-      <PillsInputField
-        value={profile.achievements}
-        onChange={(value) => handleInputChange('achievements', value)}
-        placeholder="Add achievements"
-      />
-      <Text size="lg" weight={700} mt="xl" mb="md">Contributions</Text>
+<Text size="lg" weight={700} mt="xl" mb="md">Contributions</Text>
       <PillsInputField
         value={profile.contributions}
         onChange={(value) => handleInputChange('contributions', value)}
@@ -471,6 +468,17 @@ export default function AccountForm() {
               }}
             />
           </Group>
+          <Button
+            mt="sm"
+            color="red"
+            variant="outline"
+            onClick={() => {
+              const updatedEmployment = profile.employment.filter((_, i) => i !== index);
+              handleInputChange('employment', updatedEmployment);
+            }}
+          >
+            Remove Job
+          </Button>
         </Box>
       ))}
       <Button
@@ -496,6 +504,12 @@ export default function AccountForm() {
       {successMessage && (
         <Notification color="green" mt="md" onClose={() => setSuccessMessage('')}>
           {successMessage}
+        </Notification>
+      )}
+
+      {error && (
+        <Notification color="red" mt="md" onClose={() => setError(null)}>
+          {error}
         </Notification>
       )}
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Group,
@@ -48,6 +48,7 @@ const Header: React.FC = () => {
   const [logoutModalOpened, setLogoutModalOpened] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notificationVisible, { toggle: toggleNotification }] = useDisclosure(true);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
   const theme = useMantineTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,6 +64,30 @@ const Header: React.FC = () => {
   } = useContent();
   const isLoggedIn = !!authState.user;
   const user = authState.user;
+
+  useEffect(() => {
+    const fetchProfilePic = async () => {
+      if (user && user.email) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('profilepic')
+            .eq('email', user.email)
+            .single();
+
+          if (error) throw error;
+
+          if (data && data.profilepic) {
+            setProfilePic(data.profilepic);
+          }
+        } catch (error) {
+          console.error('Error fetching profile picture:', error);
+        }
+      }
+    };
+
+    fetchProfilePic();
+  }, [user]);
 
   const handleLogoutClick = () => {
     setLogoutModalOpened(true);
@@ -220,9 +245,9 @@ const Header: React.FC = () => {
                       <Avatar
                         size="md"
                         radius="xl"
-                        src={user?.photoURL || undefined}
+                        src={profilePic || user?.photoURL}
                       >
-                        {!user?.photoURL && (user?.email?.[0].toUpperCase() || <IconUser size="1.5rem" />)}
+                        {!profilePic && !user?.photoURL && (user?.email?.[0].toUpperCase() || <IconUser size="1.5rem" />)}
                       </Avatar>
                       <Text>{user?.email}</Text>
                     </Group>
@@ -234,11 +259,6 @@ const Header: React.FC = () => {
                       Account
                     </Menu.Item>
                   </Link>
-                  {/* <Link to="/mentor-dashboard">
-                    <Menu.Item leftSection={<IconSettings size={14} />}>
-                      Mentor Dashboard
-                    </Menu.Item>
-                  </Link> */}
                   <Menu.Item 
                     leftSection={<IconLayoutGrid size={14} />}
                     onClick={handleSwitchToMentoring}

@@ -99,8 +99,9 @@ export default function ProfileCard({
             <Link to={`/mentors/${id}`}>
               <Image
                 src={profilepic}
-                height={180}
-                fit="cover"
+                h='auto'
+                w={120}
+                fit="contain"
                 radius="md"
                 className="rounded-md transition-transform duration-100 active:scale-95"
                 alt={`${name}'s profile picture`}
