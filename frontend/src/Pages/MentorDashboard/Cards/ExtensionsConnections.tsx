@@ -12,7 +12,7 @@ function ExtensionsConnections() {
     const loadGapi = () => {
       gapi.load('client:auth2', () => {
         gapi.auth2.init({
-          client_id: '910214703887-22hj717v4qrpve8ofsh2q58tjbe1pi9d.apps.googleusercontent.com.apps.googleusercontent.com', // Replace with your Client ID
+          client_id: '910214703887-qvvj07143j42m2pijkt2v2f9dvsvkubj.apps.googleusercontent.com', // Replace with your actual Client ID
           scope: 'https://www.googleapis.com/auth/calendar',
         }).then(() => {
           const isSignedIn = gapi.auth2.getAuthInstance().isSignedIn.get();
@@ -28,31 +28,34 @@ function ExtensionsConnections() {
     setIsLoading(true);
     const authInstance = gapi.auth2.getAuthInstance();
 
-    if (isConnected) {
-      // Disconnect logic
-      await authInstance.signOut();
-      localStorage.removeItem('googleCalendarToken');
-      setIsConnected(false);
-    } else {
-      // Connect logic
-      try {
+    try {
+      if (isConnected) {
+        // Disconnect logic
+        await authInstance.signOut();
+        localStorage.removeItem('googleCalendarToken');
+        setIsConnected(false);
+      } else {
+        // Connect logic
         const response = await authInstance.signIn();
         const token = response.getAuthResponse().access_token;
 
         localStorage.setItem('googleCalendarToken', token);
         setIsConnected(true);
-      } catch (error) {
-        console.error('Error connecting to Google Calendar:', error);
-        // Handle error (show a notification to the user, etc.)
       }
+    } catch (error) {
+      console.error('Error connecting to Google Calendar:', error);
+      // Handle error (show a notification to the user, etc.)
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
     <Card shadow="sm" p="lg" radius="md" withBorder className="m-4 my-6 flex-grow" mt={56}>
       <Text size="xl" weight={500} mb="md">Dashboard</Text>
       <div className="grid grid-cols-2 gap-4 justify-items-center">
+        
+        {/* Google Calendar Section */}
         <Card.Section withBorder className="rounded flex flex-col items-center p-4 w-full">
           <Image
             radius="sm"
@@ -65,10 +68,6 @@ function ExtensionsConnections() {
             variant={isConnected ? "filled" : "outline"}
             color={isConnected ? "green" : "blue"}
             leftSection={isConnected ? <IconCheck size={18} /> : <IconBrandGoogleFilled size={18} />}
-            rightSection={isConnected ? <IconX size={18} onClick={(e) => {
-              e.stopPropagation();
-              handleGoogleCalendarConnection();
-            }} /> : null}
             className="mt-4 mx-auto"
             onClick={handleGoogleCalendarConnection}
             loading={isLoading}
@@ -76,7 +75,8 @@ function ExtensionsConnections() {
             {isConnected ? "Connected" : "Connect Google Calendar"}
           </Button>
         </Card.Section>
-        {/* Second Card.Section remains unchanged */}
+        
+        {/* Another Section Placeholder (unchanged) */}
         <Card.Section withBorder className="rounded flex flex-col items-center p-4 w-full">
           <Image
             radius="sm"
@@ -93,6 +93,7 @@ function ExtensionsConnections() {
             Google Calendar
           </Button>
         </Card.Section>
+
       </div>
     </Card>
   );

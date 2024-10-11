@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import {
   TextInput,
   Textarea,
@@ -21,9 +22,12 @@ import {
   Stack,
   ActionIcon,
   Loader,
+  Select,
+  Autocomplete,
+  AutocompleteProps,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
-import { IconPhoto, IconTrash } from '@tabler/icons-react';
+import { IconBrandAngular, IconBrandReact, IconBrandVue, IconBriefcase, IconTools,  IconChartBar, IconCode, IconLoader, IconPhoto, IconRocket, IconTrash, IconUser, IconCurrencyDollar, IconUserPlus, IconChartPie, IconHeartbeat, IconGavel, IconSchool, IconHome, IconHeadset, IconTruck, IconClipboardList, IconMicroscope, IconDeviceLaptop, IconPhone, IconCheck, IconUpload } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createClient } from "@supabase/supabase-js";
 import { getAuth } from 'firebase/auth';
@@ -33,8 +37,14 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// const cloudinary = require('cloudinary').v2;
 
-const PillsInputField = ({ value = [], onChange, placeholder }) => {
+
+// import React, { useState } from 'react';
+// import { PillsInput, Pill, Combobox, Group, useCombobox, Text, Stack } from '@mantine/core';
+// import { IconCheck } from '@tabler/icons-react';
+
+const PillsInputField = ({ value = [], onChange, placeholder, description }) => {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
     onDropdownOpen: () => combobox.updateSelectedOptionIndex('active'),
@@ -64,48 +74,86 @@ const PillsInputField = ({ value = [], onChange, placeholder }) => {
     .map((item) => (
       <Combobox.Option value={item} key={item}>
         <Group gap="sm">
-          {value.includes(item) ? <CheckIcon size={12} /> : null}
+          {value.includes(item) ? <IconCheck size={12} /> : null}
           <span>{item}</span>
         </Group>
       </Combobox.Option>
     )) : [];
 
   return (
-    <Combobox store={combobox} onOptionSubmit={handleValueSelect}>
-      <Combobox.DropdownTarget>
-        <PillsInput onClick={() => combobox.openDropdown()}>
-          <Pill.Group>
-            {values}
-            <Combobox.EventsTarget>
-              <PillsInput.Field
-                onFocus={() => combobox.openDropdown()}
-                onBlur={() => combobox.closeDropdown()}
-                value={search}
-                placeholder={placeholder}
-                onChange={(event) => {
-                  combobox.updateSelectedOptionIndex();
-                  setSearch(event.currentTarget.value);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' && search.trim() !== '') {
-                    event.preventDefault();
-                    handleValueSelect(search.trim());
-                  } else if (event.key === 'Backspace' && search.length === 0) {
-                    event.preventDefault();
-                    handleValueRemove(value[value.length - 1]);
-                  }
-                }}
-              />
-            </Combobox.EventsTarget>
-          </Pill.Group>
-        </PillsInput>
-      </Combobox.DropdownTarget>
-      <Combobox.Dropdown>
-        <Combobox.Options>
-          {options.length > 0 ? options : <Combobox.Empty>Type to add new items</Combobox.Empty>}
-        </Combobox.Options>
-      </Combobox.Dropdown>
-    </Combobox>
+    <Stack >
+            {description && <Text size="xs" color="dimmed">{description}</Text>}
+      <Combobox store={combobox} onOptionSubmit={handleValueSelect}>
+        <Combobox.DropdownTarget>
+          <PillsInput onClick={() => combobox.openDropdown()}>
+            <Pill.Group>
+              {values}
+              <Combobox.EventsTarget>
+                <PillsInput.Field
+                  onFocus={() => combobox.openDropdown()}
+                  onBlur={() => combobox.closeDropdown()}
+                  value={search}
+                  placeholder={placeholder}
+                  onChange={(event) => {
+                    combobox.updateSelectedOptionIndex();
+                    setSearch(event.currentTarget.value);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && search.trim() !== '') {
+                      event.preventDefault();
+                      handleValueSelect(search.trim());
+                    } else if (event.key === 'Backspace' && search.length === 0) {
+                      event.preventDefault();
+                      handleValueRemove(value[value.length - 1]);
+                    }
+                  }}
+                />
+              </Combobox.EventsTarget>
+            </Pill.Group>
+          </PillsInput>
+        </Combobox.DropdownTarget>
+        <Combobox.Dropdown>
+          <Combobox.Options>
+            {options.length > 0 ? options : <Combobox.Empty>Type to add new items</Combobox.Empty>}
+          </Combobox.Options>
+        </Combobox.Dropdown>
+      </Combobox>
+    </Stack>
+  );
+};
+
+// export default PillsInputField;
+
+const careerFields = [
+  { value: 'Engineering', label: 'Engineering', icon: IconBriefcase },
+  { value: 'Design', label: 'Design', icon: IconTools },
+  { value: 'Marketing', label: 'Marketing', icon: IconChartBar },
+  { value: 'Sales', label: 'Sales', icon: IconUser },
+  { value: 'Product Management', label: 'Product Management', icon: IconRocket },
+  { value: 'Finance', label: 'Finance', icon: IconCurrencyDollar }, // Finance-related careers
+  { value: 'Human Resources', label: 'Human Resources', icon: IconUserPlus }, // HR roles
+  { value: 'Data Science', label: 'Data Science', icon: IconChartPie }, // Data science field
+  { value: 'Information Technology', label: 'Information Technology', icon: IconDeviceLaptop }, // IT careers
+  { value: 'Healthcare', label: 'Healthcare', icon: IconHeartbeat }, // Healthcare professions
+  { value: 'Legal', label: 'Legal', icon: IconGavel }, // Legal careers
+  { value: 'Education', label: 'Education', icon: IconSchool }, // Educational roles
+  { value: 'Real Estate', label: 'Real Estate', icon: IconHome }, // Real estate field
+  { value: 'Customer Service', label: 'Customer Service', icon: IconHeadset }, // Customer service roles
+  { value: 'Logistics', label: 'Logistics', icon: IconTruck }, // Logistics and supply chain
+  { value: 'Administration', label: 'Administration', icon: IconClipboardList }, // Administrative roles
+  { value: 'Public Relations', label: 'Public Relations', icon: IconPhone }, // PR field
+  { value: 'Research', label: 'Research', icon: IconMicroscope }, // Research careers
+];
+
+
+// Render each option in the autocomplete dropdown
+const renderAutocompleteOption: AutocompleteProps['renderOption'] = ({ option }) => {
+  const Icon = option.icon; // Get the icon for the current option
+  return (
+    <Group gap="sm">
+      <Icon size={18} style={{ marginRight: 10 }} /> {/* Career field icon */}
+      <Text size="sm">{option.label}</Text> {/* Display only the career field name */}
+    </Group>
   );
 };
 
@@ -140,12 +188,15 @@ export default function MentorRegister() {
         Sunday: { times: [], enabled: false },
       },
       specificDates: [],
+      category: [],
     },
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const auth = getAuth();
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserEmail = async () => {
@@ -207,7 +258,7 @@ export default function MentorRegister() {
     const newErrors = {};
     const requiredFields = {
       option1: ['username', 'first_name', 'last_name'],
-      option2: ['job', 'company', 'summary'],
+      option2: ['category','job', 'company', 'summary'],
       option3: ['skills'],
       option4: []
     };
@@ -256,7 +307,7 @@ export default function MentorRegister() {
   const handleEmploymentAdd = () => {
     setFormData(prev => ({
       ...prev,
-      employment: [...prev.employment, { job: '', company: '', start_date: '', end_date: '' }]
+      employment: [...prev.employment, {job: '', company: '', start_date: '', end_date: '' }]
     }));
   };
 
@@ -325,6 +376,59 @@ export default function MentorRegister() {
     return <div>Loading...</div>;
   }
 
+
+// cloudinary.config({
+//     cloud_name: 'your_cloud_name',
+//     api_key: 'your_api_key',
+//     api_secret: 'your_api_secret',
+// });
+
+// const generateSignature = (fileName) => {
+//     const timestamp = Math.floor(Date.now() / 1000);
+//     const signature = cloudinary.utils.sign_request(
+//         {
+//             timestamp,
+//             folder: 'your_folder',
+//             upload_preset: 'protocon',
+//         },
+//         cloudinary.config().api_secret
+//     );
+
+//     return { signature, timestamp };
+// };
+
+
+const uploadToCloudinary = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'protocon'); // Ensure this is your correct preset
+
+  try {
+      setUploading(true);
+      setError(null);
+      const response = await axios.post(
+          `https://api.cloudinary.com/v1_1/dgcfly5zo/image/upload`, // Your actual cloud name
+          formData
+      );
+      return response.data.secure_url; // Return the URL if upload is successful
+  } catch (err) {
+      console.error('Error uploading to Cloudinary:', err.response ? err.response.data : err);
+      setError('Failed to upload image. Please try again.');
+      return null;
+  } finally {
+      setUploading(false);
+  }
+};
+
+  const handleFileUpload = async (file) => {
+    if (file) {
+      const cloudinaryUrl = await uploadToCloudinary(file);
+      if (cloudinaryUrl) {
+        handleInputChange('profilepic', cloudinaryUrl);
+      }
+    }
+  };
+
   return (
     <Container size={800} my={96}>
       <Title ta="center">Tell us about yourself!</Title>
@@ -355,33 +459,54 @@ export default function MentorRegister() {
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <Grid gutter="lg">
           <Grid.Col span={4}>
-            <Group position="center">
-              <Image
-                radius="md"
-                h={160}
-                w={140}
-                src={formData.profilepic || "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-10.png"}
-              />
-              <FileInput
-                leftSection={<IconPhoto size={14} />}
-                label="Upload Profile Picture"
-                placeholder="Upload"
-                onChange={(file) => handleInputChange('profilepic', file)}
-              />
-            </Group>
+          <Group position="center" direction="column">
+      <Image
+        radius="md"
+        h={160}
+        w={140}
+        src={formData.profilepic || "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-10.png"}
+        alt="Profile picture"
+      />
+      <FileInput
+        icon={<IconUpload size={14} />}
+        label="Upload Profile Picture"
+        placeholder="Upload"
+        accept="image/*"
+        onChange={handleFileUpload}
+        disabled={uploading}
+        styles={{
+          input: {
+            '&[data-disabled]': {
+              backgroundColor: '#f1f3f5',
+              color: '#adb5bd',
+              opacity: 0.6,
+            },
+          },
+        }}
+      />
+      {uploading && <Loader size="sm" />}
+      {error && <Text color="red" size="xs">{error}</Text>}
+    </Group>
           </Grid.Col>
           <Grid.Col span={8}>
             {selectedOption === 'option1' && (
               <>
                 <TextInput
                   label="Username"
+                  description="Username should be unique"
                   placeholder="Your username"
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   required
                   error={errors.username}
                   rightSection={isCheckingUsername ? <Loader size="xs" /> : null}
+                  styles={{
+                    input: {
+                      color: 'gray', // Set the input text color to gray.
+                    },
+                  }}
                 />
+
                 <TextInput
                   label="Email"
                   value={formData.email}
@@ -397,6 +522,11 @@ export default function MentorRegister() {
                   required
                   mt="md"
                   error={errors.first_name}
+                  styles={{
+                    input: {
+                      color: 'gray', // Set the input text color to gray.
+                    },
+                  }}
                 />
                 <TextInput
                   label="Last Name"
@@ -406,20 +536,51 @@ export default function MentorRegister() {
                   required
                   mt="md"
                   error={errors.last_name}
+                  styles={{
+                    input: {
+                      color: 'gray', // Set the input text color to gray.
+                    },
+                  }}
                 />
               </>
             )}
 
             {selectedOption === 'option2' && (
               <>
+              
+              <Autocomplete
+                data={careerFields}
+                renderOption={renderAutocompleteOption}
+                maxDropdownHeight={300}
+                label="Select Career Field"
+                placeholder="Search for a career"
+                styles={{
+                  input: {
+                    color: 'gray',
+                  },
+                }}
+                error={errors.category}
+                value={formData.category}
+                onChange={(value) => handleInputChange('category', value)}
+                required
+              />
                 <TextInput
+                  className='mt-4'
                   label="Job Title"
                   placeholder="Your job title"
                   value={formData.job}
                   onChange={(e) => handleInputChange('job', e.target.value)}
                   required
                   error={errors.job}
+                  styles={{
+                    input: {
+                      color: 'gray', // Set the input text color to gray.
+                    },
+                  }}
                 />
+
+
+
                 <TextInput
                   label="Company"
                   placeholder="Your company"
@@ -428,6 +589,11 @@ export default function MentorRegister() {
                   required
                   mt="md"
                   error={errors.company}
+                  styles={{
+                    input: {
+                      color: 'gray', // Set the input text color to gray.
+                    },
+                  }}
                 />
                 <Textarea
                   label="Summary"
@@ -438,39 +604,48 @@ export default function MentorRegister() {
                   mt="md"
                   minRows={4}
                   error={errors.summary}
+                  styles={{
+                    input: {
+                      color: 'gray', // Set the input text color to gray.
+                    },
+                  }}
                 />
               </>
             )}
 
-            {selectedOption === 'option3' && (
-              <div className='grid grid-cols-1 gap-3'>
-                <PillsInputField
-                  value={formData.skills}
-                  onChange={(value) => handleInputChange('skills', value)}
-                  placeholder="Add skills"
-                />
-                {errors.skills && <Text color="red" size="sm">{errors.skills}</Text>}
-                <PillsInputField
-                  value={formData.hobbies}
-                  onChange={(value) => handleInputChange('hobbies', value)}
-                  placeholder="Add hobbies"
-                  mt="md"
-                />
-                <PillsInputField
-                  value={formData.achievements}
-                  onChange={(value) => handleInputChange('achievements', value)}
-                
-                  placeholder="Add achievements"
-                  mt="md"
-                />
-                <PillsInputField
-                  value={formData.contributions}
-                  onChange={(value) => handleInputChange('contributions', value)}
-                  placeholder="Add contributions"
-                  mt="md"
-                />
-              </div>
-            )}
+{selectedOption === 'option3' && (
+  <div className='grid grid-cols-1 gap-3'>
+    <PillsInputField
+      value={formData.skills}
+      onChange={(value) => handleInputChange('skills', value)}
+      placeholder="Add skills"
+      category="skills"
+      description="Press Enter or Return key"
+    />
+    {errors.skills && <Text color="red" size="sm">{errors.skills}</Text>}
+    <PillsInputField
+      value={formData.hobbies}
+      onChange={(value) => handleInputChange('hobbies', value)}
+      placeholder="Add hobbies"
+      category="hobbies"
+      // description="Share your personal interests and hobbies"
+    />
+    <PillsInputField
+      value={formData.achievements}
+      onChange={(value) => handleInputChange('achievements', value)}
+      placeholder="Add achievements"
+      category="achievements"
+      // description="List your notable accomplishments"
+    />
+    <PillsInputField
+      value={formData.contributions}
+      onChange={(value) => handleInputChange('contributions', value)}
+      placeholder="Add contributions"
+      category="contributions"
+      // description="Mention your contributions to projects or communities"
+    />
+  </div>
+)}
 
             {selectedOption === 'option4' && (
               <>
