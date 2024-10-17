@@ -62,6 +62,7 @@ const MentorshipPlans = () => {
   const handleBookNow = () => {
     setIsModalOpen(true);
     setBookingStep(1);
+    // navigate('/userDetails')
   };
 
   const handleNext = () => {
@@ -71,18 +72,28 @@ const MentorshipPlans = () => {
   const handleSubmit = () => {
     console.log('Booking submitted:', { selectedPlan, selectedDate, selectedTime, userInfo });
   
-    // Assuming you want to add a new payment option based on the booking information
+    // Find the selected plan's details, including the price
+    const selectedPlanDetails = plans.find(plan => plan.name === selectedPlan);
+  
+    // Create the new payment option with plan, date, time, userInfo, and price
     const newPaymentOption = {
       plan: selectedPlan,
       date: selectedDate,
       time: selectedTime,
       userInfo: userInfo,
+      price: selectedPlanDetails?.price || 0, // Safeguard if selectedPlan is not found
     };
   
-    setPaymentOptions(prevOptions => [...prevOptions, newPaymentOption]);
+    setPaymentOptions(prevOptions => [
+      ...prevOptions, 
+      newPaymentOption
+    ]);
+    
     setIsModalOpen(false);
-    navigate('/mentors/payment')
+    navigate('/mentors/payment');
   };
+  
+  
   
 
   return (

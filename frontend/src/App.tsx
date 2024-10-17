@@ -30,6 +30,7 @@ import MentorDashboard from './Pages/MentorDashboard/MentorDashboard.tsx';
 import PaymenForm from './Pages/PaymentForm.ts'
 import PaymentPage from './Pages/PaymentPage.tsx';
 import Privacy from './Pages/Terms/Privacy.tsx';
+import UserDetails from './Pages/UserDetails/UserDetails.tsx';
 
 
 // Create the Medusa client
@@ -105,7 +106,27 @@ function App() {
         <Route path="/mentors/:id" element={<MentorsPage />} />
         <Route path="/mentor-dashboard" element={<MentorDashboard/>} />
 
-        <Route path='mentors/payment' element={<PaymentPage/>}/>
+        {/* <Route path='mentors/payment' element={<PaymentPage/>}/> */}
+        
+        <Route
+          path="/mentors/payment"
+          element={
+            <ProtectedRoute>
+              <PaymentPage />
+              </ProtectedRoute>
+          }
+        />
+
+<Route
+          path="/userDetails"
+          element={
+            <ProtectedRoute>
+              <UserDetails/>
+            
+              </ProtectedRoute>
+
+          }
+        />
 
         {/* <Route path="/profile" element={<NavBar />} /> */}
       </Routes>
