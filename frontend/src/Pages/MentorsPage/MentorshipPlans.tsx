@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Card, Text, Button, Stack, Group, Radio, Box, Modal, Select, TextInput, Checkbox } from '@mantine/core';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 
+import { ContentContext, ContentProvider } from '../../context/ContentContext.tsx';
+import { useNavigate } from 'react-router-dom';
+
 const MentorshipPlans = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const {setPaymentOptions} = useContext(ContentContext)
   const [selectedPlan, setSelectedPlan] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
@@ -15,6 +21,7 @@ const MentorshipPlans = () => {
     contactNumber: '',
     chiefConcern: [],
   });
+
 
   const plans = [
     { name: 'Resume Feedback', duration: '30 minutes', price: 89 },
@@ -63,8 +70,20 @@ const MentorshipPlans = () => {
 
   const handleSubmit = () => {
     console.log('Booking submitted:', { selectedPlan, selectedDate, selectedTime, userInfo });
+  
+    // Assuming you want to add a new payment option based on the booking information
+    const newPaymentOption = {
+      plan: selectedPlan,
+      date: selectedDate,
+      time: selectedTime,
+      userInfo: userInfo,
+    };
+  
+    setPaymentOptions(prevOptions => [...prevOptions, newPaymentOption]);
     setIsModalOpen(false);
+    navigate('/mentors/payment')
   };
+  
 
   return (
     <div className="col-span-1 md:col-span-1 lg:col-span-1">
@@ -207,7 +226,7 @@ const MentorshipPlans = () => {
               </Box>
               <TextInput
                 label="Payment Amount"
-                value={`${plans.find(p => p.name === selectedPlan)?.price || 0} INR`}
+                value={`${plans.find(p => p.name === selectedPlan)?.price || 0} USD`}
                 readOnly
               />
               <Checkbox

@@ -56,6 +56,8 @@ interface ContentContextType {
   markAllNotificationsAsRead: () => void;
   clearAllNotifications: () => void;
   unreadNotificationsCount: number;
+  paymentOptions: any[];
+  setPaymentOptions: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -67,6 +69,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [superProfiles, setSuperProfiles] = useState<any[]>([]);
   const [colorScheme, setColorScheme] = useState<string>('light');
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [paymentOptions, setPaymentOptions] = useState<any[]>([]);
 
   const backendPort = 3002;
   const domainName = "localhost";
@@ -76,9 +79,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const { data: { session } } = await supabase.auth.getSession();
       authDispatch({ type: 'SET_USER', payload: session?.user || null });
     };
-    
+
     checkSession();
-    
+
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       authDispatch({ type: 'SET_USER', payload: session?.user || null });
     });
@@ -216,7 +219,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     markNotificationAsRead,
     markAllNotificationsAsRead,
     clearAllNotifications,
-    unreadNotificationsCount
+    unreadNotificationsCount,
+    paymentOptions, // Exposed paymentOptions
+    setPaymentOptions, // Exposed setPaymentOptions
   };
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
