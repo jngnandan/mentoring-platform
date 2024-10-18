@@ -90,29 +90,30 @@ const MentorshipPlans = () => {
 
 
   const handleSubmit = () => {
-    console.log('Booking submitted:', { selectedPlan, selectedDate, selectedTime, userInfo });
-  
-    // Find the selected plan's details, including the price
     const selectedPlanDetails = plans.find(plan => plan.name === selectedPlan);
-  
-    // Create the new payment option with plan, date, time, userInfo, and price
+    const price = selectedPlanDetails?.price || 0;
+    const tax = price * 0.2; // 20% tax
+    const total = price + tax;
+
     const newPaymentOption = {
       plan: selectedPlan,
       date: selectedDate,
       time: selectedTime,
       userInfo: userInfo,
-      price: selectedPlanDetails?.price || 0, // Safeguard if selectedPlan is not found
+      price: price,
+      tax: tax,
+      total: total,
     };
-  
+
     setPaymentOptions(prevOptions => [
       ...prevOptions, 
       newPaymentOption
     ]);
-  
-    // Pass the payment option data to PaymentPage
-    setIsModalOpen(false);
 
-    navigate('/mentors/payment', { state: { selectedDate } });
+    console.log('Booking submitted:', newPaymentOption);
+
+    setIsModalOpen(false);
+    navigate('/mentors/payment', { state: { paymentDetails: newPaymentOption } });
   };
   
   
@@ -129,7 +130,7 @@ const MentorshipPlans = () => {
           {plans.map((plan) => (
             <Box
               key={plan.name}
-              className={`p-3 ${selectedPlan === plan.name ? 'bg-blue-50 border-blue-500' : 'bg-gray-50 border-gray-300'} border rounded-md`}
+              className={`p-3 ${selectedPlan === plan.name ? 'bg-black-50 border-blue-500' : 'bg-black-50 border-gray-300'} border rounded-md`}
             >
               <Radio
                 value={plan.name}

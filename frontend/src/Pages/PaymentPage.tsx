@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom'; // Import useLocation for accessing state
+import { useLocation } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { ContentContext } from '../context/ContentContext.tsx';
@@ -8,14 +8,22 @@ import { Calendar, Clock, UserCircle, Mail, Phone } from 'lucide-react';
 import { Card, Text, Group, Stack, SimpleGrid, Button, TextInput } from '@mantine/core';
 
 const PaymentPage = () => {
-  const location = useLocation(); // Get the location object
-  const { selectedDate } = location.state || {}; // Extract selectedDate from state
+  const location = useLocation();
+  const { paymentDetails } = location.state || {};
   const [stripePromise, setStripePromise] = useState(null);
   const [error, setError] = useState(null);
   const { paymentOptions } = useContext(ContentContext);
 
-  const selectedPaymentOption = paymentOptions?.[0];
-  const { plan: selectedPlan, time: selectedTime, userInfo, price } = selectedPaymentOption || {};
+  const selectedPaymentOption = paymentDetails || paymentOptions?.[0];
+  const { 
+    plan: selectedPlan, 
+    time: selectedTime, 
+    date: selectedDate,
+    userInfo, 
+    price: subtotal,
+    tax,
+    total
+  } = selectedPaymentOption || {};
 
   const [billingAddress, setBillingAddress] = useState({
     street: '',
@@ -52,11 +60,6 @@ const PaymentPage = () => {
     });
   };
 
-  // Calculate prices
-  const subtotal = price ? parseFloat(price) : 0;
-  const tax = subtotal * 0.20;
-  const total = subtotal + tax;
-
   if (error) {
     return (
       <div className="p-4">
@@ -81,7 +84,7 @@ const PaymentPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 mt-16">
+    <div className="min-h-screen py-8 mt-16">
       <div className="max-w-6xl mx-auto px-4">
         <SimpleGrid cols={{ base: 1, md: 5 }} spacing="lg">
           {/* Left Column - Payment Form */}
@@ -148,7 +151,7 @@ const PaymentPage = () => {
               <Stack gap="xs">
                 <Group gap="xs">
                   <Calendar size={16} className="text-gray-500" />
-                  <Text size="sm">{formatDate(selectedDate)}</Text> {/* Use the passed selectedDate */}
+                  <Text size="sm">{formatDate(selectedDate)}</Text>
                 </Group>
                 <Group gap="xs">
                   <Clock size={16} className="text-gray-500" />
@@ -184,15 +187,15 @@ const PaymentPage = () => {
               <Stack gap="xs">
                 <Group justify="space-between">
                   <Text size="sm">Subtotal</Text>
-                  <Text size="sm">${subtotal.toFixed(2)}</Text>
+                  <Text size="sm">${subtotal?.toFixed(2) || '0.00'}</Text>
                 </Group>
                 <Group justify="space-between">
                   <Text size="sm">Tax (20%)</Text>
-                  <Text size="sm">${tax.toFixed(2)}</Text>
+                  <Text size="sm">${tax?.toFixed(2) || '0.00'}</Text>
                 </Group>
                 <Group justify="space-between" pt="sm" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
                   <Text fw={500}>Total</Text>
-                  <Text fw={500}>${total.toFixed(2)}</Text>
+                  <Text fw={500}>${total?.toFixed(2) || '0.00'}</Text>
                 </Group>
               </Stack>
 
