@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom'; // Import useLocation for accessing state
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { ContentContext } from '../context/ContentContext.tsx';
@@ -7,12 +8,14 @@ import { Calendar, Clock, UserCircle, Mail, Phone } from 'lucide-react';
 import { Card, Text, Group, Stack, SimpleGrid, Button, TextInput } from '@mantine/core';
 
 const PaymentPage = () => {
+  const location = useLocation(); // Get the location object
+  const { selectedDate } = location.state || {}; // Extract selectedDate from state
   const [stripePromise, setStripePromise] = useState(null);
   const [error, setError] = useState(null);
   const { paymentOptions } = useContext(ContentContext);
 
   const selectedPaymentOption = paymentOptions?.[0];
-  const { plan: selectedPlan, date: selectedDate, time: selectedTime, userInfo, price } = selectedPaymentOption || {};
+  const { plan: selectedPlan, time: selectedTime, userInfo, price } = selectedPaymentOption || {};
 
   const [billingAddress, setBillingAddress] = useState({
     street: '',
@@ -145,7 +148,7 @@ const PaymentPage = () => {
               <Stack gap="xs">
                 <Group gap="xs">
                   <Calendar size={16} className="text-gray-500" />
-                  <Text size="sm">{formatDate(selectedDate)}</Text>
+                  <Text size="sm">{formatDate(selectedDate)}</Text> {/* Use the passed selectedDate */}
                 </Group>
                 <Group gap="xs">
                   <Clock size={16} className="text-gray-500" />

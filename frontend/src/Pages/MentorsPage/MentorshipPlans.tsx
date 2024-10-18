@@ -6,6 +6,12 @@ import DatePicker from 'react-datepicker';
 import { ContentContext, ContentProvider } from '../../context/ContentContext.tsx';
 import { useNavigate } from 'react-router-dom';
 
+import { IconCalendarDue, IconClock, IconUser, IconTopologyStar } from '@tabler/icons-react';
+import { Clock, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar } from '@mantine/dates';
+import '@mantine/dates/styles.css';
+import dayjs from 'dayjs';
+
 const MentorshipPlans = () => {
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -13,14 +19,21 @@ const MentorshipPlans = () => {
   const [selectedPlan, setSelectedPlan] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // State for the selected date
+
+  const handleSelect = (date: Date) => {
+    setSelectedDate(date); // Update the selected date
+  };
+  
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
     contactNumber: '',
     chiefConcern: [],
   });
+
 
 
   const plans = [
@@ -69,6 +82,13 @@ const MentorshipPlans = () => {
     setBookingStep(2);
   };
 
+  const handleBack = () => {
+    if (bookingStep > 1) {
+      setBookingStep(bookingStep - 1); // Go back to the previous step
+    }
+  };
+
+
   const handleSubmit = () => {
     console.log('Booking submitted:', { selectedPlan, selectedDate, selectedTime, userInfo });
   
@@ -88,10 +108,13 @@ const MentorshipPlans = () => {
       ...prevOptions, 
       newPaymentOption
     ]);
-    
+  
+    // Pass the payment option data to PaymentPage
     setIsModalOpen(false);
-    navigate('/mentors/payment');
+
+    navigate('/mentors/payment', { state: { selectedDate } });
   };
+  
   
   
   
@@ -130,138 +153,197 @@ const MentorshipPlans = () => {
       </Card>
 
       <Modal
-        opened={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={bookingStep === 1 ? "Book Your Appointment" : "Your Info"}
-        size="xl"
-      >
-        {bookingStep === 1 && (
-          <div className="mb-4">
-            <Text className="text-lg font-semibold mb-2">Date & Time</Text>
-            <Text className="text-sm text-gray-600 mb-4">Your appointment will be booked with Lizu Kaur</Text>
-            <DatePicker
-              selected={selectedDate}
-              onChange={date => setSelectedDate(date)}
-              inline
-              minDate={new Date()}
-              className="w-full"
-            />
-            <div className="mb-4">
-              <Text weight={500} className="mb-2">Slot Availability</Text>
+      opened={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      size="xl"
+      title={
+        <Text className="text-xl font-bold text-gray-800">
+          {bookingStep === 1 ? "Book Your Appointment" : "Your Information"}
+        </Text>
+      }
+    >
+      <div className="p-1 py-6">
+      {bookingStep === 1 && (
+      <div className="space-y-6">
+        <Card withBorder radius="sm">
+          {/* Date Selection Section */}
+          <Card.Section withBorder inheritPadding py="xl">
+            <Text fw={600} className="text-md font-semibold text-gray-600 mb-4 flex items-center">
+              <IconCalendarDue className="mr-2" /> Select Date
+            </Text>
+            <div className="w-full mt-2">
+            <Calendar
+      value={selectedDate} // Bind the selected date to the Calendar
+      onChange={handleSelect} // Handle date selection
+      minDate={new Date()} // Prevent selection of past dates
+      className="w-full" // Apply full width class
+      // Customize day props for additional functionality, if needed
+      getDayProps={(date) => ({
+        selected: dayjs(date).isSame(selectedDate, 'date'), // Check if the date is selected
+        onClick: () => handleSelect(date), // Handle click to select the date
+      })}
+      // You can include more props here as needed
+    />
+            </div>
+          </Card.Section>
+
+          {/* Time Selection Section */}
+          <Card.Section withBorder inheritPadding py="xl">
+            <Text fw={600} className="text-md font-semibold text-gray-600 mb-4 flex items-center">
+              <IconClock className="mr-2" /> Select Time
+            </Text>
+            <div className="space-y-4">
               <Select
                 label="Time Zone"
                 placeholder="Europe/London - BST (+01:00)"
                 data={[{ value: 'Europe/London', label: 'Europe/London - BST (+01:00)' }]}
-                className="mb-4"
+                className="my-2"
               />
-              <Text weight={500} className="mb-2">Morning</Text>
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {timeSlots.slice(0, 5).map(slot => (
+              <div className="grid grid-cols-3 gap-3">
+                {timeSlots.map((slot) => (
                   <Button
                     key={slot.value}
                     variant={selectedTime === slot.value ? 'filled' : 'outline'}
-                    onClick={() => setSelectedTime(slot.value)}
-                    className="w-full"
-                  >
-                    {slot.label}
-                  </Button>
-                ))}
-              </div>
-              <Text weight={500} className="mb-2">Afternoon</Text>
-              <div className="grid grid-cols-2 gap-2">
-                {timeSlots.slice(5).map(slot => (
-                  <Button
-                    key={slot.value}
-                    variant={selectedTime === slot.value ? 'filled' : 'outline'}
-                    onClick={() => setSelectedTime(slot.value)}
-                    className="w-full"
+                    onClick={() => setSelectedTime(slot.value)}                        
+                    className="w-full py-2"
                   >
                     {slot.label}
                   </Button>
                 ))}
               </div>
             </div>
-            <Button fullWidth onClick={handleNext} mt="xl">
-              Next
-            </Button>
-          </div>
-        )}
-        
+          </Card.Section>
+        </Card>
+        <Button onClick={handleNext} className="w-full">
+          Next Step
+        </Button>
+      </div>
+    )}
+
         {bookingStep === 2 && (
-          <div className="mb-4">
-            <Text size="lg" weight={700} mb="md">Your Info</Text>
-            <Text mb="lg">Please enter your details</Text>
-            <Stack spacing="md">
-              <TextInput
-                label="Name"
-                placeholder="Name"
-                required
-                value={userInfo.name}
-                onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
-              />
-              <TextInput
-                label="Email"
-                placeholder="Email"
-                required
-                value={userInfo.email}
-                onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
-              />
-              <TextInput
-                label="Contact Number"
-                placeholder="Contact Number"
-                required
-                icon={<span>🇮🇳</span>} // Placeholder for Indian flag icon
-                value={userInfo.contactNumber}
-                onChange={(e) => setUserInfo({ ...userInfo, contactNumber: e.target.value })}
-              />
-              <Text weight={500} mb="xs">Chief Concern</Text>
-              <Box sx={{ maxHeight: '200px', overflowY: 'auto' }}>
-                {concerns.map(concern => (
-                  <Checkbox
-                    key={concern}
-                    label={concern}
-                    checked={userInfo.chiefConcern.includes(concern)}
-                    onChange={(e) => {
-                      if (e.currentTarget.checked) {
-                        setUserInfo({ ...userInfo, chiefConcern: [...userInfo.chiefConcern, concern] });
-                      } else {
-                        setUserInfo({
-                          ...userInfo,
-                          chiefConcern: userInfo.chiefConcern.filter(c => c !== concern)
-                        });
-                      }
-                    }}
-                    mb="xs"
+          <div className="space-y-6">
+            <Card withBorder radius="sm">
+              {/* Personal Information Section */}
+              <Card.Section withBorder inheritPadding py="xl">
+                {/* <Text fw={500} className="text-md font-semibold text-gray-700 mb-4">
+                  Personal Details
+                </Text> */}
+                <Text fw={600} className="text-md font-semibold text-gray-600 mb-4 flex flex-row justify-start items-center">
+                  <IconUser className="mr-2" /> Personal Details
+                </Text>
+                
+                <div className="space-y-4 mt-2">
+                  <TextInput
+                    icon={<User size={18} />}
+                    label="Name"
+                    placeholder="Enter your full name"
+                    required
+                    value={userInfo.name}
+                    onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
                   />
-                ))}
-              </Box>
-              <TextInput
-                label="Payment Amount"
-                value={`${plans.find(p => p.name === selectedPlan)?.price || 0} USD`}
-                readOnly
-              />
-              <Checkbox
-                label={
-                  <Text size="sm">
-                    I have read and agree to your{' '}
-                    <Text component="span" color="blue" inherit>
-                      Terms and Conditions
-                    </Text>{' '}
-                    and the{' '}
-                    <Text component="span" color="blue" inherit>
-                      Consent Agreement
+                  <TextInput
+                    icon={<Mail size={18} />}
+                    label="Email"
+                    placeholder="Enter your email address"
+                    required
+                    value={userInfo.email}
+                    onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
+                  />
+                  <TextInput
+                    icon={<Phone size={18} />}
+                    label="Contact Number"
+                    placeholder="Enter your phone number"
+                    required
+                    value={userInfo.contactNumber}
+                    onChange={(e) => setUserInfo({ ...userInfo, contactNumber: e.target.value })}
+                  />
+                </div>
+              </Card.Section>
+
+              {/* Appointment Details Section */}
+              <Card.Section withBorder inheritPadding py="xl">
+              <Text fw={600} className="text-md font-semibold text-gray-600 mb-1 flex flex-row justify-start items-center">
+                  <IconTopologyStar className="mr-2" /> Concern
+                </Text>
+                <div className="space-y-4 mt-3">
+                  
+                    <div className="grid grid-cols-2 gap-2">
+                      {concerns.map((concern) => (
+                        <Checkbox
+                          key={concern}
+                          label={concern}
+                          checked={userInfo.chiefConcern.includes(concern)}
+                          // onChange={(e) => {
+                          //   if (e.currentTarget.checked) {
+                          //     setUserInfo({ ...userInfo, chiefConcern: [...userInfo.chiefConcern, concern] });
+                          //   } else {
+                          //     setUserInfo({
+                          //       ...userInfo,
+                          //       chiefConcern: userInfo.chiefConcern.filter((c) => c !== concern),
+                          //     });
+                          //   }
+                          // }}
+                          onChange={(e) => {
+                            if (e.currentTarget.checked) {
+                              setUserInfo({ ...userInfo, chiefConcern: [...userInfo.chiefConcern, concern] });
+                            } else {
+                              setUserInfo({
+                                ...userInfo,
+                                chiefConcern: userInfo.chiefConcern.filter(c => c !== concern)
+                              });
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+
+                  <TextInput
+                    label="Payment Amount"
+                    value={`${plans.find(p => p.name === selectedPlan)?.price || 0} USD`}                    readOnly
+                    className="bg-gray-100"
+                  />
+                </div>
+              </Card.Section>
+
+              {/* Terms and Conditions Section */}
+              <Card.Section inheritPadding py="xl">
+                <Checkbox
+                  label={
+                    <Text size="sm" c="dimmed">
+                      I have read and agree to the{' '}
+                      <Text span inherit c="var(--mantine-color-anchor)">
+                        Terms and Conditions
+                      </Text>{' '}
+                      and the{' '}
+                      <Text span inherit c="var(--mantine-color-anchor)">
+                        Consent Agreement
+                      </Text>
+                      .
                     </Text>
-                    .
-                  </Text>
-                }
-              />
-              <Button fullWidth color="blue" size="md" onClick={handleSubmit}>
-                Pay and Schedule Appointment
+                  }
+                />
+              </Card.Section>
+            </Card>
+
+            <div className="flex space-x-4">
+              <Button
+                onClick={handleBack}
+                variant="outline"
+                className="w-1/2 py-3 rounded-lg transition duration-300"
+              >
+                <ChevronLeft size={18} className="mr-2" /> Back
               </Button>
-            </Stack>
+              <Button
+                onClick={handleSubmit}
+                className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition duration-300"
+              >
+                Complete Booking <ChevronRight size={18} className="ml-2" />
+              </Button>
+            </div>
           </div>
         )}
-      </Modal>
+      </div>
+    </Modal>
     </div>
   );
 };
