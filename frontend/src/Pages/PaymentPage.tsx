@@ -1,17 +1,117 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { ContentContext } from '../context/ContentContext.tsx';
 import PaymentForm from './PaymentForm.tsx';
-import { Calendar, Clock, UserCircle, Mail, Phone } from 'lucide-react';
+import { Calendar, Clock, UserCircle, Mail, Phone, CheckCircle } from 'lucide-react';
 import { Card, Text, Group, Stack, SimpleGrid, Button, TextInput } from '@mantine/core';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
+
+const updateBookingInProfile = async (profileId, bookingDetails) => {
+  try {
+    console.log('Updating profile with ID:', profileId, 'and booking details:', bookingDetails);
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ bookings: bookingDetails })
+      .eq('id', profileId);
+
+    if (error) {
+      console.error('Supabase error:', error);
+      throw new Error(`Error updating profile bookings: ${error.message}`);
+    }
+
+    console.log('Profile updated:', data);
+    return data;
+  } catch (err) {
+    console.error('Failed to update booking in profile:', err);
+    throw err;
+  }
+};
+
+
+// Confirmation Screen Component
+const ConfirmationScreen = ({ bookingDetails }) => {
+  const navigate = useNavigate();
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  return (
+    <div className="min-h-screen py-8 mt-16">
+      <div className="max-w-2xl mx-auto px-4">
+        <Card withBorder radius="md" className="text-center">
+          <Card.Section inheritPadding py="xl">
+            <div className="flex justify-center mb-6">
+              <CheckCircle size={64} className="text-green-500" />
+            </div>
+            <Text size="xl" fw={600} className="mb-4">
+              Thank You! Your Booking is Confirmed
+            </Text>
+            <Text size="md" c="dimmed" className="mb-6">
+              We've sent a confirmation email with all the details to your inbox
+            </Text>
+            
+            <div className="bg-gray-50 p-6 rounded-lg mb-6">
+              <Stack gap="md">
+                <Group gap="xs" justify="center">
+                  <Calendar size={20} className="text-gray-500" />
+                  <Text>{formatDate(bookingDetails?.date)}</Text>
+                </Group>
+                <Group gap="xs" justify="center">
+                  <Clock size={20} className="text-gray-500" />
+                  <Text>{bookingDetails?.time}</Text>
+                </Group>
+                <Group gap="xs" justify="center">
+                  <UserCircle size={20} className="text-gray-500" />
+                  <Text>{bookingDetails?.plan}</Text>
+                </Group>
+                {bookingDetails?.userInfo?.email && (
+                  <Group gap="xs" justify="center">
+                    <Mail size={20} className="text-gray-500" />
+                    <Text>{bookingDetails.userInfo.email}</Text>
+                  </Group>
+                )}
+              </Stack>
+            </div>
+
+            <Stack gap="md">
+              <Button 
+                fullWidth 
+                variant="outline"
+                onClick={() => navigate('/profile')}
+              >
+                View Booking Details
+              </Button>
+              <Button 
+                fullWidth
+                variant="subtle"
+                onClick={() => navigate('/')}
+              >
+                Return to Home
+              </Button>
+            </Stack>
+          </Card.Section>
+        </Card>
+      </div>
+    </div>
+  );
+};
 
 const PaymentPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { paymentDetails } = location.state || {};
   const [stripePromise, setStripePromise] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const { paymentOptions } = useContext(ContentContext);
 
   const selectedPaymentOption = paymentDetails || paymentOptions?.[0];
@@ -60,6 +160,48 @@ const PaymentPage = () => {
     });
   };
 
+  const handlePlaceOrder = async () => {
+    setIsLoading(true);
+    try {
+      // Simulate the Stripe payment process (replace with actual logic)
+      const paymentSuccess = true; // Replace this with actual Stripe payment intent confirmation logic
+  
+      if (!paymentSuccess) {
+        throw new Error('Payment failed');
+      }
+  
+      // If payment is successful, update the profile booking
+      if (userInfo?.id) {
+        const bookingDetails = {
+          plan: selectedPlan,
+          date: selectedDate,
+          time: selectedTime,
+          total: total,
+          billingAddress,
+          status: 'confirmed',
+          confirmedAt: new Date().toISOString()
+        };
+  
+        await updateBookingInProfile(userInfo.id, bookingDetails);
+      }
+  
+      // Show confirmation screen
+      setIsConfirmed(true);
+    } catch (err) {
+      console.error('Error placing order:', err);
+      setError('Failed to place order. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  
+
+  // If confirmed, show confirmation screen
+  if (isConfirmed) {
+    return <ConfirmationScreen bookingDetails={selectedPaymentOption} />;
+  }
+
   if (error) {
     return (
       <div className="p-4">
@@ -101,6 +243,7 @@ const PaymentPage = () => {
                   placeholder="Enter street address"
                   value={billingAddress.street}
                   onChange={(e) => setBillingAddress({...billingAddress, street: e.target.value})}
+                  required
                 />
                 <Group grow>
                   <TextInput
@@ -108,12 +251,14 @@ const PaymentPage = () => {
                     placeholder="Enter city"
                     value={billingAddress.city}
                     onChange={(e) => setBillingAddress({...billingAddress, city: e.target.value})}
+                    required
                   />
                   <TextInput
                     label="State"
                     placeholder="Enter state"
                     value={billingAddress.state}
                     onChange={(e) => setBillingAddress({...billingAddress, state: e.target.value})}
+                    required
                   />
                 </Group>
                 <Group grow>
@@ -122,12 +267,14 @@ const PaymentPage = () => {
                     placeholder="Enter post code"
                     value={billingAddress.zipCode}
                     onChange={(e) => setBillingAddress({...billingAddress, zipCode: e.target.value})}
+                    required
                   />
                   <TextInput
                     label="Country"
                     placeholder="Enter country"
                     value={billingAddress.country}
                     onChange={(e) => setBillingAddress({...billingAddress, country: e.target.value})}
+                    required
                   />
                 </Group>
               </Stack>
@@ -199,8 +346,15 @@ const PaymentPage = () => {
                 </Group>
               </Stack>
 
-              <Button fullWidth size="lg" mt="md">
-                Place Order
+              <Button 
+                fullWidth 
+                size="lg" 
+                mt="md"
+                loading={isLoading}
+                onClick={handlePlaceOrder}
+                // disabled={!billingAddress.street || !billingAddress.city || !billingAddress.state || !billingAddress.zipCode || !billingAddress.country}
+              >
+                {isLoading ? 'Processing...' : 'Place Order'}
               </Button>
             </Card.Section>
           </Card>
