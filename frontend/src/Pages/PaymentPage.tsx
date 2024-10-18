@@ -182,7 +182,14 @@ const PaymentPage = () => {
           confirmedAt: new Date().toISOString()
         };
   
-        await updateBookingInProfile(userInfo.id, bookingDetails);
+        // await updateBookingInProfile(userInfo.id, bookingDetails);
+        try {
+          console.log("Booking details:", bookingDetails);
+          await updateBookingInProfile(userInfo.id, bookingDetails);
+          console.log("Booking updated successfully!");
+        } catch (err) {
+          console.error("Error updating booking:", err);
+        }
       }
   
       // Show confirmation screen
