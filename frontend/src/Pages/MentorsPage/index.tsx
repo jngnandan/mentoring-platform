@@ -128,6 +128,8 @@ const MentorsPage = () => {
     console.log("Environment Variables:", process.env);
   }, [id, superProfiles]);
 
+  
+
   const handleSendMessage = () => {
     console.log("Sending message:", messageText);
     setMessageModalOpen(false);
@@ -431,7 +433,7 @@ const MentorsPage = () => {
           </Card>
         </div>
 
-        <MentorshipPlans />
+        <MentorshipPlans data={profile}/>
       </div>
 
       <Modal

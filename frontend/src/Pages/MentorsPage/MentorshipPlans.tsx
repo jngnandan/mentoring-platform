@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Card, Text, Button, Stack, Group, Radio, Box, Modal, Select, TextInput, Checkbox } from '@mantine/core';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
@@ -12,29 +12,32 @@ import { Calendar } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 import dayjs from 'dayjs';
 
-const MentorshipPlans = () => {
+const MentorshipPlans = ({data}) => {
+
+  console.log('data here', data)
+
   const navigate = useNavigate(); // Initialize useNavigate
 
-  const {setPaymentOptions} = useContext(ContentContext)
+  const {setPaymentOptions} = useContext(ContentContext);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
-  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null); // State for the selected date
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
 
-  const handleSelect = (date: Date) => {
-    setSelectedDate(date); // Update the selected date
-  };
   
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
     contactNumber: '',
-    chiefConcern: [],
+    chiefConcern: '', // Changed to string for the text area
   });
 
-
+  const handleSelect = (date: Date) => {
+    setSelectedDate(date);
+    setSelectedTime(null); // Reset selected time when date changes
+  };
 
   const plans = [
     { name: 'Resume Feedback', duration: '30 minutes', price: 89 },
@@ -72,10 +75,43 @@ const MentorshipPlans = () => {
     'Personal Branding',
   ];
 
+  useEffect(() => {
+    if (data && data.availability) {
+      const { weekly, specificDates } = data.availability;
+  
+      const allTimeSlots = [];
+  
+      // Add weekly slots
+      Object.entries(weekly).forEach(([day, { times, enabled }]) => {
+        if (enabled && times) {
+          times.forEach((time) => {
+            allTimeSlots.push({
+              day,
+              startTime: time.start,
+              endTime: time.end,
+              label: `${time.start} - ${time.end}`
+            });
+          });
+        }
+      });
+  
+      // Add specific date slots
+      specificDates.forEach(({ date, start, end }) => {
+        allTimeSlots.push({
+          date: new Date(date),
+          startTime: start,
+          endTime: end,
+          label: `${start} - ${end}`
+        });
+      });
+  
+      setAvailableTimeSlots(allTimeSlots);
+    }
+  }, [data]);
+
   const handleBookNow = () => {
     setIsModalOpen(true);
     setBookingStep(1);
-    // navigate('/userDetails')
   };
 
   const handleNext = () => {
@@ -87,7 +123,6 @@ const MentorshipPlans = () => {
       setBookingStep(bookingStep - 1); // Go back to the previous step
     }
   };
-
 
   const handleSubmit = () => {
     const selectedPlanDetails = plans.find(plan => plan.name === selectedPlan);
@@ -115,10 +150,6 @@ const MentorshipPlans = () => {
     setIsModalOpen(false);
     navigate('/mentors/payment', { state: { paymentDetails: newPaymentOption } });
   };
-  
-  
-  
-  
 
   return (
     <div className="col-span-1 md:col-span-1 lg:col-span-1">
@@ -154,74 +185,74 @@ const MentorshipPlans = () => {
       </Card>
 
       <Modal
-      opened={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
-      size="xl"
-      title={
-        <Text className="text-xl font-bold text-gray-800">
-          {bookingStep === 1 ? "Book Your Appointment" : "Your Information"}
-        </Text>
-      }
-    >
-      <div className="p-1 py-6">
-      {bookingStep === 1 && (
-      <div className="space-y-6">
-        <Card withBorder radius="sm">
-          {/* Date Selection Section */}
-          <Card.Section withBorder inheritPadding py="xl">
-            <Text fw={600} className="text-md font-semibold text-gray-600 mb-4 flex items-center">
-              <IconCalendarDue className="mr-2" /> Select Date
-            </Text>
-            <div className="w-full mt-2">
-            <Calendar
-      value={selectedDate} // Bind the selected date to the Calendar
-      onChange={handleSelect} // Handle date selection
-      minDate={new Date()} // Prevent selection of past dates
-      className="w-full" // Apply full width class
-      // Customize day props for additional functionality, if needed
-      getDayProps={(date) => ({
-        selected: dayjs(date).isSame(selectedDate, 'date'), // Check if the date is selected
-        onClick: () => handleSelect(date), // Handle click to select the date
-      })}
-      // You can include more props here as needed
-    />
-            </div>
-          </Card.Section>
+        opened={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="xl"
+        title={
+          <Text className="text-xl font-bold text-gray-800">
+            {bookingStep === 1 ? "Book Your Appointment" : "Your Information"}
+          </Text>
+        }
+      >
+        <div className="p-1 py-6">
+          {bookingStep === 1 && (
+            <div className="space-y-6">
+              <Card withBorder radius="sm">
+                {/* Date Selection Section */}
+                <Card.Section withBorder inheritPadding py="xl">
+                  <Text fw={600} className="text-md font-semibold text-gray-600 mb-4 flex items-center">
+                    <IconCalendarDue className="mr-2" /> Select Date
+                  </Text>
+                  <div className="w-full mt-2">
+                    <Calendar
+                      value={selectedDate}
+                      onChange={handleSelect}
+                      minDate={new Date()}
+                      className="w-full"
+                      getDayProps={(date) => ({
+                        selected: dayjs(date).isSame(selectedDate, 'date'),
+                        onClick: () => handleSelect(date),
+                      })}
+                    />
+                  </div>
+                </Card.Section>
 
-          {/* Time Selection Section */}
-          <Card.Section withBorder inheritPadding py="xl">
-            <Text fw={600} className="text-md font-semibold text-gray-600 mb-4 flex items-center">
-              <IconClock className="mr-2" /> Select Time
-            </Text>
-            <div className="space-y-4">
-              <Select
-                label="Time Zone"
-                placeholder="Europe/London - BST (+01:00)"
-                data={[{ value: 'Europe/London', label: 'Europe/London - BST (+01:00)' }]}
-                className="my-2"
-              />
-              <div className="grid grid-cols-3 gap-3">
-                {timeSlots.map((slot) => (
-                  <Button
-                    key={slot.value}
-                    variant={selectedTime === slot.value ? 'filled' : 'outline'}
-                    onClick={() => setSelectedTime(slot.value)}                        
-                    className="w-full py-2"
-                  >
-                    {slot.label}
-                  </Button>
-                ))}
-              </div>
+                {/* Time Selection Section */}
+                <Card.Section withBorder inheritPadding py="xl">
+                  <Text fw={600} className="text-md font-semibold text-gray-600 mb-4 flex items-center">
+                    <IconClock className="mr-2" /> Select Time
+                  </Text>
+                  <div className="space-y-4">
+                    <Select
+                      label="Time Zone"
+                      placeholder="Europe/London - BST (+01:00)"
+                      data={[{ value: 'Europe/London', label: 'Europe/London - BST (+01:00)' }]}
+                      className="my-2"
+                    />
+                    <div className="grid grid-cols-3 gap-3">
+                      {availableTimeSlots
+                        .filter(slot => !slot.date || dayjs(slot.date).isSame(selectedDate, 'date')) // Ensure slots are filtered correctly
+                        .map((slot) => (
+                          <Button
+                            key={slot.startTime} // Ensure each key is unique
+                            variant={selectedTime === slot.startTime ? 'filled' : 'outline'} // Change button style based on selection
+                            onClick={() => setSelectedTime(slot.startTime)} // Update selected time
+                            className="w-full py-2"
+                          >
+                            {slot.label}
+                          </Button>
+                        ))}
+                    </div>
+                  </div>
+                </Card.Section>
+              </Card>
+              <Button onClick={handleNext} className="w-full">
+                Next Step
+              </Button>
             </div>
-          </Card.Section>
-        </Card>
-        <Button onClick={handleNext} className="w-full">
-          Next Step
-        </Button>
-      </div>
-    )}
+          )}
 
-        {bookingStep === 2 && (
+{bookingStep === 2 && (
           <div className="space-y-6">
             <Card withBorder radius="sm">
               {/* Personal Information Section */}
@@ -343,8 +374,8 @@ const MentorshipPlans = () => {
             </div>
           </div>
         )}
-      </div>
-    </Modal>
+        </div>
+      </Modal>
     </div>
   );
 };
